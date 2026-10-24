@@ -9,6 +9,7 @@ import android.provider.Telephony
 import android.telecom.Call
 import android.telecom.CallScreeningService
 import android.telephony.TelephonyManager
+import android.util.Log
 import app.satya.AppGraph
 import app.satya.core.Capture
 import app.satya.core.Channel
@@ -38,6 +39,7 @@ object SmsPipeline {
 
 class SmsReceiver : BroadcastReceiver() {
     override fun onReceive(ctx: Context, intent: Intent) {
+        Log.i("SATYA", "SmsReceiver: ${intent.action}")
         if (intent.action != Telephony.Sms.Intents.SMS_RECEIVED_ACTION) return
         val parts = Telephony.Sms.Intents.getMessagesFromIntent(intent) ?: return
         if (parts.isEmpty()) return
@@ -45,7 +47,12 @@ class SmsReceiver : BroadcastReceiver() {
         val body = parts.joinToString("") { it.messageBody.orEmpty() } // multipart SMS joined
         val pending = goAsync()
         AppGraph.get(ctx).scope.launch {
-            try { SmsPipeline.handle(ctx, sender, body) } catch (_: Throwable) { } finally { pending.finish() }
+            try {
+                val r = SmsPipeline.handle(ctx, sender, body)
+                Log.i("SATYA", "SMS from ${sender.take(4)}…: ${r?.hits?.joinToString { it.id } ?: "no broken promise"}")
+            } catch (t: Throwable) {
+                Log.w("SATYA", "SMS check failed", t)
+            } finally { pending.finish() }
         }
     }
 }
