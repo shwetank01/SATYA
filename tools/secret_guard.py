@@ -24,6 +24,8 @@ GENERIC = [
     (re.compile(r"\bhf_[A-Za-z0-9]{30,}"), "Hugging Face token"),
     (re.compile(r"\bsbp_[a-f0-9]{30,}"), "Supabase access token"),
     (re.compile(r"\bgh[pousr]_[A-Za-z0-9]{30,}"), "GitHub token"),
+    (re.compile(r"\bsk_[a-z0-9]{8}_[A-Za-z0-9]{16,}"), "Sarvam AI API key"),
+    (re.compile(r"\bvercel_blob_rw_[A-Za-z0-9_]{16,}"), "Vercel Blob token"),
 ]
 SECRET_FILES = [
     "android/secrets.properties", "android/keystore.properties",

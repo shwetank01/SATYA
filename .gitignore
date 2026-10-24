@@ -1,5 +1,5 @@
 # --- secrets: never committed (the repo is public) ---
-keys/
+/keys/
 **/.env
 **/.env.*
 !**/.env.example
@@ -47,3 +47,7 @@ vivek/eval/samples/fake/*
 Thumbs.db
 *.log
 tools/autopush.state
+tools/autopush.stop
+
+# TypeScript incremental build info
+*.tsbuildinfo
