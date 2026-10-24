@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+/* SATYA tokens (design/INVENTORY.md). Words, never colours, carry verdicts and severity. */
+@theme {
+  --color-blue: #1F5FC4;
+  --color-yellow: #F7C800;
+  --color-paper: #F4F3EE;
+  --color-ink: #0E2348;
+  --color-muted: #4A5672;
+  --color-muted2: #7A849A;
+  --color-body2: #2A3B5E;
+  --color-evidence: #ECE8E1;
+  --color-bubble: #D7E5FF;
+  --color-sub: #C9D3E6;
+  --font-display: var(--font-sora), system-ui, sans-serif;
+  --font-sans: var(--font-hanken), 'Noto Sans Devanagari', system-ui, sans-serif;
+  --ease-satya: cubic-bezier(.16, 1, .3, 1);
+  --ease-pop: cubic-bezier(.2, 1.3, .3, 1);
+}
+
+:root { color-scheme: light; }
+html, body { background: var(--color-paper); color: var(--color-ink); }
+body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+
+.micro { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--color-muted); }
+.card { background: #fff; border: 1px solid rgba(14,35,72,.08); border-radius: 22px; box-shadow: 0 1px 2px rgba(14,35,72,.04), 0 10px 26px rgba(14,35,72,.06); }
+.stamp { display: inline-flex; align-items: center; height: 26px; padding: 0 8px; border: 3px double var(--color-ink); border-radius: 7px; font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; white-space: nowrap; }
+.stamp-big { height: 44px; padding: 0 14px; border-width: 5px; border-radius: 10px; font-family: var(--font-display); font-size: 16px; letter-spacing: .06em; }
+.grain { position: relative; isolation: isolate; }
+.grain::after { content: ""; position: absolute; inset: 0; background: url(/grain.png) 0 0 / 128px 128px; mix-blend-mode: overlay; opacity: .5; pointer-events: none; border-radius: inherit; }
+.lattice { background-image: url(/lattice-paper.svg); background-size: 640px 640px; }
+.btn-ink { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 22px; background: var(--color-ink); color: var(--color-paper); font-weight: 600; transition: transform .14s; }
+.btn-ink:active { transform: scale(.96); }
+.btn-ink:disabled { opacity: .45; }
+.btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 22px; background: #fff; color: var(--color-ink); border: 1px solid rgba(14,35,72,.14); font-weight: 600; }
+.field { width: 100%; height: 44px; border-radius: 14px; border: 1px solid rgba(14,35,72,.14); background: #fff; padding: 0 14px; font-size: 15px; }
+textarea.field { height: auto; padding: 12px 14px; }
+@keyframes cardIn { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes stampIn { 0% { opacity: 0; transform: scale(1.9) rotate(-16deg); } 60% { opacity: 1; transform: scale(.94) rotate(-7deg); } 100% { opacity: 1; transform: scale(1) rotate(-8deg); } }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(247,200,0,.75); } 100% { box-shadow: 0 0 0 9px rgba(247,200,0,0); } }
+.card-in { animation: cardIn .4s var(--ease-satya) both; }
+.stamp-in { animation: stampIn .5s var(--ease-pop) both; }
+.live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-yellow); animation: pulse 1.6s ease-out infinite; }

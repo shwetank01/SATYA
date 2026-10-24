@@ -32,3 +32,12 @@ export async function POST(req: Request) {
   if (error) return fail(500, 'kill_failed');
   return json({ blocked_reports: Number(data ?? 0) });
 }
+
+/** Blocklist view: indicators this bank confirmed as fake (labels are masked; values never stored). */
+export async function GET(req: Request) {
+  const u = await requireConsole(req);
+  if (isResponse(u)) return u;
+  const { data, error } = await db().from('indicators').select('hash,type,label,confirmed_by,confirmed_at,reports').in('confirmed_by', u.orgs).order('confirmed_at', { ascending: false }).limit(500);
+  if (error) return fail(500, 'read_failed');
+  return json({ items: data ?? [] });
+}

@@ -32,3 +32,17 @@ export async function POST(req: Request) {
   if (error) return fail(500, 'publish_failed');
   return json({ version });
 }
+
+/** The signed-in bank's current card + certified sign key (console card builder; no app key in the browser). */
+export async function GET(req: Request) {
+  const u = await requireConsole(req);
+  if (isResponse(u)) return u;
+  const bank = new URL(req.url).searchParams.get('bank') ?? u.orgs[0];
+  if (!bank || !u.orgs.includes(bank)) return fail(403, 'forbidden');
+  const [{ data: card }, { data: org }] = await Promise.all([
+    db().from('promise_cards').select('card_json,sig,signed_by,version,published_at').eq('org_id', bank).maybeSingle(),
+    db().from('orgs').select('sign_pk,box_pk,cert_sig').eq('id', bank).maybeSingle(),
+  ]);
+  if (!card) return fail(404, 'no_card');
+  return json({ ...card, sign_pk: org?.sign_pk ?? null, box_pk: org?.box_pk ?? null, root_pk: process.env.SATYA_ROOT_PK ?? null });
+}
