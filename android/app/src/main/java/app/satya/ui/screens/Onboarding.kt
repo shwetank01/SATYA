@@ -78,6 +78,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -91,6 +93,7 @@ import app.satya.ui.Nav
 import app.satya.ui.Route
 import app.satya.ui.Toaster
 import app.satya.ui.components.BlueSurface
+import app.satya.ui.components.Convergence
 import app.satya.ui.components.Dots
 import app.satya.ui.components.Ic
 import app.satya.ui.components.SealAnimated
@@ -409,74 +412,63 @@ private fun SetupField(value: String, hint: String, type: KeyboardType = Keyboar
 // ---------------------------------------------------------------- Activation
 
 /**
- * The activation sequence, built from the seal: it drops in, the 24 ticks draw clockwise, the ring
- * closes, the eye opens, the iris scans once, the lattice ripples outward from the seal, two yellow
- * pulses leave it, and "Shield on." resolves with what is protected. ~2.6 s, then Home.
+ * Turning the shield on plays "The Convergence" from the Brand Guide (ui/components/Convergence.kt):
+ * paper and lattice arrive from the four corners, a yellow cross seals the seams, the band opens and
+ * the seal and wordmark land. It releases at 2x into an honest summary of what is on, with a way
+ * back to Setup for anything that is still off. Tap to skip; "Remove animations" is respected.
  */
 @Composable
 fun ActivationScreen(nav: Nav) {
-    val ctx = LocalContext.current
     val view = LocalView.current
-    val health = remember { shieldHealth(ctx) }
-    val drop = remember { Animatable(0f) }
-    val ticks = remember { Animatable(0f) }
-    val ring = remember { Animatable(0f) }
-    val eye = remember { Animatable(0f) }
-    val pupil = remember { Animatable(0f) }
-    val ripple = remember { Animatable(0f) }
-    val pulse = remember { Animatable(0f) }
-    val words = remember { Animatable(0f) }
-    LaunchedEffect(Unit) {
-        launch { drop.animateTo(1f, tween(700, easing = Motion.Pop)); view.performHapticFeedback(HapticFeedbackConstants.CONFIRM) }
-        launch { delay(300); ticks.animateTo(1f, tween(800, easing = LinearEasing)) }
-        launch { delay(500); ring.animateTo(1f, tween(650, easing = Motion.Ease)) }
-        launch { delay(950); eye.animateTo(1f, tween(450, easing = Motion.Pop)) }
-        launch {
-            delay(1300)
-            pupil.animateTo(0f, keyframes { durationMillis = 1000; -18f at 200 using Motion.Scan; 18f at 650 using Motion.Scan; 0f at 1000 })
-        }
-        launch { delay(1000); ripple.animateTo(1f, tween(1500, easing = Motion.Ease)) }
-        launch { delay(1500); pulse.animateTo(1f, tween(1400, easing = LinearEasing)) }
-        launch { delay(1800); words.animateTo(1f, tween(500, easing = Motion.Ease)) }
-        Config.update { it.activated = true }
-    }
-    val latticeBrush = remember {
-        androidx.compose.ui.graphics.ShaderBrush(
-            androidx.compose.ui.graphics.ImageShader(Lattice.bitmap(Satya.Paper, 1100), androidx.compose.ui.graphics.TileMode.Repeated, androidx.compose.ui.graphics.TileMode.Repeated),
-        )
-    }
+    val health = rememberShieldHealth()
+    var summary by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { Config.update { it.activated = true } }
     Box(Modifier.fillMaxSize().background(Satya.Blue)) {
-        // Lattice revealed through a circle growing from the seal.
-        Canvas(Modifier.fillMaxSize()) {
-            val c = Offset(size.width / 2, size.height * .36f)
-            val r = size.maxDimension * 1.1f * ripple.value
-            if (r > 0f) drawCircle(latticeBrush, r, c, alpha = .16f)
-            if (ripple.value in .01f..(.99f)) drawCircle(Satya.Paper.copy(alpha = .35f * (1 - ripple.value)), r, c, style = Stroke(2.dp.toPx()))
-            for (k in 0..1) {
-                val pv = (pulse.value * 1.4f - k * .4f).coerceIn(0f, 1f)
-                if (pv > 0f && pv < 1f) drawCircle(Satya.Yellow.copy(alpha = .75f * (1 - pv)), 80.dp.toPx() + 120.dp.toPx() * pv, c, style = Stroke(3.dp.toPx() * (1 - pv) + 1f))
+        if (!summary) {
+            Convergence(
+                Modifier.fillMaxSize().press(1f) { summary = true }.semantics { contentDescription = "SATYA shield turning on. Tap to skip." },
+                holdMs = 1300,
+                onArrived = { view.performHapticFeedback(HapticFeedbackConstants.CONFIRM) },
+                onDone = { summary = true },
+            )
+        } else ActivationSummary(nav, health)
+    }
+}
+
+@Composable
+private fun ActivationSummary(nav: Nav, health: ShieldHealth) {
+    val ctx = LocalContext.current
+    val words = remember { Animatable(0f) }
+    LaunchedEffect(Unit) { words.animateTo(1f, tween(520, easing = Motion.Ease)) }
+    BlueSurface(Modifier.fillMaxSize(), latticeAlpha = .12f) {
+        Column(
+            Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = 24.dp)
+                .graphicsLayer { alpha = words.value; translationY = (1 - words.value) * 24.dp.toPx() },
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(Modifier.weight(.2f))
+            SealAnimated(Modifier.size(132.dp))
+            Spacer(Modifier.height(28.dp))
+            Text(if (health.allOn) "Shield on." else "Shield partly on.", style = display(46, 700, Satya.Yellow, 1f, -.03f))
+            Spacer(Modifier.height(12.dp))
+            Text(
+                if (health.allOn) "SATYA is watching for broken promises. The app can stay closed."
+                else "SATYA checks what you can turn on now. Finish the rest to be fully covered.",
+                style = body(17, 400, Satya.Paper, 1.5f).copy(textAlign = androidx.compose.ui.text.style.TextAlign.Center),
+            )
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 20.dp)) {
+                ActivationRow("Screen check", health.a11y); ActivationRow("SMS", health.sms); ActivationRow("Calls", health.calls); ActivationRow("Alerts", health.notif)
             }
-            drawCircle(Brush.radialGradient(listOf(Color(0xFFE2ECFF).copy(alpha = .4f * ripple.value), Color.Transparent), c, 260.dp.toPx()), 260.dp.toPx(), c)
-        }
-        Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(Modifier.weight(.22f))
-            Canvas(
-                Modifier.size(170.dp).graphicsLayer {
-                    val d = drop.value
-                    val s = 2.2f - 1.2f * d
-                    scaleX = s; scaleY = s; alpha = (d * 1.8f).coerceIn(0f, 1f)
-                },
-            ) { drawSeal(SealState(pupil = pupil.value, eyeOpen = eye.value, ticks = ticks.value, ring = ring.value)) }
-            Spacer(Modifier.height(36.dp))
-            Column(Modifier.graphicsLayer { alpha = words.value; translationY = (1 - words.value) * 24.dp.toPx() }, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                Text("Shield on.", style = display(48, 700, Satya.Yellow, 1f, -.03f))
-                Text("SATYA is watching for broken promises. The app can stay closed.", style = body(17, 400, Satya.Paper, 1.5f).copy(textAlign = androidx.compose.ui.text.style.TextAlign.Center))
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 6.dp)) {
-                    ActivationRow("Screen check", health.a11y); ActivationRow("SMS", health.sms); ActivationRow("Calls", health.calls); ActivationRow("Alerts", health.notif)
-                }
-            }
+            if (health.a11y) Text(
+                "Start a check: triple-tap the edge strip, tap the Check screen tile, or turn on Android’s accessibility button for SATYA.",
+                style = body(13, 500, Satya.Paper, 1.45f).copy(textAlign = androidx.compose.ui.text.style.TextAlign.Center),
+                modifier = Modifier.padding(top = 16.dp).press { openA11yDetails(ctx) },
+            )
             Spacer(Modifier.weight(.3f))
-            Box(Modifier.graphicsLayer { alpha = words.value }) { YellowButton("Go to SATYA", { nav.reset(Route.Home) }) }
+            if (!health.allOn) {
+                Text("Finish setup", style = body(16, 700, Satya.Paper), modifier = Modifier.press { nav.reset(Route.Setup) }.padding(14.dp))
+            }
+            YellowButton("Go to SATYA", { nav.reset(Route.Home) })
             Spacer(Modifier.height(24.dp))
         }
     }

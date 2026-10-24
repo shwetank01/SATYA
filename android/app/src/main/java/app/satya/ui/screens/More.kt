@@ -353,6 +353,9 @@ fun SettingsScreen(nav: Nav) {
         Row(Modifier.fillMaxWidth().press(.99f) { nav.reset(Route.Setup) }.card(shadow = false).padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
             IconTile("shield", Satya.Blue); Column(Modifier.weight(1f)) { Text("Shield setup", style = body(15, 600)); Text("Screen check, SMS, calls, notifications, tile", style = body(13, 400, Satya.Muted)) }; Ic("chev", Satya.Ink.copy(alpha = .4f), 18.dp, 2.2f)
         }
+        Row(Modifier.fillMaxWidth().press(.99f) { nav.reset(Route.Activation) }.card(shadow = false).padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+            IconTile("sync", Satya.Blue); Column(Modifier.weight(1f)) { Text("Replay the activation", style = body(15, 600)); Text("The Convergence, then what is on right now", style = body(13, 400, Satya.Muted)) }; Ic("chev", Satya.Ink.copy(alpha = .4f), 18.dp, 2.2f)
+        }
         Column(Modifier.fillMaxWidth().card(shadow = false)) {
             Row(Modifier.fillMaxWidth().press(.99f) { confirmClear = true }.padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 IconTile("trash", Satya.Blue)

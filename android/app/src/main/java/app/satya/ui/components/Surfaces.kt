@@ -65,9 +65,34 @@ object Lattice {
     private val parsed = HashMap<String, Path>()
     private fun path(d: String) = parsed.getOrPut(d) { PathParser().parsePathString(d).toPath() }
 
-    private fun kindAt(i: Int, j: Int): String {
+    fun kindAt(i: Int, j: Int): String {
         if ((((i + j) % 2) + 2) % 2 != 0) return "node"
         return ORDER[((floor((i - j) / 2.0).toInt() % 4) + 4) % 4]
+    }
+
+    /** One stroke of a tile in its 100-unit box; [rotation] (degrees, about the tile centre) is for node leaves. */
+    class Stroke(val path: Path, val rotation: Float = 0f)
+
+    /** One filled dot of a tile (the Detect pupil, the node's four "watching eyes"). */
+    class Dot(val x: Float, val y: Float, val r: Float, val rotation: Float = 0f)
+
+    private val strokeCache = HashMap<String, Pair<List<Stroke>, List<Dot>>>()
+
+    /**
+     * Strokes and dots of one tile kind, for drawing a single tile (the Convergence animation trims
+     * each stroke as the tile travels). Same construction as [bitmap].
+     */
+    fun tile(kind: String): Pair<List<Stroke>, List<Dot>> = strokeCache.getOrPut(kind) {
+        fun circle(x: Float, y: Float, r: Float) = Path().apply { addOval(androidx.compose.ui.geometry.Rect(x - r, y - r, x + r, y + r)) }
+        if (kind == "node") {
+            val angles = listOf(0f, 90f, 180f, 270f)
+            (angles.map { Stroke(path(LEAF), it) } + Stroke(circle(50f, 50f, 3.5f)) + BRACKETS.map { Stroke(path(it)) }) to
+                angles.map { Dot(50f, 29f, 2.2f, it) }
+        } else {
+            val m = MOTIFS.getValue(kind)
+            (FRAME.map { Stroke(path(it)) } + m.p.map { Stroke(path(it)) } + m.c.map { (x, y, r) -> Stroke(circle(x, y, r)) }) to
+                m.d.map { (x, y, r) -> Dot(x, y, r) }
+        }
     }
 
     private val cache = HashMap<Pair<Int, Int>, ImageBitmap>()
