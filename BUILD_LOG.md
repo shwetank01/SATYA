@@ -6,9 +6,9 @@
 | 1 Core | 2026-10-24 13:05 IST | gradle :core:test, vitest, pytest mask | **PASS** | Kotlin :core 11 tests (17 rule cases, 10 mask, 9 hash + day token + ticket, router, verdict); vitest 48 (rules, mask, hash, Pay Check P01-P03, crypto App. D); pytest 11 (mask vectors + oracle parity). |
 | 2 DB + seed | 2026-10-24 16:25 IST | doctor --only db (C5, C11), seed idempotent | **PARTIAL** | schema.sql + cron.sql generated from Section 12; 7 PGlite (real Postgres) tests pass: atomic ingest, mismatch rejection, idempotent sightings, injection-safe prefix lookup, kill scoped to bank, RLS isolation, anon/authenticated cannot execute service functions, pay RLS. seed.ts written. **Blocked:** Supabase provisioning needs the marketplace terms accepted in Vercel. |
 | 3 Gateway | 2026-10-24 16:36 IST | doctor C1 C2 C3 C4 C6 C7 (local, prod) | **PARTIAL** | 16 routes deployed to https://satya-gateway.vercel.app (Mumbai, bom1). C4b (Doctor seal + receipt signature) PASS against prod. C1-C4, C6, C7 fail only on `db not reachable` until Supabase exists. |
-| 4 VIVEK + AI | 2026-10-24 16:22 IST | doctor C8 C9 C10, model eval | **PARTIAL** | satya-ai worker (Qwen3 + Whisper on Workers AI) 8 tests, SETU 3 tests, VIVEK 21 tests (re-mask before AI, fallbacks, PyAV decode, no temp files). **Blocked:** `wrangler login` and `modal token new` were not approved yet. |
+| 4 VIVEK + AI | 2026-10-24 16:22 IST | doctor C8 C9 C10, model eval | **PASS (self-hosted)** | Self-hosted on this laptop (`tools/local-cloud.sh --local`): Qwen3-4B on llama.cpp (Vulkan GPU) + VIVEK + in-process Whisper. CLI Doctor C8 10/10 (796 ms), C9 10/10, C10 10/10 (tmp files unchanged). VIVEK 24 tests. Ask eval: tuning 19/20, held-out 13/14. **Still blocked:** `wrangler login` (satya-ai worker, SETU) and `modal token new`; the public Cloudflare quick tunnel was refused by this session's safety policy, so the phone reaches VIVEK over USB (`adb reverse`). |
 | 5 Console | 2026-10-24 16:34 IST | doctor --e2e, Pay Check P01-P03 in UI | **BUILT** | 12 pages, next build clean, vitest 57/57 (incl. Pay Check P01-P03 logic and Radar grouping). Live at /login; E2E waits on Supabase. |
-| 6 Android | 2026-10-24 14:12 IST | one-door, Doctor D1-D19 on A and B, sequences A + B | **PASS (emulator, local protocols)** | one-door script PASS. Doctor 14/19 on Android 15 emulator; the 5 failures are cloud-only (D11 herd, D14-D17 VIVEK). D8 17/17, D9 10/10, D12/D13 phone-sealed box opened by the live gateway. Sequence A works end to end (banner in ~1.5 s). Samsung run pending (no phone connected). Version 1 APK in VERSIONS/Version 1. |
+| 6 Android | 2026-10-24 14:12 IST | one-door, Doctor D1-D19 on A and B, sequences A + B | **PASS (emulator)** | 0.2.0: Doctor 18/19 on the Android 15 emulator; Reliability x10 = 94% (180/190): every check 10/10 except D11 (gateway has no database yet). D14-D17 now pass against the self-hosted VIVEK. Samsung run pending (no phone connected). APKs in VERSIONS/Version 2. |
 | 7 Hardening | | full demo script x2, Doctor green after reboot | | |
 
 ## Phase 0 gate output
@@ -38,12 +38,27 @@ PASS  C4b  Doctor seal endpoint              opened by the gateway, signed by RE
 C5-C12                                       waiting on Supabase / VIVEK / SETU accounts
 ```
 
-### On device (Android 15 emulator, debug build)
+### On device (Android 15 emulator, 0.2.0-debug, VIVEK on the laptop via `adb reverse`)
 ```
-PASS D1 accessibility · PASS D2 strip (right edge) · PASS D3 screenshot 1080x2340 · PASS D4 OCR 528 chars
-PASS D5 SMS perms · PASS D6 call screening role · PASS D7 6 cards (assets) · PASS D8 17/17 · PASS D9 10/10
-PASS D10 one KavachClient · FAIL D11 HTTP 500 (no db) · PASS D12 gateway opened phone seal · PASS D13 receipt + App. D
-FAIL D14-D17 VIVEK not deployed · PASS D18 Room · PASS D19 SyncWorker enqueued
+Run all: 18 of 19 PASS (D11 HTTP 500: no database behind the gateway yet)
+Reliability x10: Overall 94% (180/190)
+D1  accessibility          10/10   0 ms    D11 SANGH round trip      0/10 157 ms
+D2  edge strip             10/10   0 ms    D12 DOOT seal opened      10/10 134 ms
+D3  screenshot             10/10 572 ms    D13 receipt + App. D      10/10   0 ms
+D4  OCR thumbnail          10/10 2689 ms   D14 VIVEK health          10/10 111 ms
+D5  SMS permissions        10/10   0 ms    D15 ask T02=share_secret  10/10 872 ms
+D6  call screening         10/10   0 ms    D16 face score            10/10 211 ms
+D7  registry 6 cards       10/10   0 ms    D17 voice score + STT     10/10 976 ms
+D8  rules 17/17            10/10 151 ms    D18 SAKSHI Room           10/10  18 ms
+D9  masking 10/10          10/10   6 ms    D19 SyncWorker            10/10   9 ms
+D10 one door               10/10   0 ms
+```
+
+### CLI, VIVEK self-hosted (2026-10-24 23:58 IST, `VIVEK_URL=http://127.0.0.1:8000 doctor.ts --only vivek|ai --repeat 10`)
+```
+PASS  C8   VIVEK health, ask(T02) = share_secret          10/10  796 ms  share_secret via ai
+PASS  C9   provider lists chat + STT models               10/10   31 ms  127.0.0.1:8081 (qwen3-4b), STT local
+PASS  C10  VIVEK tmp files unchanged, gateway no echo     10/10  896 ms
 ```
 
 ### Feature timings on the emulator
@@ -55,7 +70,28 @@ FAIL D14-D17 VIVEK not deployed · PASS D18 Room · PASS D19 SyncWorker enqueued
 | U1 Circle to Check (whole screen, SMS thread) | 3/3 correct (SBI01, G02, G05), 2.4-4.1 s |
 
 ## Model eval
-(pending Phase 4)
+
+### Chat model for /v1/ask (`vivek/eval/eval_ask.py`, 20 tuning + 14 held-out masked cases, EN/HI/Hinglish)
+| Model (self-hosted, llama.cpp, RTX 3050 Vulkan) | Prompt | Tuning | Held-out | Bank | Median |
+|---|---|---|---|---|---|
+| Qwen2.5-1.5B-Instruct Q4_K_M | Appendix H | 15/20 | - | 8/20 | 0.48 s |
+| Qwen3-4B Q4_K_M | Appendix H | 16/20 | 10/14 (71%) | 17/20, 12/14 | 0.77 s |
+| **Qwen3-4B Q4_K_M (chosen)** | Appendix H + guidance + 5 few-shot | **19/20** | **13/14 (92%)** | 19/20, 14/14 | 0.78 s |
+
+Remaining misses: "share your pin code for delivery" -> share_secret, and "5000 bhej de" -> share_secret.
+Neither can raise a false alarm: the phone adds an AI-assisted hit only with lexical evidence
+(no OTP/PIN/code word in either), and never over an official channel (Section 21.9-21.10).
+Qwen2.5-3B was rejected: its licence is not open source.
+
+### Speech-to-text (self-hosted, `AI_STT_MODEL=local:openai/whisper-small`, int8, CPU)
+| Clip | Result | Time |
+|---|---|---|
+| Hindi speech 4.1 s | मिर्ची में कितने विबिन्ना प्रजात्या है (lang hi) | 2.3 s |
+| English speech 3.3-10.4 s | accurate | 1.7-2.2 s |
+| Tone / silence / noise | no-speech gate (P 0.74-0.92), empty transcript | 0.7 s (was 10.3 s) |
+
+### Deepfake classifiers
+See below (eval_models.py over 6 real + 8 Piper-synthesised voices, 7 real + 8 StyleGAN faces).
 
 ## Deviations from SATYA_ARCHITECTURE.md
 Each one is also written into the architecture file (Section 21, v1.1).
@@ -77,3 +113,7 @@ Each one is also written into the architecture file (Section 21, v1.1).
 | 13 | Release APK ships ARM ABIs only; debug adds x86_64 | Saves ~22 MB of ML Kit native code no phone needs | 13.1 |
 | 14 | VIVEK also ships a Dockerfile and `run_local.sh` | Runs without Modal (laptop + Cloudflare tunnel, or any container host) | 11.2, 18 |
 | 15 | KAVACH circuit breaker (20 s) + parallel herd lookups in a 3.5 s budget | A missing cloud must never slow a verdict | 8.3, 18 |
+| 16 | AI label needs lexical evidence; official channel (Keeps) suppresses AI-assisted hits | A model guess must never flag a genuine OTP SMS or debit alert | 21.9, 21.10 |
+| 17 | VIVEK appends guidance + few-shot after the verbatim Appendix H prompt | Measured +3 tuning, +3 held-out cases on Qwen3-4B at the same latency | 21.11 |
+| 18 | Self-hosted AI: Qwen3-4B on llama.cpp + in-process Whisper (`local:` STT); VIVEK private temp dir | Cloud logins not approved; Section 18 backup path made real | 21.12 |
+| 19 | `network_security_config.xml` (cleartext only to loopback) replaces `usesCleartextTraffic="false"` | Lets a USB test phone use a laptop VIVEK via `adb reverse` without a public tunnel | 13.2, 21.13 |
