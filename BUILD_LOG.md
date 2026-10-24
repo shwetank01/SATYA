@@ -11,6 +11,12 @@
 | 6 Android | 2026-10-24 14:12 IST | one-door, Doctor D1-D19 on A and B, sequences A + B | **PASS (emulator)** | 0.2.0: Doctor 18/19 on the Android 15 emulator; Reliability x10 = 94% (180/190): every check 10/10 except D11 (gateway has no database yet). D14-D17 now pass against the self-hosted VIVEK. Samsung run pending (no phone connected). APKs in VERSIONS/Version 2. |
 | 7 Hardening | | full demo script x2, Doctor green after reboot | | |
 
+## CI
+`.github/workflows/ci.yml` (oracles + VIVEK, web, workers, android-core + one-door) has never run: GitHub answers
+`HTTP 422: Actions has been disabled for this user` for the workblue21 account (checked 2026-10-25 with a manual
+dispatch). Every suite it would run passes locally: oracles ALL PASS, Kotlin :core + :app unit tests, vitest 57,
+VIVEK pytest 24, worker tests 8 + 3. The account owner has to lift the restriction in GitHub.
+
 ## Phase 0 gate output
 
 ```
