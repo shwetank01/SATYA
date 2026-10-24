@@ -31,8 +31,8 @@ android {
         applicationId = "app.satya"
         minSdk = 30
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.0"
 
         buildConfigField("String", "GATEWAY_URL", "\"${secret("GATEWAY_URL", "https://satya-gateway.vercel.app")}\"")
         buildConfigField("String", "VIVEK_URL", "\"${secret("VIVEK_URL")}\"")

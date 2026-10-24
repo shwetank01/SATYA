@@ -145,7 +145,7 @@ def label(text, hint_bank=None):
         "temperature": 0,
         "max_tokens": 200,
         "response_format": {"type": "json_object"},
-        "messages": [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": user}],
+        "messages": _messages(user),
     }
     if not body["model"]:
         body.pop("model")
@@ -180,9 +180,15 @@ def wav_bytes(samples_f32, rate=16000):
     return buf.getvalue()
 
 
-def transcribe(wav):
-    """/audio/transcriptions -> (text, language, ok). Never raises."""
+def transcribe(wav, samples=None):
+    """/audio/transcriptions -> (text, language, ok). Never raises.
+    AI_STT_MODEL=local:<hf id> transcribes in this process from `samples` instead (stt_local.py)."""
     c = _cfg()
+    if c["stt"].startswith("local:"):
+        if samples is None:
+            return "", None, False
+        import stt_local
+        return stt_local.transcribe(c["stt"][len("local:"):], samples)
     if not (c["base"] and c["key"] and c["stt"]):
         return "", None, False
     for attempt in range(2):
@@ -205,6 +211,11 @@ def health():
     """Section 17 C9: is the provider reachable and does it list our models?"""
     c = _cfg()
     out = {"reachable": False, "chat_model_ok": False, "stt_model_ok": False, "base": c["base"].split("//")[-1].split("/")[0] if c["base"] else None}
+    local_stt = c["stt"].startswith("local:")
+    if local_stt:
+        import stt_local
+        out["stt_model_ok"] = stt_local.loaded(c["stt"][len("local:"):])
+        out["stt"] = "local"
     if not (c["base"] and c["key"]):
         return out
     try:
@@ -212,7 +223,9 @@ def health():
             r = h.get("/models")
         if r.status_code == 200:
             ids = {m.get("id") for m in r.json().get("data", [])}
-            out.update(reachable=True, chat_model_ok=(not c["chat"]) or c["chat"] in ids, stt_model_ok=bool(c["stt"]) and c["stt"] in ids)
+            out.update(reachable=True, chat_model_ok=(not c["chat"]) or c["chat"] in ids)
+            if not local_stt:
+                out["stt_model_ok"] = bool(c["stt"]) and c["stt"] in ids
     except Exception:
         pass
     return out

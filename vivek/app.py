@@ -31,10 +31,13 @@ MAX_VOICE = 15 * 1024 * 1024
 MAX_FACE_BODY = 5 * 300 * 1024 * 4 // 3 + 4096  # 5 frames of 300 KB, base64
 
 
+_SYSTEM_TMP = tempfile.gettempdir()
+
+
 def _private_tmp():
     """VIVEK's own temp dir, so tmp_files (C10) counts only what this process could have written,
-    not every other program's files on a shared machine's %TEMP%."""
-    d = os.environ.get("VIVEK_TMPDIR") or os.path.join(tempfile.gettempdir(), f"vivek-{os.getpid()}")
+    not every other program's files on a shared machine's %TEMP%. Idempotent."""
+    d = os.environ.get("VIVEK_TMPDIR") or os.path.join(_SYSTEM_TMP, "satya-vivek")
     os.makedirs(d, exist_ok=True)
     tempfile.tempdir = d
     for var in ("TMPDIR", "TEMP", "TMP"):  # child processes (ffmpeg) inherit it too
@@ -54,6 +57,11 @@ def create_app(scorer: Scorer | None = None) -> FastAPI:
     app = FastAPI(title="VIVEK", docs_url=None, redoc_url=None, openapi_url=None)
     sc = scorer or Scorer().load()
     app_key = os.environ.get("SATYA_APP_KEY", "")
+    stt = os.environ.get("AI_STT_MODEL", "")
+    if stt.startswith("local:") and scorer is None:
+        import threading
+        import stt_local
+        threading.Thread(target=stt_local.warm, args=(stt[len("local:"):],), daemon=True).start()
 
     @app.middleware("http")
     async def guard(request: Request, call_next):
@@ -103,7 +111,9 @@ def create_app(scorer: Scorer | None = None) -> FastAPI:
         except Exception:
             return JSONResponse({"error": "undecodable_audio"}, status_code=400)
         score = sc.score_audio(samples)
-        text, lang, ok = ai_client.transcribe(ai_client.wav_bytes(samples)) if samples.size else ("", None, False)
+        local = os.environ.get("AI_STT_MODEL", "").startswith("local:")
+        text, lang, ok = (ai_client.transcribe(None if local else ai_client.wav_bytes(samples), samples)
+                          if samples.size else ("", None, False))
         del data, samples
         return {"transcript": text, "language": lang, "stt_ok": ok, "synthetic_score": score,
                 "threshold": cfg.get("threshold", 0.7), "model_id": cfg.get("id"), "ms": int((time.perf_counter() - t0) * 1000)}

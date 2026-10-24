@@ -132,3 +132,34 @@ def test_vismriti_no_temp_files(client):
     client.post("/v1/voice", content=wav_tone(2.0), headers={**H, "Content-Type": "audio/wav"})
     client.post("/v1/ask", json={"text": "share OTP"}, headers=H)
     assert len(os.listdir(tempfile.gettempdir())) == before
+
+
+def test_tmp_files_counts_only_vivek_private_dir(client):
+    assert os.path.basename(tempfile.gettempdir()) == "satya-vivek" or os.environ.get("VIVEK_TMPDIR")
+    before = client.get("/health", headers=H).json()["tmp_files"]
+    client.post("/v1/voice", content=wav_tone(), headers=H)
+    assert client.get("/health", headers=H).json()["tmp_files"] == before
+
+
+def test_few_shot_never_reuses_eval_text():
+    data = json.load(open(os.path.join(os.path.dirname(__file__), "..", "eval", "ask_cases.json"), encoding="utf-8"))
+    eval_texts = {c["text"] for c in data["cases"] + data.get("holdout", [])}
+    shots = {t for t, _ in ai_client.FEW_SHOT}
+    assert not shots & eval_texts
+    msgs = ai_client._messages("x")
+    assert msgs[0]["role"] == "system" and msgs[-1] == {"role": "user", "content": "x"}
+    for _, ans in ai_client.FEW_SHOT:
+        assert ai_client.validate(ans) is not None
+
+
+def test_local_stt_routes_samples_in_process(client, monkeypatch):
+    import stt_local
+    seen = {}
+    def fake(model_id, samples):
+        seen["model"], seen["n"] = model_id, len(samples)
+        return "jo OTP aaya hai woh bata dijiye", "hi", True
+    monkeypatch.setattr(stt_local, "transcribe", fake)
+    monkeypatch.setenv("AI_STT_MODEL", "local:openai/whisper-small")
+    j = client.post("/v1/voice", content=wav_tone(), headers=H).json()
+    assert j["stt_ok"] and j["language"] == "hi" and j["transcript"].startswith("jo OTP")
+    assert seen == {"model": "openai/whisper-small", "n": 16000}

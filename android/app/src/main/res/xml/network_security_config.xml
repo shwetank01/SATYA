@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- HTTPS everywhere. The one exception is loopback, which never leaves the phone: with
+     `adb reverse tcp:8000 tcp:8000` a USB-connected test phone reaches a laptop's self-hosted
+     VIVEK at http://127.0.0.1:8000 (Doctor > Override URLs) without exposing it to the internet. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">127.0.0.1</domain>
+        <domain includeSubdomains="false">localhost</domain>
+    </domain-config>
+</network-security-config>

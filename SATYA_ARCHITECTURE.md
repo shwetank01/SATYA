@@ -956,7 +956,7 @@ Components:
 - `SatyaCallScreeningService` with `BIND_SCREENING_SERVICE` and intent filter `android.telecom.CallScreeningService`.
 - `SmsReceiver` (exported, `android.permission.BROADCAST_SMS`) for `android.provider.Telephony.SMS_RECEIVED`.
 - `ShareActivity` with `ACTION_SEND` filters for `audio/*`, `image/*`, `text/plain`.
-- `usesCleartextTraffic="false"`.
+- `android:networkSecurityConfig="@xml/network_security_config"`: no cleartext except loopback (Section 21.13).
 
 ### 13.3 Package structure (`app/src/main/java/app/satya/`)
 
@@ -1643,3 +1643,8 @@ Each change was made here first, then built. Mirrored in `BUILD_LOG.md` under De
 6. **Quick Settings tile "Check screen"** (from the design) is a second trigger for Circle to Check, next to the triple tap. With Accessibility off it falls back to a one-frame MediaProjection capture with the system consent dialog.
 7. **Doctor reliability mode.** Every on-device check can run N times (default 10) and reports pass rate and median latency per feature; the CLI Doctor has `--repeat N`.
 8. **GLOBAL card `upi_apps`** list for Know Your App (UPI apps are not banks).
+9. **An AI label needs evidence in the text** (`AskMapping.hasEvidence`). The model may recognise a paraphrase ("the 6 digit number you got"), but an AI-assisted hit is added only when the masked text carries a word for that ask (`share_secret`: otp, pin, code, digit…, and never "pin code", which is an address, N02). Still capped at High.
+10. **The official channel outranks the AI.** When the verdict from the rules alone is Keeps (official sender, official number), no AI-assisted hit is added. A genuine OTP SMS or debit alert can never be turned into a warning by a model's guess.
+11. **VIVEK prompt guidance.** Appendix H stays verbatim; VIVEK appends a short "rules for hard cases" block (danger order, "tell me the code" in Hindi/Hinglish, alerts are info_only, pin code is postal, YONO = SBI…) and five few-shot turns that share no text with `vivek/eval/ask_cases.json`. Measured on Qwen3-4B: tuning set 16/20 → 19/20, held-out set 10/14 → 13/14, median latency unchanged (0.78 s).
+12. **Self-hosted AI path** (Section 18 backup, no cloud account): `tools/local-cloud.sh` runs Qwen3-4B (Apache-2.0, llama.cpp, Vulkan GPU) as the OpenAI-compatible provider, and VIVEK transcribes in-process when `AI_STT_MODEL=local:openai/whisper-small` (Apache-2.0), from samples already in RAM. VIVEK keeps its own temp dir (`satya-vivek`, or `VIVEK_TMPDIR`) so C10's `tmp_files` counts only what VIVEK could have written.
+13. **Loopback cleartext.** Section 13.2's `usesCleartextTraffic="false"` becomes `network_security_config.xml`: HTTPS everywhere except `127.0.0.1`/`localhost`, which never leaves the phone. With `adb reverse tcp:8000 tcp:8000` a USB-connected test phone uses a laptop's VIVEK at `http://127.0.0.1:8000` without a public tunnel.

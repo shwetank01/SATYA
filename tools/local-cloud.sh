@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SATYA's self-hosted AI on this laptop (Section 18 backup, no cloud accounts needed):
 #   1. Qwen3-4B (Apache-2.0, official Qwen GGUF) on llama.cpp's OpenAI-compatible server, GPU via Vulkan, CPU fallback
-#   2. VIVEK (FastAPI) with the deepfake classifiers, talking to that Qwen server
+#   2. VIVEK (FastAPI) with the deepfake classifiers and in-process Whisper STT, talking to that Qwen server
 #   3. A Cloudflare quick tunnel (no login) so the phone and the Vercel gateway can reach VIVEK
 # Usage: bash tools/local-cloud.sh          (Ctrl+C stops everything)
 #        bash tools/local-cloud.sh --local  (no tunnel: Qwen + VIVEK on 127.0.0.1 only)
@@ -21,7 +21,7 @@ SATYA_APP_KEY=$APP_KEY
 AI_BASE_URL=http://127.0.0.1:8081/v1
 AI_API_KEY=$AI_KEY
 AI_CHAT_MODEL=$ALIAS
-AI_STT_MODEL=
+AI_STT_MODEL=local:openai/whisper-small
 EOF
 
 pids=()
