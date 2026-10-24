@@ -9,7 +9,67 @@
 | 4 VIVEK + AI | 2026-10-24 16:22 IST | doctor C8 C9 C10, model eval | **PASS (self-hosted)** | Self-hosted on this laptop (`tools/local-cloud.sh --local`): Qwen3-4B on llama.cpp (Vulkan GPU) + VIVEK + in-process Whisper. CLI Doctor C8 10/10 (809 ms), C9 10/10, C10 10/10 (tmp files unchanged). VIVEK 24 tests. Ask eval: tuning 19/20, held-out 13/14. **Still blocked:** `wrangler login` (satya-ai worker, SETU) and `modal token new`; the public Cloudflare quick tunnel was refused by this session's safety policy, so the phone reaches VIVEK over USB (`adb reverse`). |
 | 5 Console | 2026-10-24 16:34 IST | doctor --e2e, Pay Check P01-P03 in UI | **BUILT** | 12 pages, next build clean, vitest 57/57 (incl. Pay Check P01-P03 logic and Radar grouping). Live at /login; E2E waits on Supabase. |
 | 6 Android | 2026-10-24 14:12 IST | one-door, Doctor D1-D19 on A and B, sequences A + B | **PASS (emulator)** | 0.2.0: Doctor 18/19 on the Android 15 emulator; Reliability x10 = 94% (180/190): every check 10/10 except D11 (gateway has no database yet). D14-D17 now pass against the self-hosted VIVEK. Samsung run pending (no phone connected). APKs in VERSIONS/Version 2. |
-| 7 Hardening | | full demo script x2, Doctor green after reboot | | |
+| 7 Hardening | 2026-10-25 03:30 IST | live E2E, Doctor on device, emulator flows | **PASS (emulator)** | 0.3.0: gateway on Vercel Blob + Sarvam; `scripts/smoke.ts` 15/15 against production; Doctor 19/19 on the Android 15 emulator. Samsung run pending (no phone connected). APKs in VERSIONS/Version 3. |
+
+## Release 0.3.0 (2026-10-25)
+
+What was broken in 0.2.0, reproduced on the emulator first:
+- Report to bank stayed "Queued": `POST /reports` returned 500 (no database).
+- Circle to Check put status-bar icon labels into the message.
+- Back did nothing after repeated deep links.
+- Know Your App flagged genuine bank apps.
+
+All four are fixed (Section 22 of the architecture).
+
+### Live gateway, `npx tsx --env-file=.env.local scripts/smoke.ts` (production, 2026-10-25 04:00 IST)
+```
+PASS  health                             store true, ai sarvam-105b · 778 ms
+PASS  registry (signed cards + blocklist) 5 banks · 125 ms
+PASS  AI analyze (Sarvam)                pay_fee / scam (0.95) · 1316 ms
+PASS  herd sighting + lookup             seen_7d 1 · 416 ms
+PASS  report sealed to SBI, receipt verifies · 3490 ms
+PASS  phone status = delivered
+PASS  console refuses without a session  401
+PASS  console login (SBI)                State Bank of India
+PASS  inbox lists the report
+PASS  bank opens the box in "browser"
+PASS  AI case brief                      block · 1373 ms
+PASS  kill -> blocked for everyone       1 report(s) closed
+PASS  phone status = blocked
+PASS  registry carries the block
+PASS  herd shows confirmed_by SBI
+ALL PASS
+```
+
+### Sarvam labelling, `scripts/eval-sarvam.ts` (same 34 cases as the 0.2.0 model eval)
+| Model | Tuning | Held-out | Bank | Median |
+|---|---|---|---|---|
+| sarvam-105b, reasoning off, JSON mode | 18/20 | 13/14 | 18/20, 14/14 | 0.8 s |
+
+Misses:
+- A KYC-update link was labelled `click_link` instead of `kyc_update`. Both are scams, and the rule SBI01 fires anyway.
+- "send the amount today itself" was labelled `other` instead of `move_money`.
+- "5000 bhej de" was labelled `share_secret` instead of `move_money`. It adds no hit: the lexical-evidence guard (21.9) has no OTP or PIN word to match.
+
+### On device, 0.3.0-debug, Android 15 emulator
+```
+Doctor Run all: 19 of 19 PASS
+D11 SANGH round trip   PASS 122 ms (0/10 in 0.2.0)
+D14 cloud store + AI   PASS 171 ms  (store on · AI sarvam-105b)
+D15 T02 = share_secret PASS 838 ms  (Sarvam)
+D16 face score         PASS 1131 ms (laptop VIVEK over adb reverse; optional, fails without it)
+D17 voice STT          PASS 982 ms  (saaras:v3)
+```
+
+| Flow | Result |
+|---|---|
+| Circle to Check (edge strip) on an electricity-disconnection SMS | "Looks like a scam" in 3.3 s, with no status-bar text in the evidence |
+| Circle to Check (accessibility button), whole screen | Same verdict in 1.7 s; the bank question is skipped because the AI says no bank is named |
+| Report to SBI from the verdict sheet | Delivered in about 3 s; receipt signature verified on the phone |
+| A report queued under 0.2.0 | Delivered by WorkManager once the store was live |
+| Back from report status | Report status → Reports → Home |
+| Know Your App | Only the FakeKYC demo is a suspect; "Ask SATYA AI" says "Risk high · pretends to be SBI" |
+| Activation | The Convergence plays (frames checked), then the status screen |
 
 ## CI
 `.github/workflows/ci.yml` (oracles + VIVEK, web, workers, android-core + one-door) has never run: GitHub answers
@@ -139,3 +199,10 @@ Each one is also written into the architecture file (Section 21, v1.1).
 | 17 | VIVEK appends guidance + few-shot after the verbatim Appendix H prompt | Measured +3 tuning, +3 held-out cases on Qwen3-4B at the same latency | 21.11 |
 | 18 | Self-hosted AI: Qwen3-4B on llama.cpp + in-process Whisper (`local:` STT); VIVEK private temp dir | Cloud logins not approved; Section 18 backup path made real | 21.12 |
 | 19 | `network_security_config.xml` (cleartext only to loopback) replaces `usesCleartextTraffic="false"` | Lets a USB test phone use a laptop VIVEK via `adb reverse` without a public tunnel | 13.2, 21.13 |
+| 20 | AI on Sarvam behind the gateway; explanation fields; AI asked on every user check | Cloud AI worked only with the laptop on USB; Sarvam was requested | 22.1, 22.2 |
+| 21 | Verdict `suspicious` ("Looks like a scam") from a confident AI when no rule matched | Scams outside the Promise Cards (bills, parcels) showed only "Unknown" | 22.3 |
+| 22 | Gateway storage on a private Vercel Blob store | Supabase terms not accepted; reports were never delivered | 22.4 |
+| 23 | NYAYA: three features, password + signed-cookie sign-in | The console needed Supabase Auth to open at all | 22.5 |
+| 24 | Capture skips System UI and button labels | Status-bar text polluted checks and reports | 22.6 |
+| 25 | Know Your App: suspects only off-store; KnownApps; watchlist pruning | Genuine bank apps were flagged and their PIN screens blocked | 22.7 |
+| 26 | Accessibility button trigger; Convergence activation; navigation fixes; report to any bank | Requested features and emulator findings | 22.8-22.11 |

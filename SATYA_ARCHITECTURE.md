@@ -1648,3 +1648,54 @@ Each change was made here first, then built. Mirrored in `BUILD_LOG.md` under De
 11. **VIVEK prompt guidance.** Appendix H stays verbatim; VIVEK appends a short "rules for hard cases" block (danger order, "tell me the code" in Hindi/Hinglish, alerts are info_only, pin code is postal, YONO = SBI…) and five few-shot turns that share no text with `vivek/eval/ask_cases.json`. Measured on Qwen3-4B: tuning set 16/20 → 19/20, held-out set 10/14 → 13/14, median latency unchanged (0.78 s).
 12. **Self-hosted AI path** (Section 18 backup, no cloud account): `tools/local-cloud.sh` runs Qwen3-4B (Apache-2.0, llama.cpp, Vulkan GPU) as the OpenAI-compatible provider, and VIVEK transcribes in-process when `AI_STT_MODEL=local:openai/whisper-small` (Apache-2.0), from samples already in RAM. VIVEK keeps its own temp dir (`satya-vivek`, or `VIVEK_TMPDIR`) so C10's `tmp_files` counts only what VIVEK could have written.
 13. **Loopback cleartext.** Section 13.2's `usesCleartextTraffic="false"` becomes `network_security_config.xml`: HTTPS everywhere except `127.0.0.1`/`localhost`, which never leaves the phone. With `adb reverse tcp:8000 tcp:8000` a USB-connected test phone uses a laptop's VIVEK at `http://127.0.0.1:8000` without a public tunnel.
+
+---
+
+## 22. v1.2 CHANGES (2026-10-25, release 0.3.0)
+
+Each change was made after reproducing the failure on the Android 15 emulator. They are mirrored in `BUILD_LOG.md`.
+
+1. **AI provider = Sarvam, behind the gateway.** Sarvam is called from `web/lib/ai/` with `SARVAM_API_KEY`, which is server only:
+   - `sarvam-105b` for chat (`reasoning_effort: null`, JSON mode);
+   - `saaras:v3` for speech-to-text.
+   - The phone's `AskLabel` and `VoiceNote` packets go to `POST /api/v1/ai/analyze` and `/api/v1/ai/voice` on the gateway instead of VIVEK.
+   - The Appendix H labels are unchanged. The answer adds `risk` (scam | suspicious | safe | unclear), `summary` / `summary_hi`, up to 3 `reasons`, and `advice` / `advice_hi`.
+   - Measured on `vivek/eval/ask_cases.json`: 18/20 tuning, 13/14 held out, median 0.8 s.
+   - VIVEK (Section 11) stays optional, for deepfake scores and self-hosting.
+2. **Every user-triggered check with text asks the AI** (`Router.askCloud` = user trigger and at least 12 letters), also when a rule fired, so the receipt can explain. Background checks never ask (Law 1 unchanged).
+3. **Verdict `suspicious` ("Looks like a scam").** It applies only when all of these hold:
+   - no rule hit;
+   - the rules-only verdict is Unknown (never over Keeps);
+   - no herd confirmation;
+   - the AI says `risk = scam` with confidence of at least 0.75.
+   - Its overall severity is Medium.
+   - "Breaks promise" still comes only from rules (Law 3).
+4. **Gateway storage = private Vercel Blob store** (`web/lib/store.ts`) until the Section 12 database exists:
+   - `reports/<id>.json` holds the sealed box, tags and status; `index/<bank>.json` is the inbox;
+   - `herd/<prefix>.json` holds the per-day sighting tokens (kept 8 days), report counts and confirmations;
+   - `blocklist.json` holds the blocklist.
+   - Each read-modify-write is a compare-and-swap on the ETag (weak ETags are normalised).
+   - The registry route serves the signed bundle shipped with the gateway plus the live blocklist.
+5. **NYAYA is reduced to three features.** They are Report Inbox (with an optional AI case brief), Scam Check (the same signed rules plus AI), and Blocklist.
+   - Sign-in is a bank and the `NYAYA_PASSWORD`; the session is an HMAC-signed HttpOnly cookie (`NYAYA_SECRET`).
+   - Bank Box keys are still imported into the browser only.
+   - Radar, Deepfake Re-check, the Promise Card editor and Pay Check are removed from the console. Their libraries and vectors stay in `spec/` and `web/lib/satya/`.
+6. **Capture reads only the app on screen.**
+   - `screenTexts()` keeps only `TYPE_APPLICATION` windows that are not System UI or a launcher.
+   - Content descriptions (button labels) are used only when a screen has no real text.
+   - Before this, status-bar icon labels ("Phone notification: 18001800") entered the checked text and the report.
+7. **Know Your App rule.** A suspect is an app installed outside a trusted store that presents itself as a bank, KYC or payment app, or a copy of a listed package with the wrong signing certificate.
+   - Trusted stores: Play Store, Galaxy Store and OEM stores.
+   - Matching is by whole words, so "cupid" is not "upi".
+   - `KnownApps` lists 22 more genuine finance packages; they count as verified only when installed from a trusted store.
+   - `pruneWatch()` removes watchlist entries the old rule added, so Suspect Watch never blocks a genuine bank app's PIN screen.
+   - "Ask SATYA AI" sends only the app's label, package id and install source (`AppOpinion` packet).
+8. **The accessibility button is the third Circle to Check trigger** (`flagRequestAccessibilityButton`). It works as the floating button, gesture or shortcut, chosen in Settings, Accessibility, SATYA.
+9. **Activation = The Convergence** (Brand Guide v1.0, 02 Motion), drawn from the Lattice tile primitives.
+   - Timeline: Paper 0.15-1.15 s; Pattern 0.35-2.06 s with a 60 ms stagger; Seal 2.05-2.50 s; Name 2.40-3.40 s; hold; release at 2x.
+   - After it, a status screen shows what is on, with a way back to Setup.
+10. **Navigation.**
+    - The same route is never pushed twice.
+    - Deep links arrive only through the `MainActivity` intent (singleTask), so the in-process flow was removed.
+    - The back stack is saved in `onSaveInstanceState`.
+11. **Report to any bank.** When no bank is claimed, the Report screen offers the banks that have a Box key. The sealed payload carries the AI reading for the bank.
