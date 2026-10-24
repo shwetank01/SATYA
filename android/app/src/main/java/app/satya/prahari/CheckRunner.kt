@@ -34,6 +34,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.floatOrNull
@@ -78,15 +79,23 @@ class CheckRunner(
         var deepfake: Deepfake? = null
 
         onStep(0)
-        // U5: a shared voice note is transcribed first, then judged like any other text.
+        // U5: a shared voice note is transcribed first (Sarvam Saaras), then judged like any other text.
+        var voiceAi: AiLabel? = null
         extras.voice?.let { (bytes, mime) ->
-            val r = withTimeoutOrNull(28_000) { client.send(Kavach.voiceNote(bytes, mime, checkId)) }
+            val r = withTimeoutOrNull(40_000) { client.send(Kavach.voiceNote(bytes, mime, checkId)) }
             val o = r?.takeIf { it.ok }?.let { client.json(it.body) as? JsonObject }
             val transcript = o?.get("transcript")?.jsonPrimitive?.contentOrNull.orEmpty()
             val score = o?.get("synthetic_score")?.jsonPrimitive?.floatOrNull
-            val thr = o?.get("threshold")?.jsonPrimitive?.floatOrNull ?: .7f
-            deepfake = Deepfake(voice = score, threshold = thr, modelId = o?.get("model_id")?.jsonPrimitive?.contentOrNull,
-                note = if (o == null) "Voice check unavailable right now." else "A signal, not proof.")
+            deepfake = Deepfake(
+                voice = score, threshold = o?.get("threshold")?.jsonPrimitive?.floatOrNull ?: .7f, modelId = o?.get("stt_model")?.jsonPrimitive?.contentOrNull,
+                note = when {
+                    o == null -> "Voice note could not be transcribed right now."
+                    transcript.isBlank() -> "No speech found in the voice note."
+                    score == null -> "Transcribed by SATYA AI. No synthetic-voice score for voice notes yet."
+                    else -> "A signal, not proof."
+                },
+            )
+            voiceAi = (o?.get("analysis") as? JsonObject)?.let { aiLabelOf(it) }
             c = c.copy(text = listOf(c.text, transcript).filter { it.isNotBlank() }.joinToString("\n"), channel = Channel.VOICE)
         }
 
@@ -96,17 +105,10 @@ class CheckRunner(
         val herdD = async { herdFor(plan.herdLookups, reg, checkId, "check") }
         val realityD = async { plan.realityAmount?.let { reality.check(it) } }
         val askD = async {
-            if (!plan.askCloud) null
-            else withTimeoutOrNull(10_000) {
-                val r = client.send(Kavach.askLabel(c.text, plan.rules.claimedBank, checkId))
-                (client.json(r.body) as? JsonObject)?.takeIf { r.ok }?.let { o ->
-                    AiLabel(
-                        askType = o["ask_type"]?.jsonPrimitive?.contentOrNull ?: "unknown",
-                        source = o["source"]?.jsonPrimitive?.contentOrNull ?: "ai",
-                        confidence = o["confidence"]?.jsonPrimitive?.floatOrNull ?: 0f,
-                        claimedBank = o["claimed_bank"]?.jsonPrimitive?.contentOrNull,
-                    )
-                }
+            voiceAi?.takeIf { it.source == "ai" } ?: if (!plan.askCloud) null
+            else withTimeoutOrNull(12_000) {
+                val r = client.send(Kavach.askLabel(c.text, plan.rules.claimedBank, checkId, c.channel.wire, c.sender))
+                (client.json(r.body) as? JsonObject)?.takeIf { r.ok }?.let { aiLabelOf(it) }
             } ?: AiLabel("unknown", "fallback")
         }
         val faceD = async {
@@ -237,8 +239,13 @@ class CheckRunner(
             verdict == Verdict.KEEPS -> "ऐसा कुछ नहीं जो बैंक ने कभी न माँगने का वादा किया"
             else -> AskMapping.words(null, hi = true)
         }
+        // "Looks like a scam": no promise matched and the message is not from an official channel, but
+        // SATYA AI is confident it is a scam. Rules still own "Breaks promise" (Law 3).
+        val aiSuspects = verdict == Verdict.UNKNOWN && result.hits.isEmpty() && herd?.confirmedBy == null &&
+            ai != null && ai.source == "ai" && ai.risk == "scam" && ai.confidence >= AI_SUSPECT_CONFIDENCE
         val overall = when {
             herd?.confirmedBy != null && result.overall.rank < Severity.HIGH.rank -> Severity.HIGH
+            aiSuspects -> Severity.MEDIUM
             else -> result.overall
         }
         val egress = runCatching { db.egress().forCheck(checkId) }.getOrDefault(emptyList())
@@ -261,7 +268,11 @@ class CheckRunner(
                 ReceiptHit(it.id, it.severity.wire, it.promise.text, it.promise.textHi, it.promise.issuer, it.promise.source, it.aiAssisted, it.promise.killChainStage)
             },
             overall = overall.wire,
-            verdict = if (herd?.confirmedBy != null) Verdict.BREAKS.wire else verdict.wire,
+            verdict = when {
+                herd?.confirmedBy != null -> Verdict.BREAKS.wire
+                aiSuspects -> SUSPICIOUS
+                else -> verdict.wire
+            },
             killChainStage = VerdictRules.stage(result.hits),
             herd = herd,
             reality = reality ?: if (c.trigger.isUser) Reality("skipped", "No debit or refund was claimed, so the SMS inbox was not checked.") else null,
@@ -309,7 +320,28 @@ class CheckRunner(
         return "PR-" + SimpleDateFormat("ddMM", Locale.US).format(Date()) + "-" + n.toString().padStart(4, '0')
     }
 
+    /** Reads the gateway's /ai/analyze answer (also embedded in /ai/voice). Unknown fields are ignored. */
+    private fun aiLabelOf(o: JsonObject): AiLabel {
+        fun str(k: String) = o[k]?.jsonPrimitive?.contentOrNull.orEmpty()
+        return AiLabel(
+            askType = str("ask_type").ifBlank { "unknown" },
+            source = str("source").ifBlank { "ai" },
+            confidence = o["confidence"]?.jsonPrimitive?.floatOrNull ?: 0f,
+            claimedBank = o["claimed_bank"]?.jsonPrimitive?.contentOrNull?.takeIf { it != "NONE" },
+            risk = str("risk").ifBlank { "unclear" },
+            summary = str("summary"),
+            summaryHi = str("summary_hi"),
+            reasons = (o["reasons"] as? JsonArray)?.mapNotNull { it.jsonPrimitive.contentOrNull }?.take(3).orEmpty(),
+            advice = str("advice"),
+            adviceHi = str("advice_hi"),
+            model = str("model").ifBlank { null },
+        )
+    }
+
     companion object {
+        const val SUSPICIOUS = "suspicious"
+        const val AI_SUSPECT_CONFIDENCE = .75f
+
         fun utcDay(): String = SimpleDateFormat("yyyy-MM-dd", Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }.format(Date())
         fun telIndicator(number: String): Indicator = Normalize.tel(number)
         fun isUserTrigger(t: Trigger) = t.isUser

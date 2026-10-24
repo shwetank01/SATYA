@@ -42,6 +42,14 @@ class RouterTest {
     }
 
     @Test
+    fun userTapWithARuleHitStillAsksTheCloudToExplain() {
+        val p = Router.plan(book, Capture(Trigger.TAP, Channel.SMS, t09, "+91 70448 21319"))
+        assertTrue(p.rules.hits.isNotEmpty())
+        assertTrue(p.askCloud)
+        assertFalse(Router.plan(book, Capture(Trigger.TAP, Channel.SCREEN, "OK 12:40", "")).askCloud)
+    }
+
+    @Test
     fun moneyClaimTriggersRealityCheckOnUserTriggerOnly() {
         val text = "Rs 10,000 debited from your account. If not you, call this number."
         assertEquals(10_000L, Router.plan(book, Capture(Trigger.TAP, Channel.SCREEN, text)).realityAmount)

@@ -27,7 +27,7 @@ data class Plan(
     val herdLookups: List<Indicator>,
     /** Values to record a sighting for (checked by the user, or already flagged by a rule). */
     val herdSightings: List<Indicator>,
-    /** Ask VIVEK for an AI label of the masked text. Never true for background captures. */
+    /** Ask SATYA AI for a label and explanation of the masked text. Never true for background captures. */
     val askCloud: Boolean,
     val faceCloud: Boolean,
     val voiceCloud: Boolean,
@@ -55,7 +55,9 @@ object Router {
         val secretOrMoney = tk.any { it in Lexicon.MONEY_WORDS } || book.global.firstOrNull { it.id == "G01_NO_SECRETS" }?.check?.values?.any { v ->
             Rules.find(tk, Rules.toks(v)).isNotEmpty()
         } == true || ents.amounts.isNotEmpty() || ents.upiIds.isNotEmpty()
-        val askCloud = c.trigger.isUser && rules.hits.isEmpty() && (askLike || secretOrMoney) && c.text.isNotBlank()
+        // v1.2: every user-triggered check with real text gets the AI's plain-words reading (Sarvam via the
+        // gateway), also when a rule fired, so the receipt can explain the scam. Background never asks.
+        val askCloud = c.trigger.isUser && c.text.count { it.isLetter() } >= 12
 
         val needsPicker = c.trigger.isUser && rules.claimedBank == null && (askLike || secretOrMoney || rules.hits.isNotEmpty())
 

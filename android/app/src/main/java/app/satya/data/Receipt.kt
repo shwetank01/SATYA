@@ -26,7 +26,7 @@ data class Receipt(
     val hits: List<ReceiptHit> = emptyList(),
     /** critical | high | medium | none */
     val overall: String = "none",
-    /** breaks | keeps | unknown */
+    /** breaks | keeps | suspicious (AI-raised, no promise matched) | unknown */
     val verdict: String = "unknown",
     val killChainStage: Int = 0,
     val herd: Herd? = null,
@@ -73,8 +73,27 @@ data class Reality(val status: String, val message: String)
 @Serializable
 data class Deepfake(val face: Float? = null, val voice: Float? = null, val threshold: Float = .7f, val modelId: String? = null, val note: String = "A signal, not proof.")
 
+/**
+ * SATYA AI's reading of the message (Sarvam, via the gateway). [askType] feeds the AI-assisted
+ * rules; [risk] can raise "suspicious" only when no promise matched; the rest is explanation.
+ */
 @Serializable
-data class AiLabel(val askType: String, val source: String, val confidence: Float = 0f, val claimedBank: String? = null)
+data class AiLabel(
+    val askType: String,
+    val source: String,
+    val confidence: Float = 0f,
+    val claimedBank: String? = null,
+    /** scam | suspicious | safe | unclear */
+    val risk: String = "unclear",
+    val summary: String = "",
+    val summaryHi: String = "",
+    val reasons: List<String> = emptyList(),
+    val advice: String = "",
+    val adviceHi: String = "",
+    val model: String? = null,
+) {
+    val explained: Boolean get() = source == "ai" && summary.isNotBlank()
+}
 
 @Serializable
 data class IndicatorRef(val t: String, val h: String, val value: String, val label: String)

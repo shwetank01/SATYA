@@ -149,25 +149,29 @@ class Doctor(private val ctx: Context) {
                 else -> fail("Live receipt signature invalid")
             }
         },
-        DoctorCheck("D14", "VIVEK health", true) {
-            val r = g.client.send(Kavach.health("vivek"))
-            if (r.ok) ok(r.body?.take(90) ?: "ok") else fail(r.error ?: "HTTP ${r.code}")
+        DoctorCheck("D14", "SATYA cloud: store + AI", true) {
+            val r = g.client.send(Kavach.health("gateway"))
+            val o = g.client.json(r.body) as? JsonObject
+            val ai = (o?.get("ai") as? JsonObject)?.get("chat")?.jsonPrimitive?.contentOrNull
+            val store = o?.get("store")?.jsonPrimitive?.contentOrNull == "true"
+            if (r.ok && store && ai != null) ok("store on · AI $ai") else fail(if (o == null) r.error ?: "HTTP ${r.code}" else "store $store · AI ${ai ?: "off"}")
         },
-        DoctorCheck("D15", "VIVEK labels T02 as share_secret", true) {
+        DoctorCheck("D15", "SATYA AI labels T02 as share_secret", true) {
             val t02 = "Main HDFC Bank se bol raha hoon, aapke card pe fraud hua hai, jo OTP aaya hai woh bata dijiye"
-            val r = g.client.send(Kavach.askLabel(t02, "HDFC", null))
-            val at = (g.client.json(r.body) as? JsonObject)?.get("ask_type")?.jsonPrimitive?.contentOrNull
-            if (at == "share_secret") ok("share_secret (${(g.client.json(r.body) as? JsonObject)?.get("source")?.jsonPrimitive?.contentOrNull})") else fail("Got ${at ?: r.error ?: "HTTP ${r.code}"}")
+            val r = g.client.send(Kavach.askLabel(t02, "HDFC", null, "call", ""))
+            val o = g.client.json(r.body) as? JsonObject
+            val at = o?.get("ask_type")?.jsonPrimitive?.contentOrNull
+            if (at == "share_secret") ok("share_secret · ${o["risk"]?.jsonPrimitive?.contentOrNull} (${o["model"]?.jsonPrimitive?.contentOrNull})") else fail("Got ${at ?: r.error ?: "HTTP ${r.code}"}")
         },
-        DoctorCheck("D16", "Face score (sample image)", true) {
+        DoctorCheck("D16", "Face score (VIVEK, optional)", true) {
             val r = g.client.send(Kavach.faceFrames(listOf(sampleJpeg()), null))
             val o = g.client.json(r.body) as? JsonObject
             if (r.ok && o?.containsKey("synthetic_score") == true) ok("score ${o["synthetic_score"]} · ${o["model_id"]?.jsonPrimitive?.contentOrNull}") else fail(r.error ?: "HTTP ${r.code}")
         },
-        DoctorCheck("D17", "Voice score (sample clip)", true) {
+        DoctorCheck("D17", "Voice note speech-to-text (sample clip)", true) {
             val r = g.client.send(Kavach.voiceNote(sampleWav(), "audio/wav", null))
             val o = g.client.json(r.body) as? JsonObject
-            if (r.ok && o?.containsKey("synthetic_score") == true) ok("score ${o["synthetic_score"]} · stt ${o["stt_ok"]}") else fail(r.error ?: "HTTP ${r.code}")
+            if (r.ok && o?.containsKey("transcript") == true) ok("STT ${o["stt_model"]?.jsonPrimitive?.contentOrNull} · tone = \"${o["transcript"]?.jsonPrimitive?.contentOrNull.orEmpty().take(30)}\"") else fail(r.error ?: "HTTP ${r.code}")
         },
         DoctorCheck("D18", "SAKSHI database writable", false) {
             withContext(Dispatchers.IO) {

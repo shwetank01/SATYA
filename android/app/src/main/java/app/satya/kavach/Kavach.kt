@@ -34,11 +34,16 @@ object Kavach {
     }
 
     /** Masks with the user's own names and numbers before the text can be sent. */
-    fun askLabel(rawText: String, hintBank: String?, checkId: String?): KavachPacket {
+    fun askLabel(rawText: String, hintBank: String?, checkId: String?, channel: String = "screen", sender: String = ""): KavachPacket {
         val s = Config.now
         val masked = Mask.mask(rawText, s.myNames, s.myPhones).take(MAX_ASK_CHARS)
-        return KavachPacket.AskLabel(masked, hintBank, checkId)
+        val maskedSender = Mask.mask(sender, s.myNames, s.myPhones).take(80)
+        return KavachPacket.AskLabel(masked, hintBank, channel, maskedSender, checkId)
     }
+
+    /** Public metadata of one installed app, never the app list (Know Your App, on the user's tap). */
+    fun appOpinion(label: String, pkg: String, installer: String?, source: String): KavachPacket =
+        KavachPacket.AppOpinion(label.take(120), pkg.take(160), installer?.take(160), source.take(80))
 
     fun maskOnly(rawText: String): String = Config.now.let { Mask.mask(rawText, it.myNames, it.myPhones) }
 

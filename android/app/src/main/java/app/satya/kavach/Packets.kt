@@ -31,8 +31,8 @@ sealed class KavachPacket(
         override val payloadPreview = "fingerprint ${h.take(8)}… · day token ${dayToken.take(6)}…"
     }
 
-    class AskLabel internal constructor(val maskedText: String, val hintBank: String?, checkId: String?) : KavachPacket("VIVEK", "ask", "check", checkId) {
-        override val summary = "Sent masked text to SATYA cloud. Deleted after answer."
+    class AskLabel internal constructor(val maskedText: String, val hintBank: String?, val channel: String, val maskedSender: String, checkId: String?) : KavachPacket("SARVAM", "ask", "check", checkId) {
+        override val summary = "Sent masked text to SATYA cloud for Sarvam AI to read. Not stored."
         override val payloadPreview = maskedText
     }
 
@@ -41,9 +41,14 @@ sealed class KavachPacket(
         override val payloadPreview = "${frames.size} JPEG face crops · ${kb(frames.sumOf { it.size })}"
     }
 
-    class VoiceNote internal constructor(val bytes: ByteArray, val mime: String, checkId: String?) : KavachPacket("VIVEK", "voice", "check", checkId) {
-        override val summary = "Sent the voice note you shared for a synthetic-voice score and a transcript. Deleted after answer."
+    class VoiceNote internal constructor(val bytes: ByteArray, val mime: String, checkId: String?) : KavachPacket("SARVAM", "voice", "check", checkId) {
+        override val summary = "Sent the voice note you shared to SATYA cloud for a Sarvam transcript. Not stored."
         override val payloadPreview = "Audio · ${kb(bytes.size)} · $mime"
+    }
+
+    class AppOpinion internal constructor(val label: String, val pkg: String, val installer: String?, val source: String) : KavachPacket("SARVAM", "app_opinion", "app", null) {
+        override val summary = "Asked SATYA AI about one app: its name, package id and install source. Nothing else."
+        override val payloadPreview = "$label · $pkg · $source"
     }
 
     class Report internal constructor(val envelopeJson: String, val bankName: String, val sealedBytes: Int, checkId: String?) : KavachPacket("DOOT", "report", "report", checkId) {
@@ -62,7 +67,7 @@ sealed class KavachPacket(
     }
 
     class Health internal constructor(val target: String) : KavachPacket(if (target == "vivek") "VIVEK" else "GATEWAY", "health", "doctor", null) {
-        override val summary = "Doctor: checked that the ${if (target == "vivek") "AI service" else "SATYA cloud"} is reachable."
+        override val summary = "Doctor: checked that the ${if (target == "vivek") "deepfake service" else "SATYA cloud and its AI"} is reachable."
         override val payloadPreview = "Nothing"
     }
 

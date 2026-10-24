@@ -65,13 +65,21 @@ class KavachClient(private val egress: EgressDao) {
             is KavachPacket.HerdSighting -> b.url(gw("/api/v1/herd/sighting")).post(
                 buildJsonObject { put("h", p.h); put("t", p.t); put("day_token", p.dayToken) }.toString().toRequestBody(JSON_TYPE),
             )
-            is KavachPacket.AskLabel -> if (Config.now.vivekUrl.isBlank()) null else b.url(vivek("/v1/ask")).post(
-                buildJsonObject { put("text", p.maskedText); put("hint_bank", p.hintBank?.let { JsonPrimitive(it) } ?: JsonPrimitive(null as String?)) }.toString().toRequestBody(JSON_TYPE),
+            // AI runs behind the gateway (Sarvam); the key lives on the server, never in the app.
+            is KavachPacket.AskLabel -> b.url(gw("/api/v1/ai/analyze")).post(
+                buildJsonObject {
+                    put("text", p.maskedText); put("hint_bank", p.hintBank?.let { JsonPrimitive(it) } ?: JsonPrimitive(null as String?))
+                    put("channel", p.channel); put("sender", p.maskedSender)
+                }.toString().toRequestBody(JSON_TYPE),
+            )
+            is KavachPacket.AppOpinion -> b.url(gw("/api/v1/ai/app")).post(
+                buildJsonObject { put("label", p.label); put("pkg", p.pkg); put("installer", p.installer?.let { JsonPrimitive(it) } ?: JsonPrimitive(null as String?)); put("source", p.source) }
+                    .toString().toRequestBody(JSON_TYPE),
             )
             is KavachPacket.FaceFrames -> if (Config.now.vivekUrl.isBlank()) null else b.url(vivek("/v1/face")).post(
                 buildJsonObject { put("frames", JsonArray(p.frames.map { JsonPrimitive(java.util.Base64.getEncoder().encodeToString(it)) })) }.toString().toRequestBody(JSON_TYPE),
             )
-            is KavachPacket.VoiceNote -> if (Config.now.vivekUrl.isBlank()) null else b.url(vivek("/v1/voice")).post(p.bytes.toRequestBody(p.mime.toMediaType()))
+            is KavachPacket.VoiceNote -> b.url(gw("/api/v1/ai/voice")).post(p.bytes.toRequestBody(p.mime.toMediaType()))
             is KavachPacket.Report -> b.url(gw("/api/v1/reports")).post(p.envelopeJson.toRequestBody(JSON_TYPE))
             is KavachPacket.StatusCheck -> b.url(gw("/api/v1/reports/${p.reportId}/status")).header("X-Satya-Ticket", p.ticket).get()
             is KavachPacket.DoctorSeal -> b.url(gw("/api/v1/doctor/seal")).post(buildJsonObject { put("sealed", p.sealedB64) }.toString().toRequestBody(JSON_TYPE))
@@ -81,7 +89,8 @@ class KavachClient(private val egress: EgressDao) {
     }
 
     private fun bodyBytes(p: KavachPacket): Long = when (p) {
-        is KavachPacket.AskLabel -> p.maskedText.toByteArray().size.toLong()
+        is KavachPacket.AskLabel -> p.maskedText.toByteArray().size.toLong() + p.maskedSender.length
+        is KavachPacket.AppOpinion -> (p.label.length + p.pkg.length + p.source.length + (p.installer?.length ?: 0)).toLong()
         is KavachPacket.FaceFrames -> p.frames.sumOf { it.size }.toLong()
         is KavachPacket.VoiceNote -> p.bytes.size.toLong()
         is KavachPacket.Report -> p.envelopeJson.length.toLong()
