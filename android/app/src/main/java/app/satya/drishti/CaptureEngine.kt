@@ -16,7 +16,8 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 
-data class TextBlock(val text: String, val bounds: Rect)
+/** [fromDescription] = the node had no text, only a content description (buttons, icons). */
+data class TextBlock(val text: String, val bounds: Rect, val fromDescription: Boolean = false)
 
 suspend fun <T> Task<T>.awaitOrNull(): T? = suspendCancellableCoroutine { c ->
     addOnSuccessListener { if (c.isActive) c.resume(it) }
@@ -94,10 +95,11 @@ class CaptureEngine(private val svc: AccessibilityService) {
 
     private fun walk(n: AccessibilityNodeInfo, out: MutableList<TextBlock>, depth: Int) {
         if (depth > 40 || out.size > 400) return
-        val t = (n.text?.toString() ?: n.contentDescription?.toString())?.trim()
+        val txt = n.text?.toString()?.trim()
+        val t = txt?.takeIf { it.isNotEmpty() } ?: n.contentDescription?.toString()?.trim()
         if (!t.isNullOrEmpty() && n.isVisibleToUser) {
             val r = Rect(); n.getBoundsInScreen(r)
-            out.add(TextBlock(t, r))
+            out.add(TextBlock(t, r, fromDescription = txt.isNullOrEmpty()))
         }
         for (i in 0 until n.childCount) n.getChild(i)?.let { walk(it, out, depth + 1) }
     }

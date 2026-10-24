@@ -48,6 +48,12 @@ class KavachClient(private val egress: EgressDao) {
         .retryOnConnectionFailure(true)
         .build()
 
+    /**
+     * Circuit breaker: after a connection failure, a host is skipped for 20 s so an unreachable
+     * cloud costs nothing (rules on the phone still decide). Doctor packets always try for real.
+     */
+    private val downUntil = java.util.concurrent.ConcurrentHashMap<String, Long>()
+
     private fun gw(path: String) = Config.now.gatewayUrl.trimEnd('/') + path
     private fun vivek(path: String) = Config.now.vivekUrl.trimEnd('/') + path
 
@@ -88,6 +94,10 @@ class KavachClient(private val egress: EgressDao) {
 
     suspend fun send(p: KavachPacket): KavachResponse = withContext(Dispatchers.IO) {
         val req = build(p) ?: return@withContext KavachResponse(0, null, "not configured")
+        val host = req.url.host
+        if (p.category != "doctor" && (downUntil[host] ?: 0L) > System.currentTimeMillis()) {
+            return@withContext KavachResponse(0, null, "offline (recent failure)")
+        }
         val result = suspendCancellableCoroutine<KavachResponse> { cont ->
             val call = http.newCall(req)
             cont.invokeOnCancellation { call.cancel() }
@@ -99,6 +109,7 @@ class KavachClient(private val egress: EgressDao) {
                 }
             })
         }
+        if (result.code == 0) downUntil[host] = System.currentTimeMillis() + 20_000 else downUntil.remove(host)
         runCatching {
             egress.put(
                 EgressEntity(

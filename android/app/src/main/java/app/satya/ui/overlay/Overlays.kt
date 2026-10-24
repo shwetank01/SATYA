@@ -347,9 +347,9 @@ fun CircleOverlay(shot: Bitmap?, onRegion: (Rect?) -> Unit, onVideo: () -> Unit,
             Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(16.dp).fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            OverlayPill("Whole screen", "screen", Modifier.weight(1f)) { onRegion(null) }
-            OverlayPill("Video call", "video", Modifier.weight(1f), onClick = onVideo)
-            OverlayPill("Cancel", "close", Modifier.weight(.8f), dark = true, onClick = onCancel)
+            OverlayPill("Whole screen", "screen", Modifier.weight(1.25f)) { onRegion(null) }
+            OverlayPill("Video call", "video", Modifier.weight(1.05f), onClick = onVideo)
+            OverlayPill("Cancel", "close", Modifier.weight(.9f), dark = true, onClick = onCancel)
         }
     }
 }
@@ -358,12 +358,12 @@ fun CircleOverlay(shot: Bitmap?, onRegion: (Rect?) -> Unit, onVideo: () -> Unit,
 fun OverlayPill(text: String, icon: String, modifier: Modifier, dark: Boolean = false, onClick: () -> Unit) {
     Row(
         modifier.height(52.dp).press(.95f, onClick = onClick).clip(RoundedCornerShape(26.dp))
-            .background(if (dark) Satya.Ink.copy(alpha = .85f) else Satya.Yellow).padding(horizontal = 12.dp),
+            .background(if (dark) Satya.Ink.copy(alpha = .85f) else Satya.Yellow).padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center,
     ) {
         Ic(icon, if (dark) Satya.Paper else Satya.Ink, 18.dp, 2.2f)
-        Spacer(Modifier.width(8.dp))
-        Text(text, style = body(14, 700, if (dark) Satya.Paper else Satya.Ink), maxLines = 1)
+        Spacer(Modifier.width(6.dp))
+        Text(text, style = body(13, 700, if (dark) Satya.Paper else Satya.Ink), maxLines = 1, softWrap = false)
     }
 }
 

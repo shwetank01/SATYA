@@ -93,7 +93,7 @@ class CheckRunner(
         val plan = Router.plan(reg.book, c)
         onStep(1)
 
-        val herdD = async { withTimeoutOrNull(9_000) { herdFor(plan.herdLookups, reg, checkId, "check") } }
+        val herdD = async { herdFor(plan.herdLookups, reg, checkId, "check") }
         val realityD = async { plan.realityAmount?.let { reality.check(it) } }
         val askD = async {
             if (!plan.askCloud) null
@@ -165,7 +165,7 @@ class CheckRunner(
         val blocked = inds.firstOrNull { reg.blocklist.containsKey(it.hash) }
         if (plan.rules.hits.isEmpty() && blocked == null) return null
         val checkId = UUID.randomUUID().toString()
-        val herd = withTimeoutOrNull(6_000) { herdFor(plan.herdLookups, reg, checkId, "check") }
+        val herd = herdFor(plan.herdLookups, reg, checkId, "check", budgetMs = 5_000)
         val day = utcDay()
         plan.herdSightings.take(4).forEach { ind -> appScope.launch { runCatching { client.send(Kavach.herdSighting(ind, day, checkId)) } } }
         val receipt = buildReceipt(checkId, c, plan.rules, reg, herd, null, null, null, Extras(captured = captured), inds)
@@ -173,25 +173,36 @@ class CheckRunner(
         return receipt
     }
 
-    /** SANGH lookup by 5-char prefix; the phone picks its own hash from the matches (k-anonymity). */
-    suspend fun herdFor(lookups: List<Indicator>, reg: Registry, checkId: String?, category: String): Herd? {
+    /**
+     * SANGH lookup by 5-char prefix; the phone picks its own hash from the matches (k-anonymity).
+     * Lookups run in parallel inside [budgetMs]; a slow or missing gateway can never hold a verdict.
+     */
+    suspend fun herdFor(lookups: List<Indicator>, reg: Registry, checkId: String?, category: String, budgetMs: Long = 3_500): Herd? {
         if (lookups.isEmpty()) return null
-        var seen = 0L; var reports = 0; var confirmed: String? = null; var label: String? = null; var any = false
-        for (ind in lookups.take(8)) {
-            reg.blocklist[ind.hash]?.let { confirmed = confirmed ?: it.by; label = label ?: it.label }
-            val r = client.send(Kavach.herdLookup(ind, category, checkId))
-            if (!r.ok) continue
-            any = true
-            val matches = (client.json(r.body) as? JsonObject)?.get("matches")?.jsonArray ?: continue
-            matches.map { it.jsonObject }.firstOrNull { it["h"]?.jsonPrimitive?.contentOrNull == ind.hash }?.let { m ->
-                seen = maxOf(seen, m["seen_7d"]?.jsonPrimitive?.longOrNull ?: 0)
-                reports += m["reports"]?.jsonPrimitive?.intOrNull ?: 0
-                m["confirmed_by"]?.jsonPrimitive?.contentOrNull?.let { confirmed = confirmed ?: it }
-                m["label"]?.jsonPrimitive?.contentOrNull?.let { label = label ?: it }
+        var confirmed: String? = null; var label: String? = null
+        lookups.forEach { ind -> reg.blocklist[ind.hash]?.let { confirmed = confirmed ?: it.by; label = label ?: it.label } }
+        val answers = withTimeoutOrNull(budgetMs) {
+            coroutineScope {
+                lookups.take(8).map { ind ->
+                    async {
+                        val r = client.send(Kavach.herdLookup(ind, category, checkId))
+                        if (!r.ok) return@async null
+                        val matches = (client.json(r.body) as? JsonObject)?.get("matches")?.jsonArray ?: return@async JsonObject(emptyMap())
+                        matches.map { it.jsonObject }.firstOrNull { it["h"]?.jsonPrimitive?.contentOrNull == ind.hash } ?: JsonObject(emptyMap())
+                    }
+                }.map { it.await() }
             }
+        }.orEmpty()
+        val got = answers.filterNotNull()
+        if (got.isEmpty() && confirmed == null) return Herd(checked = false)
+        var seen = 0L; var reports = 0
+        for (m in got) {
+            seen = maxOf(seen, m["seen_7d"]?.jsonPrimitive?.longOrNull ?: 0)
+            reports += m["reports"]?.jsonPrimitive?.intOrNull ?: 0
+            m["confirmed_by"]?.jsonPrimitive?.contentOrNull?.let { confirmed = confirmed ?: it }
+            m["label"]?.jsonPrimitive?.contentOrNull?.let { label = label ?: it }
         }
-        if (!any && confirmed == null) return Herd(checked = false)
-        return Herd(seen, reports, confirmed, label)
+        return Herd(seen, reports, confirmed, label, checked = got.isNotEmpty())
     }
 
     private fun mergeDeepfake(voice: Deepfake?, face: Deepfake?): Deepfake? = when {
@@ -305,22 +316,23 @@ class CheckRunner(
 
 /** The sentence of the message that carries the request. Stays on this phone. */
 object Excerpt {
+    /** Sentence ends only where punctuation is followed by whitespace or the end, so "sbi-kyc-update.in" stays whole. */
+    private val SENTENCE = Regex("""(?m)[^\n]+?(?:[.!?।](?=\s|$)|$)""")
+    private val ASKY = Regex("(?i)pay|share|send|install|call|transfer|move|update|click|login|log in|batao|bhejo|bata|dijiye")
+
     fun of(text: String, tokenIndex: Int): String {
         val t = text.trim()
         if (t.isEmpty()) return ""
-        val sentences = Regex("""[^.!?।\n]+[.!?।]?""").findAll(t).map { it.value.trim() }.filter { it.isNotEmpty() }.toList()
+        val sentences = SENTENCE.findAll(t).filter { it.value.isNotBlank() }.toList()
         if (tokenIndex >= 0) {
             val toks = Rules.tokenize(t)
             if (tokenIndex < toks.size) {
                 val pos = toks[tokenIndex].range.first
-                var acc = 0
-                for (s in Regex("""[^.!?।\n]+[.!?।]?""").findAll(t)) {
-                    if (pos in s.range) return s.value.trim().take(160)
-                    acc++
-                }
+                sentences.firstOrNull { pos in it.range }?.let { return it.value.trim().take(160) }
             }
         }
-        return (sentences.lastOrNull { s -> Regex("(?i)pay|share|send|install|call|transfer|update|click|login|log in|batao|bhejo").containsMatchIn(s) } ?: sentences.firstOrNull() ?: t).take(160)
+        val pick = sentences.lastOrNull { ASKY.containsMatchIn(it.value) } ?: sentences.firstOrNull()
+        return (pick?.value?.trim() ?: t).take(160)
     }
 }
 

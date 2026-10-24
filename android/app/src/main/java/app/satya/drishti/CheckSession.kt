@@ -21,10 +21,17 @@ import kotlinx.coroutines.withContext
 
 /** Guess who sent what is on screen: the conversation title near the top, if it looks like a number or SMS header. */
 object SenderGuess {
-    private val PHONE = Regex("""^\+?[0-9][0-9 ()-]{7,16}$""")
+    private val PHONE = Regex("""^\+?[0-9(][0-9 ()-]{7,18}$""")
+    /** Android wraps numbers in bidi isolates (U+2066..2069, U+202A..202E) and uses NBSPs; strip them first. */
+    fun clean(s: String): String = s.filterNot { it.code in 0x200E..0x200F || it.code in 0x202A..0x202E || it.code in 0x2066..0x2069 }
+        .map { if (it.code == 0xA0) ' ' else it }.joinToString("").trim()
+
     fun from(blocks: List<TextBlock>, screenHeight: Int): String {
-        val top = blocks.filter { it.bounds.top in 0..(screenHeight / 5) }.map { it.text.trim() }
-        return top.firstOrNull { PHONE.matches(it) || Rules.isHeader(it) } ?: ""
+        // Only real text near the top (the conversation title); button descriptions like "Back" are not senders.
+        val top = blocks.filter { !it.fromDescription && it.bounds.top in 0..(screenHeight / 5) }.map { clean(it.text) }
+        top.firstOrNull { PHONE.matches(it) }?.let { return it }
+        // SMS headers show in capitals (SBIINB, VM-HDFCBK); "Back" or "Call" must never pass as one.
+        return top.firstOrNull { it == it.uppercase() && it.length in 6..14 && Rules.isHeader(it) } ?: ""
     }
 }
 
@@ -72,6 +79,7 @@ class CheckSession(
     private suspend fun execute(text: String, channel: Channel?, extras: Extras) {
         state.phase = Phase.Checking(0, absorbing = false, flash = state.phase !is Phase.Checking)
         val ch = channel ?: Sources.channelFor(sourcePkg)
+        android.util.Log.i("SATYA", "check: trigger=${trigger.wire} pkg=$sourcePkg channel=${ch.wire} sender=${if (sender.isBlank()) "none" else sender.take(5) + "…"} chars=${text.length}")
         val c = Capture(trigger, ch, text, sender, sourcePkg, videoMode = extras.faceFrames.isNotEmpty(), hasAudio = extras.voice != null)
         lastCapture = c
         val started = System.currentTimeMillis()
@@ -87,6 +95,7 @@ class CheckSession(
             finish()
             return
         }
+        android.util.Log.i("SATYA", "check done in ${System.currentTimeMillis() - started} ms: ${receipt.verdict} ${receipt.hits.joinToString { it.id }} herd=${receipt.herd?.checked}")
         val floor = 2400 - (System.currentTimeMillis() - started)
         if (floor > 0) {
             delay(floor / 2); state.phase = Phase.Checking(1, false, false)
