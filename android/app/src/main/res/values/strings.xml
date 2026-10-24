@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SATYA</string>
+    <string name="share_label">SATYA Check</string>
+    <string name="tile_label">Check screen</string>
+    <string name="a11y_label">SATYA Check screen</string>
+    <string name="a11y_description">SATYA reads the screen only when you triple-tap its edge strip or tap the Check screen tile, to compare what a message asks for with your bank\'s published promises. It also watches WhatsApp and apps it has flagged as suspicious for requests your bank never makes. Your name and number are masked on this phone before anything leaves it. Nothing is read or sent in the background.</string>
+    <string name="channel_alerts">Broken promises</string>
+    <string name="channel_alerts_desc">A message, call or app asked for something your bank never asks for.</string>
+    <string name="channel_reports">Report updates</string>
+    <string name="channel_reports_desc">What the bank did with a report you sent.</string>
+    <string name="channel_service">Checking</string>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Satya" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/satya_paper</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
+    </style>
+    <style name="Theme.Satya.Launch" parent="Theme.Satya">
+        <item name="android:windowBackground">@color/satya_blue</item>
+        <item name="android:windowSplashScreenBackground">@color/satya_blue</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+    <style name="Theme.Satya.Overlay" parent="Theme.Satya">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

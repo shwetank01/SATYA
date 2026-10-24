@@ -1,0 +1,103 @@
+"""Generate SATYA's seal as Android VectorDrawables (launcher, tile, notification) from the
+same geometry as the design's seal() in design/project/Satya Android.dc.html.
+
+Run: python tools/gen_seal_vectors.py   (writes into android/app/src/main/res)
+"""
+import math
+import os
+
+ROOT = os.path.join(os.path.dirname(__file__), "..", "android", "app", "src", "main", "res")
+BLUE, YEL, PAPER, INK = "#FF1F5FC4", "#FFF7C800", "#FFF4F3EE", "#FF0E2348"
+
+
+def notched_disc(cx, cy, R, nr):
+    d = math.asin(nr / R)
+    pt = lambda a: f"{cx + R * math.cos(a):.2f} {cy + R * math.sin(a):.2f}"
+    p = ""
+    for k in range(4):
+        a = -math.pi / 2 + k * math.pi / 2
+        if k == 0:
+            p += "M" + pt(a + d)
+        p += f"A{R} {R} 0 0 1 {pt(a + math.pi / 2 - d)}A{nr} {nr} 0 0 0 {pt(a + math.pi / 2 + d)}"
+    return p + "Z"
+
+
+def circle(cx, cy, r):
+    return f"M{cx - r} {cy}A{r} {r} 0 1 1 {cx + r} {cy}A{r} {r} 0 1 1 {cx - r} {cy}Z"
+
+
+DISC = notched_disc(120, 120, 116, 10)
+EYE = "M52 120Q120 58 188 120Q120 182 52 120Z"
+KEYHOLE = "M114.6 121A8 8 0 1 1 125.4 121L128 133H112Z"
+TICKS = "".join(
+    f"M{120 + 100 * math.sin(math.radians(7.5 + k * 15)):.2f} {120 - 100 * math.cos(math.radians(7.5 + k * 15)):.2f}"
+    f"L{120 + 107 * math.sin(math.radians(7.5 + k * 15)):.2f} {120 - 107 * math.cos(math.radians(7.5 + k * 15)):.2f}"
+    for k in range(24)
+)
+RING = circle(120, 120, 91)
+IRIS = circle(120, 120, 30)
+DOTS = circle(120, 52, 4.5) + circle(120, 188, 4.5)
+
+
+def seal_group(scale, tx, ty, disc=YEL, ink=BLUE, mono=False):
+    fill_disc = ink if mono else disc
+    eye_ink = "#FF000000" if mono else ink
+    parts = [f'<group android:scaleX="{scale}" android:scaleY="{scale}" android:translateX="{tx}" android:translateY="{ty}">']
+    if not mono:
+        parts.append(f'<path android:fillColor="{fill_disc}" android:pathData="{DISC}"/>')
+        parts.append(f'<path android:strokeColor="{ink}" android:strokeWidth="3" android:strokeLineCap="round" android:pathData="{TICKS}"/>')
+        parts.append(f'<path android:strokeColor="{ink}" android:strokeWidth="4" android:pathData="{RING}"/>')
+        parts.append(f'<clip-path android:pathData="{EYE}"/>' if False else "")
+        parts.append(f'<path android:strokeColor="{eye_ink}" android:strokeWidth="8" android:pathData="{IRIS}"/>')
+        parts.append(f'<path android:fillColor="{eye_ink}" android:pathData="{KEYHOLE}"/>')
+        parts.append(f'<path android:strokeColor="{eye_ink}" android:strokeWidth="8" android:strokeLineJoin="round" android:pathData="{EYE}"/>')
+        parts.append(f'<path android:fillColor="{eye_ink}" android:pathData="{DOTS}"/>')
+    else:
+        # Monochrome (tile, notification, themed icon): ring + eye + iris, white on transparent.
+        parts.append(f'<path android:strokeColor="#FFFFFFFF" android:strokeWidth="14" android:pathData="{RING}"/>')
+        parts.append(f'<path android:strokeColor="#FFFFFFFF" android:strokeWidth="14" android:strokeLineJoin="round" android:pathData="{EYE}"/>')
+        parts.append(f'<path android:strokeColor="#FFFFFFFF" android:strokeWidth="12" android:pathData="{IRIS}"/>')
+        parts.append(f'<path android:fillColor="#FFFFFFFF" android:pathData="{DOTS}"/>')
+    parts.append("</group>")
+    return "\n    ".join(p for p in parts if p)
+
+
+def vector(w, h, vw, vh, body):
+    return (f'<?xml version="1.0" encoding="utf-8"?>\n<vector xmlns:android="http://schemas.android.com/apk/res/android"\n'
+            f'    android:width="{w}dp" android:height="{h}dp" android:viewportWidth="{vw}" android:viewportHeight="{vh}">\n    {body}\n</vector>\n')
+
+
+def write(rel, text):
+    p = os.path.join(ROOT, rel)
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    open(p, "w", encoding="utf-8", newline="\n").write(text)
+    print("wrote", rel)
+
+
+# Adaptive launcher icon: 108dp canvas, seal fills the 72dp safe zone.
+write("drawable/ic_launcher_foreground.xml", vector(108, 108, 108, 108, seal_group(0.3, 18, 18)))
+write("drawable/ic_launcher_monochrome.xml", vector(108, 108, 108, 108, seal_group(0.27, 21.6, 21.6, mono=True)))
+write("drawable/ic_seal.xml", vector(240, 240, 240, 240, seal_group(1, 0, 0)))
+write("drawable/ic_tile.xml", vector(24, 24, 240, 240, seal_group(1, 0, 0, mono=True)))
+write("drawable/ic_notify.xml", vector(24, 24, 240, 240, seal_group(1, 0, 0, mono=True)))
+adaptive = ('<?xml version="1.0" encoding="utf-8"?>\n<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">\n'
+            '    <background android:drawable="@color/satya_blue"/>\n    <foreground android:drawable="@drawable/ic_launcher_foreground"/>\n'
+            '    <monochrome android:drawable="@drawable/ic_launcher_monochrome"/>\n</adaptive-icon>\n')
+write("mipmap-anydpi-v26/ic_launcher.xml", adaptive)
+write("mipmap-anydpi-v26/ic_launcher_round.xml", adaptive)
+
+# Path strings for Compose (exact same geometry), emitted as a Kotlin file.
+kt = f'''package app.satya.ui.components
+
+// GENERATED by tools/gen_seal_vectors.py from the design's seal() geometry. Do not edit.
+internal object SealPaths {{
+    const val DISC = "{DISC}"
+    const val EYE = "{EYE}"
+    const val KEYHOLE = "{KEYHOLE}"
+    const val TICKS = "{TICKS}"
+}}
+'''
+kp = os.path.join(os.path.dirname(__file__), "..", "android", "app", "src", "main", "java", "app", "satya", "ui", "components", "SealPaths.kt")
+os.makedirs(os.path.dirname(kp), exist_ok=True)
+open(kp, "w", encoding="utf-8", newline="\n").write(kt)
+print("wrote SealPaths.kt")
