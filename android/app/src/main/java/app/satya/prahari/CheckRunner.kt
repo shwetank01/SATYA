@@ -131,8 +131,11 @@ class CheckRunner(
         val realityRes = realityD.await()
 
         var hits = plan.rules.hits
-        if (ai != null && ai.askType != "unknown") {
-            AskMapping.aiHit(reg.book, ai.askType, plan.rules.claimedBank, plan.entities.hosts.isNotEmpty(), c.sender, hits)?.let { hits = hits + it }
+        // An AI label never outranks positive proof: a message from the bank's registered header, official
+        // number or official link keeps its "Keeps promise" verdict (Law 3: the cloud labels, never decides).
+        val officialChannel = VerdictRules.verdict(reg.book, plan.rules, c.text, c.channel, c.sender) == Verdict.KEEPS
+        if (ai != null && ai.askType != "unknown" && !officialChannel) {
+            AskMapping.aiHit(reg.book, ai.askType, plan.rules.claimedBank, plan.entities.hosts.isNotEmpty(), c.sender, hits, c.text)?.let { hits = hits + it }
         }
         val result = RuleResult(plan.rules.claimedBank, hits)
         val df = mergeDeepfake(deepfake, face)
@@ -146,7 +149,8 @@ class CheckRunner(
         val reg = reg()
         val plan = Router.plan(reg.book, c.copy(bankOverride = bank))
         var hits = plan.rules.hits
-        prev.ai?.let { ai -> AskMapping.aiHit(reg.book, ai.askType, bank, plan.entities.hosts.isNotEmpty(), c.sender, hits)?.let { hits = hits + it } }
+        val officialChannel = VerdictRules.verdict(reg.book, plan.rules, c.text, c.channel, c.sender) == Verdict.KEEPS
+        if (!officialChannel) prev.ai?.let { ai -> AskMapping.aiHit(reg.book, ai.askType, bank, plan.entities.hosts.isNotEmpty(), c.sender, hits, c.text)?.let { hits = hits + it } }
         val r = buildReceipt(prev.checkId, c.copy(bankOverride = bank), RuleResult(bank, hits), reg, prev.herd, prev.reality, prev.deepfake, prev.ai,
             Extras(sourceLabel = prev.source, captured = prev.captured), plan.entities.indicators(c.sender, c.channel), prev.no)
         save(r)

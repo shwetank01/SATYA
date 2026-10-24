@@ -31,10 +31,26 @@ object AskMapping {
     }
 
     /**
-     * Turn an AI label into an AI-assisted hit, only when the rules found nothing for that promise.
-     * AI-assisted hits are capped at High (Section 8.2).
+     * Lexical evidence an AI label must have in the text before it can become an AI-assisted hit
+     * (v1.1): the model can recognise a paraphrase, but it cannot invent an ask the words don't carry.
      */
-    fun aiHit(book: RuleBook, askType: String, bank: String?, hasLink: Boolean, sender: String, existing: List<Hit>): Hit? {
+    private val EVIDENCE: Map<String, Regex> = mapOf(
+        "share_secret" to Regex("""(?i)\b(otp|pin|mpin|cvv|password|passcode|code|digit|digits|card number|expiry)\b|\[CODE\]|ओटीपी|पिन|पासवर्ड"""),
+        "remote_access" to Regex("""(?i)\b(install|download|app|apk|anydesk|teamviewer|quick ?support|rustdesk|screen|remote)\b|इंस्टॉल|डाउनलोड"""),
+        "move_money" to Regex("""(?i)\b(transfer|move|send|deposit|shift|account|a/c|upi|amount|money|bhejo|jama)\b|\[UPI_\d+\]|\[ACCOUNT\]|खाता|पैसा"""),
+        "pay_fee" to Regex("""(?i)\b(fee|fees|charge|charges|penalty|fine|pay|payment|rs|inr)\b|₹|फ़ीस|शुल्क"""),
+        "kyc_update" to Regex("""(?i)\b(kyc|pan|aadhaar|aadhar)\b|केवाईसी"""),
+        "sales_offer" to Regex("""(?i)\b(loan|offer|card|limit|cashback|interest)\b"""),
+    )
+
+    fun hasEvidence(askType: String, text: String): Boolean = EVIDENCE[askType]?.containsMatchIn(text) ?: false
+
+    /**
+     * Turn an AI label into an AI-assisted hit, only when the rules found nothing for that promise
+     * and the text carries evidence for it. AI-assisted hits are capped at High (Section 8.2).
+     */
+    fun aiHit(book: RuleBook, askType: String, bank: String?, hasLink: Boolean, sender: String, existing: List<Hit>, text: String = ""): Hit? {
+        if (text.isNotEmpty() && !hasEvidence(askType, text)) return null
         val id = when {
             askType == "share_secret" -> "G01_NO_SECRETS"
             askType == "remote_access" -> "G06_NO_REMOTE_ACCESS"
