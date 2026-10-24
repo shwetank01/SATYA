@@ -6,7 +6,7 @@
 | 1 Core | 2026-10-24 13:05 IST | gradle :core:test, vitest, pytest mask | **PASS** | Kotlin :core 11 tests (17 rule cases, 10 mask, 9 hash + day token + ticket, router, verdict); vitest 48 (rules, mask, hash, Pay Check P01-P03, crypto App. D); pytest 11 (mask vectors + oracle parity). |
 | 2 DB + seed | 2026-10-24 16:25 IST | doctor --only db (C5, C11), seed idempotent | **PARTIAL** | schema.sql + cron.sql generated from Section 12; 7 PGlite (real Postgres) tests pass: atomic ingest, mismatch rejection, idempotent sightings, injection-safe prefix lookup, kill scoped to bank, RLS isolation, anon/authenticated cannot execute service functions, pay RLS. seed.ts written. **Blocked:** Supabase provisioning needs the marketplace terms accepted in Vercel. |
 | 3 Gateway | 2026-10-24 16:36 IST | doctor C1 C2 C3 C4 C6 C7 (local, prod) | **PARTIAL** | 16 routes deployed to https://satya-gateway.vercel.app (Mumbai, bom1). C4b (Doctor seal + receipt signature) PASS against prod. C1-C4, C6, C7 fail only on `db not reachable` until Supabase exists. |
-| 4 VIVEK + AI | 2026-10-24 16:22 IST | doctor C8 C9 C10, model eval | **PASS (self-hosted)** | Self-hosted on this laptop (`tools/local-cloud.sh --local`): Qwen3-4B on llama.cpp (Vulkan GPU) + VIVEK + in-process Whisper. CLI Doctor C8 10/10 (796 ms), C9 10/10, C10 10/10 (tmp files unchanged). VIVEK 24 tests. Ask eval: tuning 19/20, held-out 13/14. **Still blocked:** `wrangler login` (satya-ai worker, SETU) and `modal token new`; the public Cloudflare quick tunnel was refused by this session's safety policy, so the phone reaches VIVEK over USB (`adb reverse`). |
+| 4 VIVEK + AI | 2026-10-24 16:22 IST | doctor C8 C9 C10, model eval | **PASS (self-hosted)** | Self-hosted on this laptop (`tools/local-cloud.sh --local`): Qwen3-4B on llama.cpp (Vulkan GPU) + VIVEK + in-process Whisper. CLI Doctor C8 10/10 (809 ms), C9 10/10, C10 10/10 (tmp files unchanged). VIVEK 24 tests. Ask eval: tuning 19/20, held-out 13/14. **Still blocked:** `wrangler login` (satya-ai worker, SETU) and `modal token new`; the public Cloudflare quick tunnel was refused by this session's safety policy, so the phone reaches VIVEK over USB (`adb reverse`). |
 | 5 Console | 2026-10-24 16:34 IST | doctor --e2e, Pay Check P01-P03 in UI | **BUILT** | 12 pages, next build clean, vitest 57/57 (incl. Pay Check P01-P03 logic and Radar grouping). Live at /login; E2E waits on Supabase. |
 | 6 Android | 2026-10-24 14:12 IST | one-door, Doctor D1-D19 on A and B, sequences A + B | **PASS (emulator)** | 0.2.0: Doctor 18/19 on the Android 15 emulator; Reliability x10 = 94% (180/190): every check 10/10 except D11 (gateway has no database yet). D14-D17 now pass against the self-hosted VIVEK. Samsung run pending (no phone connected). APKs in VERSIONS/Version 2. |
 | 7 Hardening | | full demo script x2, Doctor green after reboot | | |
@@ -47,24 +47,24 @@ C5-C12                                       waiting on Supabase / VIVEK / SETU 
 ### On device (Android 15 emulator, 0.2.0-debug, VIVEK on the laptop via `adb reverse`)
 ```
 Run all: 18 of 19 PASS (D11 HTTP 500: no database behind the gateway yet)
-Reliability x10: Overall 94% (180/190)
-D1  accessibility          10/10   0 ms    D11 SANGH round trip      0/10 157 ms
-D2  edge strip             10/10   0 ms    D12 DOOT seal opened      10/10 134 ms
-D3  screenshot             10/10 572 ms    D13 receipt + App. D      10/10   0 ms
-D4  OCR thumbnail          10/10 2689 ms   D14 VIVEK health          10/10 111 ms
-D5  SMS permissions        10/10   0 ms    D15 ask T02=share_secret  10/10 872 ms
-D6  call screening         10/10   0 ms    D16 face score            10/10 211 ms
-D7  registry 6 cards       10/10   0 ms    D17 voice score + STT     10/10 976 ms
-D8  rules 17/17            10/10 151 ms    D18 SAKSHI Room           10/10  18 ms
-D9  masking 10/10          10/10   6 ms    D19 SyncWorker            10/10   9 ms
+Reliability x10: Overall 94% (180/190)   (models: Qwen3-4B, whisper-small, mo-thecreator voice, dima806 face)
+D1  accessibility          10/10   0 ms    D11 SANGH round trip      0/10 137 ms
+D2  edge strip             10/10   0 ms    D12 DOOT seal opened      10/10 133 ms
+D3  screenshot             10/10 552 ms    D13 receipt + App. D      10/10   0 ms
+D4  OCR thumbnail          10/10 2059 ms   D14 VIVEK health          10/10  70 ms
+D5  SMS permissions        10/10   0 ms    D15 ask T02=share_secret  10/10 827 ms
+D6  call screening         10/10   1 ms    D16 face score            10/10 191 ms
+D7  registry 6 cards       10/10   0 ms    D17 voice score + STT     10/10 927 ms
+D8  rules 17/17            10/10 180 ms    D18 SAKSHI Room           10/10  20 ms
+D9  masking 10/10          10/10  15 ms    D19 SyncWorker            10/10  12 ms
 D10 one door               10/10   0 ms
 ```
 
 ### CLI, VIVEK self-hosted (2026-10-24 23:58 IST, `VIVEK_URL=http://127.0.0.1:8000 doctor.ts --only vivek|ai --repeat 10`)
 ```
-PASS  C8   VIVEK health, ask(T02) = share_secret          10/10  796 ms  share_secret via ai
+PASS  C8   VIVEK health, ask(T02) = share_secret          10/10  809 ms  share_secret via ai
 PASS  C9   provider lists chat + STT models               10/10   31 ms  127.0.0.1:8081 (qwen3-4b), STT local
-PASS  C10  VIVEK tmp files unchanged, gateway no echo     10/10  896 ms
+PASS  C10  VIVEK tmp files unchanged, gateway no echo     10/10  869 ms
 ```
 
 ### Feature timings on the emulator
@@ -96,8 +96,24 @@ Qwen2.5-3B was rejected: its licence is not open source.
 | English speech 3.3-10.4 s | accurate | 1.7-2.2 s |
 | Tone / silence / noise | no-speech gate (P 0.74-0.92), empty transcript | 0.7 s (was 10.3 s) |
 
-### Deepfake classifiers
-See below (eval_models.py over 6 real + 8 Piper-synthesised voices, 7 real + 8 StyleGAN faces).
+### Deepfake classifiers (`vivek/eval/eval_models.py`, CPU, threshold 0.7, faces cropped by VIVEK's own `crop_faces`)
+Samples (gitignored, sources in `eval/samples/SOURCES.md`): 6 real voices (LibriSpeech, LibriVox, a Hindi clip) +
+8 synthetic (Piper TTS, EN + HI scam-call scripts, `eval/make_fake_voices.py`); 7 real faces (US government
+official portraits, public domain) + 8 StyleGAN faces (thispersondoesnotexist.com). All candidates Apache-2.0.
+
+| Kind | Model | Correct | Median | |
+|---|---|---|---|---|
+| Voice | MelodyMachine/Deepfake-audio-detection-V2 (was configured) | 5/14 | 0.44 s | dropped |
+| Voice | **mo-thecreator/Deepfake-audio-detection** (wav2vec2-base) | **11/14** | 0.47 s | **chosen** |
+| Voice | Gustking/wav2vec2-large-xlsr-deepfake-audio-classification | 10/14 | 1.24 s | |
+| Voice | MelodyMachine/Deepfake-audio-detection · Vansh180/deepfake-audio-wav2vec2 | 7/14 · 6/14 | | |
+| Face | prithivMLmods/Deep-Fake-Detector-v2-Model (was configured) | 1/15 | 0.14 s | dropped |
+| Face | **dima806/deepfake_vs_real_image_detection** (ViT-base) | **13/15** | 0.14 s | **chosen** |
+| Face | samibelyo/deepfake_vs_real_image_detection · manh08/... | 13/15 · 12/15 | 0.14 s | |
+
+Chosen models: real voices 5/6 right (one Spanish LibriVox clip scored fake), Piper voices 6/8 caught; real faces
+7/7 right, GAN faces 6/8 caught. Small sample and classic TTS/GAN fakes, not modern voice clones: these scores stay
+a supporting signal and never decide the verdict (law 3). Doctor D16/D17 and CLI C8 pass 10/10 with them.
 
 ## Deviations from SATYA_ARCHITECTURE.md
 Each one is also written into the architecture file (Section 21, v1.1).

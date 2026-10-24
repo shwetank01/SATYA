@@ -1,7 +1,9 @@
 """Pick the deepfake models (Section 11.1), time-boxed.
 
-Usage (from vivek/):  .venv/Scripts/python.exe eval/eval_models.py [--write]
+Usage (from vivek/):  .venv/Scripts/python.exe eval/eval_models.py [--write] [--kind audio|face] [--models id1,id2]
 Samples: eval/samples/{real,fake}/ with audio (.wav/.flac/.mp3) and images (.jpg/.png).
+Images go through VIVEK's own crop_faces first, exactly as /v1/face does in production.
+--models skips the Hub search and evaluates only the listed ids (plus the current one).
 For each candidate: load on CPU (skip if it fails or takes > 3 s per item), print its labels, score
 every sample, and count correct calls at the model's threshold. --write stores the best model with
 >= 7/10 per kind in models.json; if none reaches it, the best is kept and marked "experimental".
@@ -18,6 +20,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 from audio import decode  # noqa: E402
+from scoring import crop_faces  # noqa: E402
+
+
+def _arg(name):
+    return sys.argv[sys.argv.index(name) + 1] if name in sys.argv else None
 
 AUDIO_EXT = (".wav", ".flac", ".mp3", ".ogg", ".m4a", ".opus")
 IMAGE_EXT = (".jpg", ".jpeg", ".png", ".webp")
@@ -74,7 +81,8 @@ def evaluate(kind, model_id, items, threshold=0.7):
                 x = decode(open(path, "rb").read())
                 res = clf({"raw": x, "sampling_rate": 16000}, top_k=None)
             else:
-                res = clf(Image.open(path).convert("RGB"), top_k=None)
+                crops, _ = crop_faces([Image.open(path).convert("RGB")])
+                res = clf(crops[0], top_k=None)
         except Exception as e:
             return {"id": model_id, "labels": labels, "error": f"infer: {str(e)[:80]}"}
         dt = time.time() - t
@@ -94,12 +102,13 @@ def main():
     cfg_path = os.path.join(ROOT, "models.json")
     cfg = json.load(open(cfg_path, encoding="utf-8"))
     report = []
-    for kind in ("audio", "face"):
+    for kind in ([_arg("--kind")] if _arg("--kind") else ["audio", "face"]):
         items = samples(kind)
         if len(items) < 4:
             report.append(f"{kind}: not enough samples in eval/samples ({len(items)})")
             continue
-        cands = [cfg[kind]["id"]] + [c for c in candidates(kind) if c != cfg[kind]["id"]]
+        pool = _arg("--models").split(",") if _arg("--models") else candidates(kind)
+        cands = [cfg[kind]["id"]] + [c for c in pool if c != cfg[kind]["id"]]
         results = []
         for mid in cands[:6]:
             r = evaluate(kind, mid, items, cfg[kind].get("threshold", 0.7))

@@ -1,4 +1,20 @@
 {
-  "audio": { "task": "audio-classification", "id": "MelodyMachine/Deepfake-audio-detection-V2", "fake_labels": ["fake"], "threshold": 0.7, "eval": "pending eval/eval_models.py (labels checked: 0=fake, 1=real)" },
-  "face":  { "task": "image-classification", "id": "prithivMLmods/Deep-Fake-Detector-v2-Model", "fake_labels": ["Deepfake"], "threshold": 0.7, "eval": "pending eval/eval_models.py (labels checked: 0=Realism, 1=Deepfake)" }
+  "audio": {
+    "task": "audio-classification",
+    "id": "mo-thecreator/Deepfake-audio-detection",
+    "fake_labels": [
+      "fake"
+    ],
+    "threshold": 0.7,
+    "eval": "11/14 on eval/samples (chosen), 2026-10-25"
+  },
+  "face": {
+    "task": "image-classification",
+    "id": "dima806/deepfake_vs_real_image_detection",
+    "fake_labels": [
+      "Fake"
+    ],
+    "threshold": 0.7,
+    "eval": "13/15 on eval/samples (chosen), 2026-10-25"
+  }
 }
