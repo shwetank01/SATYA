@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.PathParser
@@ -150,7 +151,7 @@ fun Modifier.grain(alpha: Float = .5f, tile: Dp = 128.dp): Modifier {
         }
 }
 
-private fun ImageBitmap.asAndroidBitmapCompat(): Bitmap = androidx.compose.ui.graphics.asAndroidBitmap(this)
+private fun ImageBitmap.asAndroidBitmapCompat(): Bitmap = this.asAndroidBitmap()
 
 /** Soft radial glow blobs on blue screens. */
 fun Modifier.glow(center: Offset, radius: Float, color: Color, alpha: Float): Modifier = this.drawBehind {

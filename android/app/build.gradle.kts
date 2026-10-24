@@ -25,7 +25,7 @@ val keyProps = Properties().apply {
 
 android {
     namespace = "app.satya"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "app.satya"
@@ -41,7 +41,6 @@ android {
         buildConfigField("String", "RECEIPT_PK", "\"${secret("RECEIPT_PK")}\"")
         buildConfigField("String", "DOCTOR_BOX_PK", "\"${secret("DOCTOR_BOX_PK")}\"")
 
-        ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64") }
     }
 
     signingConfigs {
@@ -64,10 +63,13 @@ android {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = if (keyProps.isNotEmpty()) signingConfigs.getByName("release") else signingConfigs.getByName("debug")
+            // Every Samsung (and every phone sold in India since ~2019) is ARM; x86_64 only adds ~22 MB of ML Kit for emulators.
+            ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a") }
         }
         debug {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
+            ndk { abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64") }
         }
     }
 
@@ -88,6 +90,18 @@ android {
 
 kotlin {
     compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
+}
+
+// The Doctor runs the shared spec vectors on the phone (D8, D9, D13): bundle them from ../spec.
+val specAssetsDir = file("build/generated/specAssets")
+val copySpecAssets = tasks.register<Copy>("copySpecAssets") {
+    from(rootProject.file("../spec")) { include("rule_cases.json", "mask_vectors.json", "crypto_vectors.json", "hash_vectors.json") }
+    into(File(specAssetsDir, "spec"))
+}
+android.sourceSets.getByName("main").assets.srcDir(specAssetsDir)
+tasks.named("preBuild") { dependsOn(copySpecAssets) }
+afterEvaluate {
+    tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Assets") }.configureEach { dependsOn(copySpecAssets) }
 }
 
 ksp {

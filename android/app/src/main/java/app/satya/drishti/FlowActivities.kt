@@ -89,7 +89,7 @@ class ShareActivity : ComponentActivity() {
         @Suppress("DEPRECATION") val uri: Uri? = intent.getParcelableExtra(Intent.EXTRA_STREAM)
         val type = intent.type.orEmpty()
         val session = CheckSession(
-            g, state, lifecycleScope, Trigger.SHARE, from, "",
+            g, state, lifecycleScope, Trigger.SHARE, from, intent.getStringExtra("satya.sender").orEmpty(),
             textFor = { text },
             sourceLabel = label ?: if (type.startsWith("audio")) "Voice note" else "Shared",
             captured = if (type.startsWith("image")) "Shared screenshot" else if (type.startsWith("audio")) "Shared voice note" else "Shared text",
