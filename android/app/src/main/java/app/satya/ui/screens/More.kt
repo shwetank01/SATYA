@@ -48,6 +48,7 @@ import app.satya.config.Config
 import app.satya.core.Normalize
 import app.satya.drishti.PhoneStateReceiver
 import app.satya.drishti.SatyaA11yService
+import app.satya.kavach.Kavach
 import app.satya.prahari.FinanceApp
 import app.satya.ui.BackRow
 import app.satya.ui.Fmt
@@ -75,6 +76,7 @@ import app.satya.vachan.SyncWorker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.contentOrNull
 
 // ---------------------------------------------------------------- 07 Apps
 
@@ -84,11 +86,14 @@ fun AppsScreen(nav: Nav) {
     val g = remember { AppGraph.get(ctx) }
     var apps by remember { mutableStateOf<List<FinanceApp>?>(null) }
     val watch by g.db.watch().all().collectAsState(emptyList())
-    LaunchedEffect(Unit) { apps = withContext(Dispatchers.Default) { g.knowYourApp.list() } }
+    LaunchedEffect(Unit) {
+        apps = withContext(Dispatchers.Default) { g.knowYourApp.list() }
+        if (withContext(Dispatchers.IO) { g.knowYourApp.pruneWatch() } > 0) SatyaA11yService.instance?.refreshSuspects()
+    }
     Page {
         BackRow({ nav.back() })
         val list = apps.orEmpty()
-        PageTitle("Know your apps", sub = if (apps == null) "Checking the finance apps on this phone…" else "${list.count { it.verified }} verified, ${list.count { !it.verified }} unknown. Each finance app is matched against the official list. The app list stays on this phone.")
+        PageTitle("Know your apps", sub = if (apps == null) "Checking the finance apps on this phone…" else "${list.count { it.verified }} verified · ${list.count { it.suspect }} suspect · ${list.count { !it.verified && !it.suspect }} not confirmed. Only apps installed from outside an app store can be suspects. The app list stays on this phone.")
         Column(Modifier.fillMaxWidth().card()) {
             list.forEachIndexed { i, a ->
                 Row(
@@ -99,9 +104,9 @@ fun AppsScreen(nav: Nav) {
                     Monogram(a, 44)
                     Column(Modifier.weight(1f)) {
                         Text(a.label, style = body(15, 600), maxLines = 1)
-                        Text(a.source, style = body(13, 400, Satya.Muted), maxLines = 1)
+                        Text(if (a.verified) a.owner else a.source, style = body(13, 400, Satya.Muted), maxLines = 1)
                     }
-                    Stamp(if (a.verified) "Verified" else if (a.suspect) "Suspect" else "Unknown")
+                    Stamp(if (a.verified) "Verified" else if (a.suspect) "Suspect" else "Not confirmed")
                 }
             }
             if (apps != null && list.isEmpty()) Text("No finance apps found.", style = body(15, 400, Satya.Muted), modifier = Modifier.padding(20.dp))
@@ -149,6 +154,8 @@ fun AppDetailScreen(nav: Nav, pkg: String) {
     var app by remember { mutableStateOf<FinanceApp?>(null) }
     var checking by remember { mutableStateOf(false) }
     var checked by remember { mutableStateOf<String?>(null) }
+    var asking by remember { mutableStateOf(false) }
+    var aiSays by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(pkg) { app = withContext(Dispatchers.Default) { g.knowYourApp.assess(pkg) } }
     val a = app ?: run { Page { BackRow({ nav.back() }); Text("This app is not a finance app, or was uninstalled.", style = body(15, 400, Satya.Muted)) }; return }
     Page {
@@ -157,9 +164,10 @@ fun AppDetailScreen(nav: Nav, pkg: String) {
             Monogram(a, 84)
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(a.label, style = display(32, 600, Satya.Blue, 1.05f, -.02f))
-                Text(if (a.verified) "On the official list" else "Not on any official list", style = body(15, 600, Satya.Body2))
+                Text(if (a.verified) "Genuine app" else if (a.suspect) "Treat as fake" else "Owner not confirmed", style = body(15, 600, Satya.Body2))
             }
-            Stamp(if (a.verified) "Verified" else if (a.suspect) "Suspect" else "Unknown", big = true)
+            Stamp(if (a.verified) "Verified" else if (a.suspect) "Suspect" else "Not confirmed", big = true)
+            if (a.why.isNotBlank()) Text(a.why, style = body(15, 500, Satya.Ink, 1.5f))
         }
         Column(Modifier.fillMaxWidth().card(shadow = false)) {
             KeyValue("Install source", a.source, false); KeyValue("Owner company", a.owner, true); KeyValue("Is KYC safe here?", a.kycSafe, true); KeyValue("Package", a.pkg, true)
@@ -189,7 +197,25 @@ fun AppDetailScreen(nav: Nav, pkg: String) {
                 Toaster.show(if (a.verified) "${a.label} is on the official list." else "${a.label} is not on any official list.")
             }
         }, Modifier.fillMaxWidth(), radius = 30.dp)
-        if (!a.verified) InkButton("Uninstall ${a.label}", { ctx.startActivity(Intent(Intent.ACTION_DELETE, Uri.parse("package:${a.pkg}")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }, Modifier.fillMaxWidth(), radius = 30.dp)
+        if (!a.verified) {
+            Column(Modifier.fillMaxWidth().card(shadow = false).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text("SECOND OPINION", style = micro())
+                Text(aiSays ?: "SATYA AI (Sarvam) can judge whether this app pretends to be a bank. Only its name, package id and install source are sent.", style = body(14, if (aiSays != null) 600 else 400, Satya.Body2, 1.5f))
+                if (aiSays == null) InkButton(if (asking) "Asking SATYA AI…" else "Ask SATYA AI", {
+                    if (asking) return@InkButton
+                    asking = true
+                    scope.launch {
+                        val r = g.client.send(Kavach.appOpinion(a.label, a.pkg, a.installer, a.source))
+                        val o = g.client.json(r.body) as? kotlinx.serialization.json.JsonObject
+                        fun s(k: String) = o?.get(k)?.let { (it as? kotlinx.serialization.json.JsonPrimitive)?.contentOrNull }
+                        asking = false
+                        aiSays = if (!r.ok || o == null || s("source") != "ai") "SATYA AI is unavailable right now. Go by the install source above."
+                        else "Risk ${s("risk")}" + (s("impersonates")?.let { " · pretends to be $it" } ?: "") + ". " + s("reason").orEmpty()
+                    }
+                }, Modifier.fillMaxWidth(), height = 50.dp, radius = 25.dp)
+            }
+            InkButton("Uninstall ${a.label}", { ctx.startActivity(Intent(Intent.ACTION_DELETE, Uri.parse("package:${a.pkg}")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }, Modifier.fillMaxWidth(), radius = 30.dp)
+        }
     }
 }
 

@@ -11,6 +11,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import app.satya.AppGraph
+import app.satya.drishti.SatyaA11yService
 import java.util.concurrent.TimeUnit
 
 /** U8: registry + blocklist every 15 min (Android's minimum), report statuses, missed installs. */
@@ -20,6 +21,7 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
         g.registry.sync()
         runCatching { g.statusPoller.pollAll() }
         runCatching { g.knowYourApp.scanChangedPackages { g.notifier.suspectApp(it) } }
+        runCatching { if (g.knowYourApp.pruneWatch() > 0) SatyaA11yService.instance?.refreshSuspects() }
         return Result.success()
     }
 
