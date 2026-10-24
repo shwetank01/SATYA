@@ -38,7 +38,7 @@ async function check(id: string, name: string, group: string, fn: () => Promise<
     }
   }
 }
-const need = (c: unknown, msg: string) => { if (!c) throw new Error(msg); };
+function need(c: unknown, msg: string): asserts c { if (!c) throw new Error(msg); }
 async function http(method: string, url: string, body?: unknown, headers: Record<string, string> = {}) {
   const r = await fetch(url, { method, headers: { ...(body ? { 'content-type': 'application/json' } : {}), ...headers }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(20_000) });
   const text = await r.text();

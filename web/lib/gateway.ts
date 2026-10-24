@@ -1,6 +1,6 @@
 // Shared plumbing for the /api/v1 route handlers (Section 10).
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { timingSafeEqual } from 'node:crypto';
+import { readSession, type Session } from './console/auth';
 
 export type Fail = { error: string; status: number };
 
@@ -11,18 +11,6 @@ export const json = (body: unknown, status = 200, headers: Record<string, string
   });
 
 export const fail = (status: number, error: string) => json({ error }, status);
-
-let service: SupabaseClient | null = null;
-/** Service-role client: bypasses RLS, server only. Never exported to the browser. */
-export function db(): SupabaseClient {
-  if (!service) {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!url || !key) throw new Error('supabase_not_configured');
-    service = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
-  }
-  return service;
-}
 
 function same(a: string, b: string): boolean {
   const x = Buffer.from(a); const y = Buffer.from(b);
@@ -35,17 +23,18 @@ export function requireApp(req: Request): Response | null {
   return same(req.headers.get('x-satya-app') ?? '', key) ? null : fail(401, 'unauthorized');
 }
 
-export interface ConsoleUser { userId: string; email: string | null; orgs: string[] }
+export interface ConsoleUser extends Session { orgs: string[] }
 
-/** Console auth: Bearer <supabase access token> + membership rows. */
-export async function requireConsole(req: Request): Promise<ConsoleUser | Response> {
-  const h = req.headers.get('authorization') ?? '';
-  const token = h.startsWith('Bearer ') ? h.slice(7) : '';
-  if (!token) return fail(401, 'unauthorized');
-  const { data, error } = await db().auth.getUser(token);
-  if (error || !data.user) return fail(401, 'unauthorized');
-  const { data: rows } = await db().from('members').select('org_id').eq('user_id', data.user.id);
-  return { userId: data.user.id, email: data.user.email ?? null, orgs: (rows ?? []).map((r: any) => r.org_id) };
+/** Console auth: the signed NYAYA session cookie (lib/console/auth.ts). */
+export function requireConsole(req: Request): ConsoleUser | Response {
+  const s = readSession(req.headers.get('cookie'));
+  return s ? { ...s, orgs: [s.org] } : fail(401, 'unauthorized');
+}
+
+/** Routes both the phone and the console use (AI analysis, speech-to-text). */
+export function requireAppOrConsole(req: Request): Response | null {
+  if (!requireApp(req)) return null;
+  return readSession(req.headers.get('cookie')) ? null : fail(401, 'unauthorized');
 }
 
 export async function readJson(req: Request, maxBytes: number): Promise<unknown | Response> {
@@ -58,4 +47,5 @@ export async function readJson(req: Request, maxBytes: number): Promise<unknown 
 
 export const isResponse = (x: unknown): x is Response => x instanceof Response;
 export const HEX64 = /^[0-9a-f]{64}$/;
+export const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 export const nowIso = () => new Date().toISOString();

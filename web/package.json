@@ -17,6 +17,7 @@
   "dependencies": {
     "@noble/hashes": "^2.0.1",
     "@supabase/supabase-js": "2.118.0",
+    "@vercel/blob": "2.8.2",
     "idb-keyval": "6.3.0",
     "libsodium-wrappers": "0.8.4",
     "next": "16.4.3",

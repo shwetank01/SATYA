@@ -2,10 +2,10 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 import { z } from 'zod';
-import { db, fail, isResponse, json, readJson, requireConsole } from '@/lib/gateway';
+import { fail, isResponse, json, readJson, requireConsole } from '@/lib/gateway';
+import { addToBlocklist, getBlocklist, storeConfigured } from '@/lib/store';
 
 const Body = z.object({
-  bank_id: z.string().regex(/^[A-Z0-9_]{2,16}$/),
   indicators: z.array(z.object({
     t: z.enum(['upi', 'tel', 'host', 'app']),
     h: z.string().regex(/^[0-9a-f]{64}$/),
@@ -14,30 +14,29 @@ const Body = z.object({
   })).min(1).max(20),
 });
 
-/** One-Click Kill (I5): confirmed fake for every SATYA user; matching reports become "blocked". */
+/**
+ * One-Click Kill (I5): confirmed fake for every SATYA user. Phones get it with their next registry
+ * sync; this bank's open reports that carry these values become "blocked".
+ */
 export async function POST(req: Request) {
-  const u = await requireConsole(req);
+  const u = requireConsole(req);
   if (isResponse(u)) return u;
+  if (!storeConfigured()) return fail(503, 'store_not_configured');
   const body = await readJson(req, 16_384);
   if (isResponse(body)) return body;
   const p = Body.safeParse(body);
   if (!p.success) return fail(400, 'invalid_body');
-  if (!u.orgs.includes(p.data.bank_id)) return fail(403, 'forbidden');
-  const { data, error } = await db().rpc('kill_indicators', {
-    p_bank: p.data.bank_id,
-    p_hashes: p.data.indicators.map((i) => i.h),
-    p_types: p.data.indicators.map((i) => i.t),
-    p_labels: p.data.indicators.map((i) => i.label),
-  });
-  if (error) return fail(500, 'kill_failed');
-  return json({ blocked_reports: Number(data ?? 0) });
+  try {
+    return json({ blocked_reports: await addToBlocklist(u.org, p.data.indicators) });
+  } catch {
+    return fail(500, 'kill_failed');
+  }
 }
 
-/** Blocklist view: indicators this bank confirmed as fake (labels are masked; values never stored). */
+/** Blocklist view: every value confirmed fake, newest first (labels are masked; values never stored). */
 export async function GET(req: Request) {
-  const u = await requireConsole(req);
+  const u = requireConsole(req);
   if (isResponse(u)) return u;
-  const { data, error } = await db().from('indicators').select('hash,type,label,confirmed_by,confirmed_at,reports').in('confirmed_by', u.orgs).order('confirmed_at', { ascending: false }).limit(500);
-  if (error) return fail(500, 'read_failed');
-  return json({ items: data ?? [] });
+  if (!storeConfigured()) return fail(503, 'store_not_configured');
+  return json({ items: await getBlocklist() });
 }
