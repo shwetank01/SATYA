@@ -51,6 +51,7 @@ import app.satya.ui.components.grain
 import app.satya.ui.components.iconForSource
 import app.satya.ui.components.lattice
 import app.satya.ui.components.press
+import app.satya.ui.overlay.reportable
 import app.satya.ui.overlay.verdictWord
 import app.satya.ui.theme.Satya
 import app.satya.ui.theme.body
@@ -76,7 +77,8 @@ fun HomeScreen(nav: Nav) {
     val health = rememberShieldHealth()
     LaunchedEffect(reg) {
         val apps = withContext(Dispatchers.Default) { g.knowYourApp.list() }
-        appsSummary = "${apps.size} finance apps · ${apps.count { !it.verified }} unknown"
+        val suspects = apps.count { it.suspect }
+        appsSummary = "${apps.size} finance apps · " + if (suspects > 0) "$suspects suspect" else "no suspects"
     }
 
     Page {
@@ -134,7 +136,7 @@ fun HomeScreen(nav: Nav) {
         // Counters
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Counter(receipts.size, "Checks done", Modifier.weight(1f)) { nav.go(Route.Checks()) }
-            Counter(receipts.count { it.verdict == "breaks" }, "Scams caught", Modifier.weight(1f)) { nav.go(Route.Checks("breaks")) }
+            Counter(receipts.count { reportable(it) }, "Scams caught", Modifier.weight(1f)) { nav.go(Route.Checks("scams")) }
             Counter(reports.size, "Reports sent", Modifier.weight(1f)) { nav.go(Route.Reports) }
         }
         // Check now

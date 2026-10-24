@@ -92,8 +92,12 @@ import kotlinx.coroutines.delay
 fun verdictWord(r: Receipt, hi: Boolean = false): String = when (r.verdict) {
     "breaks" -> if (hi) "वादा तोड़ता है" else "Breaks promise"
     "keeps" -> if (hi) "वादा निभाता है" else "Keeps promise"
+    "suspicious" -> if (hi) "धोखा लगता है" else "Looks like a scam"
     else -> if (hi) "अज्ञात" else "Unknown"
 }
+
+/** A verdict the user can report to the bank: a broken promise, or SATYA AI's confident "scam". */
+fun reportable(r: Receipt): Boolean = r.verdict == "breaks" || r.verdict == "suspicious"
 
 /** 14 Checking: frozen screen scaled to .965, dim, ribbons, glass chip, pill, step text. */
 @Composable
@@ -221,13 +225,17 @@ fun VerdictSheet(
                     Text("“", style = display(34, 700, Satya.Blue, .85f))
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text(
-                            promise?.promise ?: if (r.verdict == "keeps") "Matches ${r.bankName}’s Promise Card. This does not prove it is safe."
-                            else "No broken promise found. This does not prove it is safe.",
+                            promise?.promise ?: when (r.verdict) {
+                                "keeps" -> "Matches ${r.bankName}’s Promise Card. This does not prove it is safe."
+                                "suspicious" -> "No bank promise covers this exactly, but SATYA AI found the signs of a scam."
+                                else -> "No broken promise found. This does not prove it is safe."
+                            },
                             style = body(15, 500, Satya.Ink, 1.5f, italic = true),
                         )
                         Text(r.cardRef, style = body(12, 600, Satya.Muted))
                     }
                 }
+                AiReading(r, compact = true)
                 SignalsLine(r)
                 if (r.killChainStage > 0) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -240,11 +248,34 @@ fun VerdictSheet(
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     GhostButton("Open receipt", onOpenReceipt, Modifier.weight(1f))
-                    if (r.verdict == "breaks" && canReport) InkButton("Report to ${r.claimedBank ?: "bank"}", onReport, Modifier.weight(1.2f), height = 56.dp, radius = 28.dp)
+                    if (reportable(r) && canReport) InkButton("Report to ${r.claimedBank ?: "bank"}", onReport, Modifier.weight(1.2f), height = 56.dp, radius = 28.dp)
                     else InkButton("Done", onClose, Modifier.weight(1.2f), height = 56.dp, radius = 28.dp)
                 }
             }
         }
+    }
+}
+
+/**
+ * SATYA AI's reading (Sarvam via the gateway): one plain sentence, the warning signs it saw and what
+ * to do. Shown under the verdict; it explains, the promise rules decide.
+ */
+@Composable
+fun AiReading(r: Receipt, hi: Boolean = false, compact: Boolean = false) {
+    val ai = r.ai?.takeIf { it.explained } ?: return
+    Column(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(Satya.Blue).padding(14.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            SealSolid(Modifier.size(22.dp))
+            Text(if (hi) "SATYA AI की राय" else "SATYA AI READING", style = micro(Satya.Yellow, 11f, .12f), modifier = Modifier.weight(1f))
+            Text("Sarvam", style = body(11, 700, Satya.Paper.copy(alpha = .75f)))
+        }
+        Text(if (hi) ai.summaryHi.ifBlank { ai.summary } else ai.summary, style = body(15, 600, Satya.Paper, 1.45f))
+        if (!compact) ai.reasons.forEach { Text("• $it", style = body(13, 500, Satya.Paper, 1.4f)) }
+        val advice = if (hi) ai.adviceHi.ifBlank { ai.advice } else ai.advice
+        if (advice.isNotBlank()) Text(advice, style = body(13, 700, Satya.Yellow, 1.4f))
     }
 }
 
@@ -254,7 +285,7 @@ fun SignalsLine(r: Receipt) {
     val lines = buildList {
         r.herd?.let { h ->
             if (h.confirmedBy != null) add("Confirmed fake by ${h.confirmedBy}" + (h.label?.let { " · $it" } ?: ""))
-            else if (h.checked && (h.seen7d > 0 || h.reports > 0)) add("Seen ${h.seen7d} times by SATYA users this week · ${h.reports} reports")
+            else if (h.checked && (h.seen7d > 0 || h.reports > 0)) add("Seen ${times(h.seen7d)} by SATYA users this week · ${h.reports} report" + (if (h.reports == 1) "" else "s"))
             else if (!h.checked) add("Herd count unavailable offline")
         }
         r.reality?.takeIf { it.status != "skipped" }?.let { add(it.message) }
@@ -433,3 +464,5 @@ fun ToastOverlay(text: String) {
         app.satya.ui.components.ToastView(text, Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 40.dp).widthIn(max = 350.dp))
     }
 }
+
+private fun times(n: Long) = when (n) { 0L -> "0 times"; 1L -> "once"; 2L -> "twice"; else -> "$n times" }

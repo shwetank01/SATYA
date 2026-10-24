@@ -101,7 +101,7 @@ class CheckSession(
             delay(floor / 2); state.phase = Phase.Checking(1, false, false)
             delay(floor / 2); state.phase = Phase.Checking(2, false, false)
         }
-        state.canReport = graph.doot.canSend(receipt.claimedBank)
+        state.canReport = receipt.claimedBank == null || graph.doot.canSend(receipt.claimedBank)
         pending = receipt
         state.phase = Phase.Checking(2, absorbing = true, flash = false)
     }
@@ -110,7 +110,12 @@ class CheckSession(
 
     override fun onAbsorbed() {
         val r = pending ?: return
-        val needsBank = r.claimedBank == null && trigger.isUser &&
+        // SATYA AI already read who the message claims to be: use a Promise Card bank it names, and
+        // don't ask "Who do they say they are?" when it says no bank is named (an electricity-bill scam).
+        val ai = r.ai?.takeIf { it.source == "ai" }
+        val aiBank = ai?.claimedBank?.takeIf { graph.registry.now?.book?.bank(it) != null }
+        if (r.claimedBank == null && aiBank != null) { onPickBank(r, aiBank); return }
+        val needsBank = r.claimedBank == null && trigger.isUser && ai == null &&
             (r.hits.isNotEmpty() || (r.ai?.askType ?: "unknown") !in setOf("unknown", "info_only", "other") || r.indicators.any { it.t == "upi" })
         state.phase = Phase.Verdict(r, needsBank)
     }
@@ -120,7 +125,7 @@ class CheckSession(
         val c = lastCapture ?: return
         scope.launch {
             val next = withContext(Dispatchers.Default) { graph.runner.withBank(r, c, bank) }
-            state.canReport = graph.doot.canSend(next.claimedBank)
+            state.canReport = next.claimedBank == null || graph.doot.canSend(next.claimedBank)
             state.phase = Phase.Verdict(next, false)
         }
     }

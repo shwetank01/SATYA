@@ -83,6 +83,12 @@ class Doot(private val ctx: Context, private val db: SakshiDb, private val regis
         put("callback_number", callbackNumber)
         put("kill_chain_stage", r.killChainStage)
         put("verdict", r.verdict)
+        r.ai?.takeIf { it.explained }?.let { ai ->
+            put("ai", buildJsonObject {
+                put("ask_type", ai.askType); put("risk", ai.risk); put("confidence", ai.confidence); put("summary", ai.summary)
+                put("reasons", buildJsonArray { ai.reasons.forEach { add(JsonPrimitive(it)) } }); put("model", ai.model)
+            })
+        }
     }.toString()
 
     private fun jpeg(b: Bitmap): ByteArray {
@@ -92,9 +98,11 @@ class Doot(private val ctx: Context, private val db: SakshiDb, private val regis
     }
 
     /** Seal, store and queue. Returns the local report id. */
-    suspend fun sealAndQueue(r: Receipt, screenshot: Bitmap? = null, callbackNumber: String? = null): Long {
-        val bank = r.claimedBank ?: error("no bank to send to")
+    suspend fun sealAndQueue(r0: Receipt, screenshot: Bitmap? = null, callbackNumber: String? = null, bankId: String? = r0.claimedBank): Long {
+        val bank = bankId ?: error("no bank to send to")
         val boxPk = registry.now?.boxKeys?.get(bank) ?: error("$bank has no box key in its certificate")
+        // The user may name the bank here when the message did not (Report screen bank picker).
+        val r = if (r0.claimedBank == bank) r0 else r0.copy(claimedBank = bank, bankName = registry.now?.book?.bank(bank)?.name ?: bank)
         val plaintext = payload(r, screenshot, callbackNumber).toByteArray(Charsets.UTF_8)
         val sealed = Sodium.seal(plaintext, boxPk)
         val sealedHash = Hash.sha256Hex(sealed)

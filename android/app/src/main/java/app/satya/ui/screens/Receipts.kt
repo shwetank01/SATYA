@@ -74,7 +74,9 @@ import app.satya.ui.components.card
 import app.satya.ui.components.iconForSource
 import app.satya.ui.components.lattice
 import app.satya.ui.components.press
+import app.satya.ui.overlay.AiReading
 import app.satya.ui.overlay.SignalsLine
+import app.satya.ui.overlay.reportable
 import app.satya.ui.overlay.verdictWord
 import app.satya.ui.theme.Motion
 import app.satya.ui.theme.Satya
@@ -94,13 +96,14 @@ fun ChecksScreen(nav: Nav, initial: String) {
     val checks by g.db.checks().all().collectAsState(emptyList())
     val receipts = remember(checks) { checks.mapNotNull { it.receipt() } }
     var filter by remember { mutableStateOf(initial) }
-    val shown = receipts.filter { filter == "all" || it.verdict == filter }
+    fun matches(r: Receipt, f: String) = f == "all" || r.verdict == f || (f == "scams" && reportable(r))
+    val shown = receipts.filter { matches(it, filter) }
     Page {
         BackRow({ nav.back() })
         PageTitle("Checks", receipts.size, "Every screen you checked. Kept only on this phone.")
         Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf("all" to "All", "breaks" to "Breaks promise", "keeps" to "Keeps promise", "unknown" to "Unknown").forEach { (id, label) ->
-                Chip(label, filter == id, { filter = id }, if (id == "all") receipts.size else receipts.count { it.verdict == id })
+            listOf("all" to "All", "scams" to "Scams", "breaks" to "Breaks promise", "suspicious" to "Looks like a scam", "keeps" to "Keeps promise", "unknown" to "Unknown").forEach { (id, label) ->
+                Chip(label, filter == id, { filter = id }, receipts.count { matches(it, id) })
             }
         }
         val groups = shown.groupBy { Fmt.group(it.ts) }
@@ -180,6 +183,7 @@ fun ReceiptScreen(nav: Nav, id: String) {
                     }
                 }
             }
+            AiReading(r, hi)
             SignalsLine(r)
             if (r.leftPhone.isNotEmpty()) {
                 SectionLabel(if (hi) "फ़ोन से क्या गया" else "What left this phone")
@@ -187,7 +191,7 @@ fun ReceiptScreen(nav: Nav, id: String) {
                     r.leftPhone.forEach { Text("• $it", style = body(14, 500, Satya.Body2, 1.45f)) }
                 }
             }
-            if (r.verdict == "breaks") {
+            if (reportable(r)) {
                 SectionLabel(if (hi) "पैसे गए?" else "Lost money?")
                 Row(Modifier.fillMaxWidth().card().padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                     IconTile("call", Satya.Blue)
@@ -218,11 +222,11 @@ fun ReceiptScreen(nav: Nav, id: String) {
                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) { Ic("speaker", Satya.Ink, 19.dp); Text(if (hi) "English" else "हिंदी", style = if (hi) body(15, 600) else hindi(15, 600)) }
             InkButton(
-                when { report != null -> "View report"; r.verdict == "breaks" && canSend -> "Report to ${r.claimedBank}"; else -> "Done" },
+                when { report != null -> "View report"; reportable(r) -> "Report to ${r.claimedBank ?: "bank"}"; else -> "Done" },
                 {
                     when {
                         report != null -> nav.go(Route.ReportStatus(report.localId))
-                        r.verdict == "breaks" && canSend -> nav.go(Route.Compose(r.checkId))
+                        reportable(r) -> nav.go(Route.Compose(r.checkId))
                         else -> nav.back()
                     }
                 },
@@ -257,7 +261,7 @@ fun ReceiptTicket(r: Receipt, hi: Boolean) {
                     Text(if (hi) "फ़ैसला" else "VERDICT", style = micro())
                     Text(verdictWord(r, hi), style = if (hi) hindi(36, 700) else display(40, 700, Satya.Ink, 1.05f, -.03f))
                     Text(if (hi) r.bankNameHi else r.bankName, style = if (hi) hindi(16, 600, Satya.Body2) else body(16, 600, Satya.Body2))
-                    if (r.verdict != "breaks") Text(if (hi) "यह सुरक्षित होने का सबूत नहीं है।" else "This does not prove it is safe.", style = body(13, 600, Satya.Muted))
+                    if (!reportable(r)) Text(if (hi) "यह सुरक्षित होने का सबूत नहीं है।" else "This does not prove it is safe.", style = body(13, 600, Satya.Muted))
                 }
             }
             // Punched, dashed divider.
@@ -280,8 +284,11 @@ fun ReceiptTicket(r: Receipt, hi: Boolean) {
                         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             Text(
                                 top?.let { if (hi) it.promiseHi ?: it.promise else it.promise }
-                                    ?: if (r.verdict == "keeps") (if (hi) "यह ${r.bankNameHi} के आधिकारिक चैनल से मेल खाता है।" else "It matches ${r.bankName}’s official channels on its Promise Card.")
-                                    else (if (hi) "किसी बैंक का वादा इस माँग पर लागू नहीं होता, इसलिए SATYA इसे असली या नकली नहीं कह सकता।" else "No bank’s Promise Card covers this request, so SATYA can’t call it genuine or fake."),
+                                    ?: when (r.verdict) {
+                                        "keeps" -> if (hi) "यह ${r.bankNameHi} के आधिकारिक चैनल से मेल खाता है।" else "It matches ${r.bankName}’s official channels on its Promise Card."
+                                        "suspicious" -> if (hi) "किसी बैंक का वादा इस माँग पर सीधे लागू नहीं होता, पर SATYA AI को इसमें धोखे के निशान मिले।" else "No bank’s Promise Card covers this request exactly, but SATYA AI found the signs of a scam."
+                                        else -> if (hi) "किसी बैंक का वादा इस माँग पर लागू नहीं होता, इसलिए SATYA इसे असली या नकली नहीं कह सकता।" else "No bank’s Promise Card covers this request, so SATYA can’t call it genuine or fake."
+                                    },
                                 style = if (hi) hindi(17, 500) else body(17, 500, Satya.Ink, 1.5f, italic = true),
                             )
                             Text(r.cardRef, style = body(12, 600, Satya.Muted))
@@ -326,7 +333,7 @@ fun ReceiptTicket(r: Receipt, hi: Boolean) {
                         (if (hi) "ऐप" else "SOURCE APP") to r.source,
                         (if (hi) "जाँचा गया" else "CHECKED") to "${Fmt.dayLabel(r.ts)}, ${Fmt.time(r.ts)}",
                         (if (hi) "कैप्चर" else "CAPTURED") to r.captured.ifBlank { "On this phone" },
-                        (if (hi) "जवाब" else "ANSWERED BY") to if (r.ai?.source == "ai") "PRAHARI + VIVEK" else "PRAHARI (on this phone)",
+                        (if (hi) "जवाब" else "ANSWERED BY") to if (r.ai?.source == "ai") "PRAHARI + SATYA AI" else "PRAHARI (on this phone)",
                     )
                     meta.chunked(2).forEach { row ->
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -355,10 +362,14 @@ fun ComposeScreen(nav: Nav, checkId: String) {
     var callback by remember { mutableStateOf(false) }
     var number by remember { mutableStateOf(Config.now.myPhones.firstOrNull().orEmpty()) }
     var sealing by remember { mutableStateOf(false) }
-    val bankShort = r.claimedBank ?: "bank"
+    // The message may not name a bank (e.g. a "Looks like a scam" verdict): the user picks who to tell.
+    var bank by remember(r.checkId) { mutableStateOf(r.claimedBank) }
+    val bankShort = bank ?: "bank"
+    val bankName = bank?.let { g.registry.now?.book?.bank(it)?.name } ?: r.bankName
     val items = buildList {
         add("The request" to (r.askExcerpt.ifBlank { r.askedFor }))
-        add("Promise broken" to (r.hits.firstOrNull()?.let { "${it.id} · ${it.severity}" } ?: "None"))
+        add("Promise broken" to (r.hits.firstOrNull()?.let { "${it.id} · ${it.severity}" } ?: if (r.verdict == "suspicious") "None matched · SATYA AI: looks like a scam" else "None"))
+        r.ai?.takeIf { it.explained }?.let { add("SATYA AI" to it.summary) }
         if (r.killChainStage > 0) add("Kill chain" to "Stage ${r.killChainStage} of 4: ${KillChain.next(r.killChainStage)}")
         add("Their details" to r.indicators.joinToString(", ") { "${it.label}: ${it.value}" }.ifBlank { r.sender.ifBlank { "None found" } })
         add("Your details" to "Masked on your phone")
@@ -373,8 +384,16 @@ fun ComposeScreen(nav: Nav, checkId: String) {
             BackRow({ nav.back() }, icon = "close", title = "Report to $bankShort")
             Column(Modifier.padding(start = 4.dp, end = 4.dp, top = 6.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Box(Modifier.size(56.dp).clip(RoundedCornerShape(20.dp)).background(Satya.Blue), contentAlignment = Alignment.Center) { Ic("lock", Satya.Paper, 24.dp) }
-                Text("Sealed so only ${r.bankName} can open it.", style = display(32, 700, Satya.Blue))
+                Text(if (bank == null) "Which bank should get this?" else "Sealed so only $bankName can open it.", style = display(32, 700, Satya.Blue))
                 Text("SATYA’s relay carries the box but can’t read it. This is everything inside.", style = body(15, 400, Satya.Body2, 1.5f))
+            }
+            if (r.claimedBank == null) {
+                Column(Modifier.fillMaxWidth().card(shadow = false).padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text("WHO DID THEY CLAIM TO BE? OR YOUR OWN BANK", style = micro())
+                    Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        (g.registry.now?.boxKeys?.keys?.sorted() ?: emptyList()).forEach { id -> Chip(id, bank == id, { bank = id }) }
+                    }
+                }
             }
             Column(Modifier.fillMaxWidth().card()) { items.forEachIndexed { i, (k, v) -> KeyValue(k, v, i > 0) } }
             Column(Modifier.fillMaxWidth().card(shadow = false).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -394,19 +413,19 @@ fun ComposeScreen(nav: Nav, checkId: String) {
             }
         }
         Box(Modifier.align(Alignment.BottomCenter).fillMaxWidth().navigationBarsPadding().padding(16.dp)) {
-            InkButton("Seal and send to $bankShort", {
-                if (sealing) return@InkButton
+            InkButton(if (bank == null) "Pick a bank above" else "Seal and send to $bankShort", {
+                if (sealing || bank == null) return@InkButton
                 sealing = true
                 scope.launch {
-                    val id = runCatching { g.doot.sealAndQueue(r, null, if (callback) number.takeIf { it.isNotBlank() } else null) }.getOrNull()
+                    val id = runCatching { g.doot.sealAndQueue(r, null, if (callback) number.takeIf { it.isNotBlank() } else null, bank) }.getOrNull()
                     delay(1900)
                     sealing = false
                     if (id == null) { Toaster.show("Couldn’t seal: $bankShort has no report key on this phone."); return@launch }
                     nav.reset(Route.Home); nav.go(Route.Reports); nav.go(Route.ReportStatus(id))
                 }
-            }, Modifier.fillMaxWidth(), height = 62.dp, radius = 31.dp, leading = { Ic("lock", Satya.Paper, 19.dp) })
+            }, Modifier.fillMaxWidth(), height = 62.dp, radius = 31.dp, enabled = bank != null, leading = { Ic("lock", Satya.Paper, 19.dp) })
         }
-        if (sealing) SealingOverlay(r.bankName)
+        if (sealing) SealingOverlay(bankName)
     }
 }
 
