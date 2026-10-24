@@ -47,6 +47,11 @@ object Ocr {
  * overlays can appear in screenshots.
  */
 class CaptureEngine(private val svc: AccessibilityService) {
+    companion object {
+        /** Packages that draw system chrome over every app, never part of a message. */
+        val SYSTEM_UI = setOf("com.android.systemui", "com.samsung.android.app.cocktailbarservice", "com.sec.android.app.launcher", "com.google.android.apps.nexuslauncher")
+    }
+
     private val exec = Executors.newSingleThreadExecutor()
     private var lastShot = 0L
 
@@ -79,14 +84,19 @@ class CaptureEngine(private val svc: AccessibilityService) {
             .firstNotNullOfOrNull { w -> w.root?.packageName?.toString()?.takeIf { it != svc.packageName } }
     }.getOrNull()
 
-    /** Text and bounds of every visible node in other apps' windows. */
+    /**
+     * Text and bounds of every visible node in the app the user is looking at. System UI (status bar,
+     * notification shade, navigation bar), input methods, other overlays and SATYA itself are skipped:
+     * before v0.3 their icon labels ("Phone notification: 18001800") ended up in the checked message.
+     */
     fun screenTexts(): List<TextBlock> {
         val out = ArrayList<TextBlock>()
         runCatching {
             for (w in svc.windows) {
-                if (w.type == AccessibilityWindowInfo.TYPE_ACCESSIBILITY_OVERLAY) continue
+                if (w.type != AccessibilityWindowInfo.TYPE_APPLICATION && w.type != AccessibilityWindowInfo.TYPE_SPLIT_SCREEN_DIVIDER) continue
                 val root = w.root ?: continue
-                if (root.packageName?.toString() == svc.packageName) continue
+                val pkg = root.packageName?.toString() ?: continue
+                if (pkg == svc.packageName || pkg in SYSTEM_UI) continue
                 walk(root, out, 0)
             }
         }
@@ -104,9 +114,15 @@ class CaptureEngine(private val svc: AccessibilityService) {
         for (i in 0 until n.childCount) n.getChild(i)?.let { walk(it, out, depth + 1) }
     }
 
-    /** Node text inside [region], top to bottom, de-duplicated; OCR of the crop when nodes are empty. */
+    /**
+     * Node text inside [region], top to bottom, de-duplicated; OCR of the crop when nodes are empty.
+     * Button and icon descriptions ("Back", "Call", "More options") are used only when a screen has
+     * no real text at all, so they never pad a message.
+     */
     suspend fun textIn(region: Rect?, blocks: List<TextBlock>, shot: Bitmap?): String {
-        val picked = blocks.filter { region == null || Rect.intersects(region, it.bounds) }
+        val inRegion = blocks.filter { region == null || Rect.intersects(region, it.bounds) }
+        val real = inRegion.filter { !it.fromDescription }
+        val picked = (real.ifEmpty { inRegion })
             .sortedWith(compareBy({ it.bounds.top }, { it.bounds.left }))
             .map { it.text }.distinct()
             .filter { s -> s.length > 1 }
