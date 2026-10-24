@@ -227,21 +227,21 @@
       "sms_headers": { "values": ["PNBSMS", "PNBBNK"], "source": "Placeholder until checked on smsheader.trai.gov.in", "verified": false },
       "service_1600": { "values": [], "verified": false },
       "promo_140": { "values": [], "verified": false },
-      "inbound_helplines": { "values": ["18001800", "18002021", "18001802345"], "source": "https://pnb.bank.in/contact-us.html", "verified": true },
+      "inbound_helplines": { "values": ["18001800", "18002021", "18001802222", "18001032222", "18001802345", "18001808888", "18001805555"], "source": "https://pnb.bank.in/contact-us.html", "verified": true },
       "official_apps": [
         { "name": "PNB ONE", "package": "com.Version1", "cert_sha256": null }
       ],
       "extra_promises": [
         {
           "id": "PNB01_TOLLFREE_NEVER_CALLS_OUT",
-          "promise": "PNB's toll-free numbers only receive calls. PNB never calls you from 1800 1800 or 1800 2021.",
+          "promise": "PNB's toll-free numbers only receive calls. PNB never calls you from 1800 1800, 1800 2021, 1800 180 2222 or 1800 103 2222.",
           "promise_hi": "PNB के टोल-फ़्री नंबर सिर्फ़ कॉल रिसीव करते हैं। PNB आपको 1800 1800 या 1800 2021 से कभी कॉल नहीं करता।",
-          "check": { "type": "incoming_caller_in", "values": ["18001800", "18002021", "18001802345"] },
+          "check": { "type": "incoming_caller_in", "values": ["18001800", "18002021", "18001802222", "18001032222"] },
           "if_broken": "critical",
           "kill_chain_stage": 1,
           "source": "https://pnb.bank.in/contact-us.html",
           "source_doc": "data/bank-rules/Banks/PNB_Contact_Us_tollfree_numbers_receive_calls_only.pdf",
-          "source_note": "PNB Contact Us page: the toll-free numbers only receive calls and are not used for making outward calls.",
+          "source_note": "PNB Contact Us page, verbatim: \"Toll Free No. 1800 1800, 1800 2021, 1800 180 2222, 1800 103 2222 ... The Toll Free numbers are used to receive calls only and not for making outward calls.\"",
           "verified": true
         },
         {
