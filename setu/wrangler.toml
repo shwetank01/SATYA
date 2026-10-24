@@ -1,0 +1,13 @@
+name = "satya-setu"
+main = "src/index.ts"
+compatibility_date = "2025-10-01"
+workers_dev = true
+
+[vars]
+GATEWAY_URL = "https://satya-gateway.vercel.app"
+VIVEK_URL = "https://satya-gateway.vercel.app/api/vivek-unset"
+
+[observability]
+# Metadata only. This code never logs headers or bodies.
+enabled = true
+head_sampling_rate = 1

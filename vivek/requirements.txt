@@ -1,0 +1,10 @@
+# VIVEK runtime. torch is installed from the CPU index (see modal_app.py / Dockerfile).
+fastapi[standard]>=0.115
+httpx>=0.27
+numpy>=1.26
+pillow>=10.4
+av>=13
+opencv-python-headless>=4.10
+transformers>=4.46
+# tests
+pytest>=8

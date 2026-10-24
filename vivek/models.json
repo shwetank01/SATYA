@@ -1,0 +1,4 @@
+{
+  "audio": { "task": "audio-classification", "id": "MelodyMachine/Deepfake-audio-detection-V2", "fake_labels": ["fake", "spoof", "LABEL_1"], "threshold": 0.7, "eval": "pending eval/eval_models.py" },
+  "face":  { "task": "image-classification", "id": "prithivMLmods/Deep-Fake-Detector-v2-Model", "fake_labels": ["Deepfake", "fake", "FAKE", "LABEL_1"], "threshold": 0.7, "eval": "pending eval/eval_models.py" }
+}

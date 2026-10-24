@@ -1,0 +1,20 @@
+name = "satya-ai"
+main = "src/index.ts"
+compatibility_date = "2025-10-01"
+workers_dev = true
+
+# Workers AI binding: open-weights models hosted by Cloudflare (free daily allowance).
+[ai]
+binding = "AI"
+
+[vars]
+# First model is preferred; the rest are fallbacks if it is unavailable or returns bad JSON.
+CHAT_MODELS = "@cf/qwen/qwen3-30b-a3b-fp8,@cf/qwen/qwen2.5-coder-32b-instruct,@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+STT_MODEL = "@cf/openai/whisper-large-v3-turbo"
+
+[observability]
+# Request metadata only (route, status, duration). Bodies are never logged by this code.
+enabled = true
+head_sampling_rate = 1
+
+# AI_API_KEY is a secret: `wrangler secret put AI_API_KEY` (value from keys/server.json ai_api_key).
