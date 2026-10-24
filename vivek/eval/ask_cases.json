@@ -1,0 +1,25 @@
+{
+  "about": "Labelled /v1/ask cases for choosing the chat model. Text is what the phone sends: already masked. Mix of English, Hindi and Hinglish; scams that paraphrase around rule words, and genuine bank messages that must stay info_only.",
+  "cases": [
+    {"text": "Main HDFC Bank se bol raha hoon, aapke card pe fraud hua hai, jo OTP aaya hai woh bata dijiye", "ask_type": "share_secret", "bank": "HDFC"},
+    {"text": "Sir just tell me the 6 digit number you received on your phone so I can stop the debit", "ask_type": "share_secret", "bank": "NONE"},
+    {"text": "आपके खाते से पैसे कट रहे हैं, जो कोड आया है वो बताइए", "ask_type": "share_secret", "bank": "NONE"},
+    {"text": "This is PNB head office. Your account is under RBI audit. Install AnyDesk so our officer can secure it.", "ask_type": "remote_access", "bank": "PNB"},
+    {"text": "Please download the app from this link [LINK_1] and share the screen so our executive can fix your KYC", "ask_type": "remote_access", "bank": "NONE"},
+    {"text": "ICICI fraud team: suspicious activity found. Move your balance to this safe account for 24 hours. A/c [ACCOUNT]", "ask_type": "move_money", "bank": "ICICI"},
+    {"text": "You are under digital arrest. Transfer all your savings to the RBI verification account [ACCOUNT] immediately", "ask_type": "move_money", "bank": "OTHER"},
+    {"text": "Pay Rs 10 KYC fee to [UPI_1] to keep your YONO account active", "ask_type": "pay_fee", "bank": "SBI"},
+    {"text": "Your electricity will be cut tonight. Pay the pending penalty of Rs 1,300 at [LINK_1]", "ask_type": "pay_fee", "bank": "NONE"},
+    {"text": "Your Axis net banking is suspended. Login at [LINK_1] to restore.", "ask_type": "click_link", "bank": "AXIS"},
+    {"text": "Dear SBI customer your YONO will be blocked today. Update PAN KYC: [LINK_1]", "ask_type": "kyc_update", "bank": "SBI"},
+    {"text": "KYC pending. Aapka account band ho jayega, abhi Aadhaar update karo", "ask_type": "kyc_update", "bank": "NONE"},
+    {"text": "SBI: call us back on 1600108333 to unblock your account", "ask_type": "call_back", "bank": "SBI"},
+    {"text": "ICICI here. Special pre-approved personal loan offer at 9 percent, interested?", "ask_type": "sales_offer", "bank": "ICICI"},
+    {"text": "Rs 2,450 debited from a/c **1234 on 24-10-26. Not you? Call 18002026161", "ask_type": "info_only", "bank": "HDFC"},
+    {"text": "[CODE] is OTP for your SBI txn of Rs 500. Do not share it with anyone. -SBI", "ask_type": "info_only", "bank": "SBI"},
+    {"text": "Your Axis credit card statement is ready. Login at [LINK_1] to view.", "ask_type": "click_link", "bank": "AXIS"},
+    {"text": "Never share OTP, PIN or CVV with anyone. HDFC Bank never asks for it.", "ask_type": "info_only", "bank": "HDFC"},
+    {"text": "Please share your pin code for delivery", "ask_type": "other", "bank": "NONE"},
+    {"text": "Sir please send the amount today itself, it is urgent", "ask_type": "move_money", "bank": "NONE"}
+  ]
+}

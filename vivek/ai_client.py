@@ -55,7 +55,15 @@ def _client(timeout):
     return httpx.Client(base_url=c["base"], timeout=timeout, headers={"Authorization": f"Bearer {c['key']}"})
 
 
+def _strip_thinking(s):
+    """Qwen3 reasons inside <think>...</think>; only the answer after it matters."""
+    import re
+    s = re.sub(r"<think>.*?</think>", "", s or "", flags=re.S)
+    return s.split("</think>", 1)[-1]
+
+
 def _first_json(s):
+    s = _strip_thinking(s)
     start = s.find("{")
     while start >= 0:
         depth = 0
@@ -98,6 +106,8 @@ def label(text, hint_bank=None):
         return dict(FALLBACK)
     masked = mask(text)[:4000]
     user = masked if not hint_bank else f"{masked}\n\n(The phone guessed the claimed bank: {hint_bank})"
+    if "qwen3" in (c["chat"] or "").lower():
+        user += " /no_think"  # Qwen3 hybrid models: answer directly, no reasoning pass
     body = {
         "model": c["chat"] or None,
         "temperature": 0,

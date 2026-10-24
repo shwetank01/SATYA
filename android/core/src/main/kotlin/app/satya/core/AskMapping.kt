@@ -35,7 +35,8 @@ object AskMapping {
      * (v1.1): the model can recognise a paraphrase, but it cannot invent an ask the words don't carry.
      */
     private val EVIDENCE: Map<String, Regex> = mapOf(
-        "share_secret" to Regex("""(?i)\b(otp|pin|mpin|cvv|password|passcode|code|digit|digits|card number|expiry)\b|\[CODE\]|ओटीपी|पिन|पासवर्ड"""),
+        // "pin code" is an address (N02), not a secret.
+        "share_secret" to Regex("""(?i)\b(otp|mpin|cvv|password|passcode|digit|digits|card number|expiry)\b|\bpin\b(?!\s*-?\s*code)|(?<!pin\s)\bcode\b|\[CODE\]|ओटीपी|पासवर्ड"""),
         "remote_access" to Regex("""(?i)\b(install|download|app|apk|anydesk|teamviewer|quick ?support|rustdesk|screen|remote)\b|इंस्टॉल|डाउनलोड"""),
         "move_money" to Regex("""(?i)\b(transfer|move|send|deposit|shift|account|a/c|upi|amount|money|bhejo|jama)\b|\[UPI_\d+\]|\[ACCOUNT\]|खाता|पैसा"""),
         "pay_fee" to Regex("""(?i)\b(fee|fees|charge|charges|penalty|fine|pay|payment|rs|inr)\b|₹|फ़ीस|शुल्क"""),

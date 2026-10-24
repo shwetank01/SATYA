@@ -81,6 +81,26 @@ class RouterTest {
     }
 
     @Test
+    fun aiLabelNeedsEvidenceInTheText() {
+        val debit = "Rs 2,450 debited from a/c **1234 on 24-10-26. Not you? Call 18002026161"
+        assertNull(AskMapping.aiHit(book, "share_secret", "HDFC", false, "VM-HDFCBK", emptyList(), debit), "no secret word: no AI-assisted G01")
+        val paraphrase = "Sir just tell me the 6 digit number you got on your phone"
+        val h = AskMapping.aiHit(book, "share_secret", null, false, "", emptyList(), paraphrase)
+        assertNotNull(h)
+        assertEquals("G01_NO_SECRETS", h.id)
+        assertEquals(Severity.HIGH, h.severity)
+        assertNull(AskMapping.aiHit(book, "share_secret", null, false, "", emptyList(), "Please share your pin code for delivery"), "pin code is an address, not a secret (N02)")
+        assertNotNull(AskMapping.aiHit(book, "share_secret", null, false, "", emptyList(), "share the code you got"))
+    }
+
+    @Test
+    fun officialChannelOutranksAnAiGuess() {
+        val debit = "Rs 2,450 debited from a/c **1234 on 24-10-26. Not you? Call 18002026161"
+        val r = Rules.evaluate(book, debit, Channel.SMS, "VM-HDFCBK-S")
+        assertEquals(Verdict.KEEPS, VerdictRules.verdict(book, r, debit, Channel.SMS, "VM-HDFCBK-S"))
+    }
+
+    @Test
     fun entities() {
         val e = EntityExtractor.extract("Pay Rs 2,40,000 or 4.8 lakh to sbi.kyc@ybl, mail a.b@gmail.com, visit https://www.sbi-kyc.in/x, call +91 70123 45645 or 1600108333")
         assertEquals(listOf("sbi.kyc@ybl"), e.upiIds)
