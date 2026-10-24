@@ -1,0 +1,25 @@
+name: Feature or new promise
+description: Suggest a feature, or a bank promise SATYA should check.
+labels: [enhancement]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of request?
+      options: [New bank promise / rule, App feature, NYAYA feature, Other]
+    validations: { required: true }
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does it solve?
+      placeholder: "Scammers now ask people to install a 'Customer Support' APK from a link."
+    validations: { required: true }
+  - type: textarea
+    id: source
+    attributes:
+      label: Official source (for promises)
+      description: Every promise must cite a bank, RBI, TRAI or NPCI document. Link it here.
+  - type: textarea
+    id: idea
+    attributes:
+      label: Proposed solution

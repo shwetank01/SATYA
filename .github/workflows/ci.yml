@@ -29,7 +29,7 @@ jobs:
       - run: python -m pytest vivek/tests -q
 
   web:
-    name: TypeScript (lib, SQL on PGlite, console build)
+    name: TypeScript (gateway, console, SQL on PGlite)
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: web } }
     steps:
@@ -39,9 +39,6 @@ jobs:
       - run: npm ci
       - run: npx vitest run
       - run: npx next build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder
 
   workers:
     name: Cloudflare workers (satya-ai, SETU)

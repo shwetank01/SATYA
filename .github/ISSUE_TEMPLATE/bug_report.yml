@@ -1,0 +1,38 @@
+name: Bug report
+description: Something in the app, the gateway or NYAYA does not work as described.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. **Never paste a real victim's name, number, account or OTP.** Mask them like SATYA does: [NAME], [PHONE_1].
+        Security problems go to **Security → Report a vulnerability** instead (see SECURITY.md).
+  - type: dropdown
+    id: part
+    attributes:
+      label: Which part?
+      options: [SATYA app (Android), NYAYA console, Gateway API, VIVEK / self-hosted AI, Promise rules (spec)]
+    validations: { required: true }
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+      placeholder: "Circle to Check on an SBI KYC SMS said Unknown; expected Breaks promise (SBI01)."
+    validations: { required: true }
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. … 2. … 3. …"
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes:
+      label: Version and device
+      placeholder: "SATYA 0.3.0 · Samsung Galaxy A35 · One UI 6.1 / Android 14"
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Doctor output (app bugs)
+      description: Settings → long-press the version line → Doctor → Run all → Copy report.
+      render: text
