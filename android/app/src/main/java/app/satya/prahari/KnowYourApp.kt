@@ -77,9 +77,11 @@ class KnowYourApp(private val ctx: Context, private val registry: RegistryStore,
         val official = reg?.book?.banks?.flatMap { b -> b.officialApps.map { b to it } }?.firstOrNull { it.second.pkg == pkg }
         val upi = reg?.book?.upiApps?.firstOrNull { it.pkg == pkg }
         val bankWord = mentionsBank(hay)
-        val isFinance = official != null || upi != null || bankWord != null || FIN_WORDS.any { hay.contains(it) }
-        if (!isFinance) return null
         val system = (ai.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+        // Built-in apps are listed only when they are on an official/UPI list or name a bank; a generic
+        // "wallet" or "pay" in a system app's name is not a reason to call it unknown.
+        val isFinance = official != null || upi != null || bankWord != null || (!system && FIN_WORDS.any { hay.contains(it) })
+        if (!isFinance) return null
         val installer = installerOf(pkg)
         val cert = certSha256(pkg)
         val expectedCert = official?.second?.certSha256 ?: upi?.certSha256
