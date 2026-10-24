@@ -64,9 +64,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/** Opens SATYA's own screens from a flow activity. */
+/** Opens SATYA's own screens from a flow activity (MainActivity is singleTask: onCreate or onNewIntent). */
 private fun Activity.openInApp(target: String) {
-    AppGraph.get(this).navigate.tryEmit(target)
     startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra(Notifier.EXTRA_OPEN, target))
 }
 

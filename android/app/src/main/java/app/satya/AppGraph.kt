@@ -13,7 +13,6 @@ import app.satya.vachan.RegistryStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableSharedFlow
 
 /** One instance per process: the whole app's wiring, no DI framework. */
 class AppGraph private constructor(ctx: Context) {
@@ -30,9 +29,6 @@ class AppGraph private constructor(ctx: Context) {
     val doot = Doot(app, db, registry)
     val notifier = Notifier(app)
     val statusPoller = StatusPoller(db, client, registry) { rep, t, b -> notifier.reportUpdate(rep, t, b) }
-
-    /** In-app navigation requests from services and notifications, e.g. "receipt:<id>". */
-    val navigate = MutableSharedFlow<String>(extraBufferCapacity = 8)
 
     companion object {
         @Volatile private var instance: AppGraph? = null

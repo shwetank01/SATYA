@@ -44,6 +44,7 @@ import app.satya.vachan.SyncWorker
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    private companion object { const val STATE_STACK = "satya.nav.stack" }
     private var nav: Nav? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,11 +58,11 @@ class MainActivity : ComponentActivity() {
         }
         val n = Nav(start)
         nav = n
-        intent?.getStringExtra(Notifier.EXTRA_OPEN)?.let { if (s.onboarded) n.open(it) }
+        if (savedInstanceState != null) n.restore(savedInstanceState.getStringArrayList(STATE_STACK))
+        else intent?.getStringExtra(Notifier.EXTRA_OPEN)?.let { if (s.onboarded) n.open(it) }
         setContent {
             SatyaTheme {
                 val toast by Toaster.text.collectAsState()
-                LaunchedEffect(Unit) { g.navigate.collect { n.open(it) } }
                 val top = n.top
                 LaunchedEffect(top) { applyBars(top) }
                 BackHandler(enabled = n.stack.size > 1) { n.back() }
@@ -103,6 +104,11 @@ class MainActivity : ComponentActivity() {
             statusBarStyle = if (dark) SystemBarStyle.dark(android.graphics.Color.TRANSPARENT) else SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
             navigationBarStyle = if (dark) SystemBarStyle.dark(android.graphics.Color.TRANSPARENT) else SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
         )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        nav?.let { outState.putStringArrayList(STATE_STACK, it.save()) }
     }
 
     override fun onNewIntent(intent: Intent) {
