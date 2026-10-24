@@ -185,7 +185,7 @@ fun OnboardingScreen(nav: Nav) {
                             PermRow("app", "App list", "Allowed at install", "So the Apps page can check which finance apps are real. The list stays on this phone.", true) {}
                             Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.padding(horizontal = 4.dp)) {
                                 Text("No signup. No login. No account.", style = display(18, 600, Satya.Yellow, 1.2f, 0f))
-                                Text("SATYA reads your screen only when you triple-tap the strip or tap the tile, never in the background.", style = body(14, 400, Satya.Paper, 1.45f))
+                                Text("SATYA reads a screen only when you triple-tap the strip or tap the tile. In the background it checks only new SMS and WhatsApp messages, on this phone.", style = body(14, 400, Satya.Paper, 1.45f))
                             }
                         }
                     }
@@ -424,16 +424,17 @@ fun ActivationScreen(nav: Nav) {
         launch { delay(1800); words.animateTo(1f, tween(500, easing = Motion.Ease)) }
         Config.update { it.activated = true }
     }
-    val latticeBmp = remember { Lattice.bitmap(Satya.Paper, 1100) }
+    val latticeBrush = remember {
+        androidx.compose.ui.graphics.ShaderBrush(
+            androidx.compose.ui.graphics.ImageShader(Lattice.bitmap(Satya.Paper, 1100), androidx.compose.ui.graphics.TileMode.Repeated, androidx.compose.ui.graphics.TileMode.Repeated),
+        )
+    }
     Box(Modifier.fillMaxSize().background(Satya.Blue)) {
         // Lattice revealed through a circle growing from the seal.
         Canvas(Modifier.fillMaxSize()) {
             val c = Offset(size.width / 2, size.height * .36f)
             val r = size.maxDimension * 1.1f * ripple.value
-            val clip = Path().apply { addOval(androidx.compose.ui.geometry.Rect(c, r)) }
-            clipPath(clip) {
-                drawImage(latticeBmp, topLeft = Offset(c.x - latticeBmp.width / 2f, c.y - latticeBmp.height / 2f), alpha = .16f)
-            }
+            if (r > 0f) drawCircle(latticeBrush, r, c, alpha = .16f)
             if (ripple.value in .01f..(.99f)) drawCircle(Satya.Paper.copy(alpha = .35f * (1 - ripple.value)), r, c, style = Stroke(2.dp.toPx()))
             for (k in 0..1) {
                 val pv = (pulse.value * 1.4f - k * .4f).coerceIn(0f, 1f)
