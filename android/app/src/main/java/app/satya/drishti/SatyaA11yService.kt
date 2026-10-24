@@ -1,5 +1,6 @@
 package app.satya.drishti
 
+import android.accessibilityservice.AccessibilityButtonController
 import android.accessibilityservice.AccessibilityService
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -64,6 +65,11 @@ class SatyaA11yService : AccessibilityService() {
     private var suspectJob: Job? = null
     private val lastBlockAt = HashMap<String, Long>()
     private var pkgReceiver: BroadcastReceiver? = null
+    private var buttonCallback: AccessibilityButtonController.AccessibilityButtonCallback? = null
+
+    /** True when the system shows SATYA's accessibility button (nav bar, floating button or gesture). */
+    @Volatile var buttonAvailable: Boolean = false
+        private set
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -72,7 +78,11 @@ class SatyaA11yService : AccessibilityService() {
         host = OverlayHost(this)
         engine = CaptureEngine(this)
         scope.launch {
-            suspects = withContext(Dispatchers.IO) { graph.db.watch().list().map { it.pkg }.toSet() }
+            suspects = withContext(Dispatchers.IO) {
+                // Genuine apps flagged by the pre-0.3 rule must not keep getting KYC screens blocked.
+                runCatching { graph.knowYourApp.pruneWatch() }
+                graph.db.watch().list().map { it.pkg }.toSet()
+            }
             updateScope()
         }
         updateScope()
@@ -80,6 +90,24 @@ class SatyaA11yService : AccessibilityService() {
             scope.launch { flow.collect { (on, side, y) -> placeStrip(on, side, y) } }
         }
         registerPackageWatcher()
+        registerAccessibilityButton()
+    }
+
+    /**
+     * Circle to Check from the system accessibility button, gesture or shortcut (Settings ->
+     * Accessibility -> SATYA -> SATYA shortcut). Works in every app, with the edge strip hidden.
+     */
+    private fun registerAccessibilityButton() {
+        val controller = accessibilityButtonController
+        val cb = object : AccessibilityButtonController.AccessibilityButtonCallback() {
+            override fun onClicked(controller: AccessibilityButtonController) { startCheck(Trigger.TAP, "Accessibility button · 1 frame, then stopped") }
+            override fun onAvailabilityChanged(controller: AccessibilityButtonController, available: Boolean) { buttonAvailable = available }
+        }
+        runCatching {
+            controller.registerAccessibilityButtonCallback(cb)
+            buttonAvailable = controller.isAccessibilityButtonAvailable
+            buttonCallback = cb
+        }
     }
 
     /** Section 8.1 scoping: events only from WhatsApp and suspects. The strip and screenshots work everywhere. */
@@ -92,7 +120,7 @@ class SatyaA11yService : AccessibilityService() {
     private fun placeStrip(on: Boolean, side: String, y: Float) {
         host.remove(strip); strip = null
         if (!on) return
-        val s = EdgeStrip(this, onTripleTap = { startCheck(Trigger.TAP) }, onMoved = { f -> scope.launch { Config.update { it.edgeY(f) } } })
+        val s = EdgeStrip(this, onTripleTap = { startCheck(Trigger.TAP, "Triple tap · 1 frame, then stopped") }, onMoved = { f -> scope.launch { Config.update { it.edgeY(f) } } })
         runCatching { host.addRaw(s, s.layoutParams(side, y)) }.onSuccess { strip = s }
     }
 
@@ -104,11 +132,11 @@ class SatyaA11yService : AccessibilityService() {
         scope.launch {
             performGlobalAction(GLOBAL_ACTION_DISMISS_NOTIFICATION_SHADE)
             delay(480)
-            startCheck(Trigger.TILE)
+            startCheck(Trigger.TILE, "Check screen tile · 1 frame, then stopped")
         }
     }
 
-    fun startCheck(trigger: Trigger) {
+    fun startCheck(trigger: Trigger, captured: String) {
         if (flowView != null) return
         scope.launch {
             val pkg = engine.foregroundPkg()
@@ -121,7 +149,7 @@ class SatyaA11yService : AccessibilityService() {
                 graph, state, scope, trigger, pkg, SenderGuess.from(blocks, h),
                 textFor = { r -> engine.textIn(r, blocks, shot) },
                 onVideoMode = { videoSnap(state) },
-                captured = if (trigger == Trigger.TILE) "Check screen tile · 1 frame, then stopped" else "Triple tap · 1 frame, then stopped",
+                captured = captured,
                 finish = { removeFlow() },
                 openInApp = { openApp(it) },
             )
@@ -149,7 +177,6 @@ class SatyaA11yService : AccessibilityService() {
     private fun removeFlow() { host.remove(flowView); flowView = null }
 
     fun openApp(target: String) {
-        graph.navigate.tryEmit(target)
         startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra(Notifier.EXTRA_OPEN, target))
     }
 
@@ -265,6 +292,7 @@ class SatyaA11yService : AccessibilityService() {
     override fun onDestroy() {
         instance = null
         pkgReceiver?.let { runCatching { unregisterReceiver(it) } }
+        buttonCallback?.let { runCatching { accessibilityButtonController.unregisterAccessibilityButtonCallback(it) } }
         host.remove(strip); host.remove(flowView); host.remove(bannerView); host.remove(blockView)
         host.destroy()
         scope.cancel()

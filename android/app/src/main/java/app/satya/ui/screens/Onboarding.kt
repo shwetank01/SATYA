@@ -168,9 +168,9 @@ fun OnboardingScreen(nav: Nav) {
                             Text("SATYA checks a payment request on your screen against your bank’s own promises.", style = body(19, 400, Satya.Paper, 1.5f))
                         }
                         1 -> Column(verticalArrangement = Arrangement.spacedBy(22.dp)) {
-                            Text("Two ways to check any screen", style = display(34, 700, Satya.Yellow, 1.05f))
+                            Text("Three ways to check any screen", style = display(34, 700, Satya.Yellow, 1.05f))
                             Box(Modifier.align(Alignment.CenterHorizontally)) { QsGif() }
-                            listOf("Triple-tap the thin yellow strip on the ${if (Config.isSamsung) "left" else "right"} edge", "Or pull down twice and tap the Check screen tile", "Circle the message. SATYA does the rest").forEachIndexed { i, s ->
+                            listOf("Triple-tap the thin yellow strip on the ${if (Config.isSamsung) "left" else "right"} edge", "Or tap the Check screen tile, or Android’s accessibility button", "Circle the message. SATYA does the rest").forEachIndexed { i, s ->
                                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                     Box(Modifier.size(26.dp).clip(CircleShape).background(Satya.Yellow), contentAlignment = Alignment.Center) { Text("${i + 1}", style = display(13, 600, Satya.Ink, 1f, 0f)) }
                                     Text(s, style = body(15, 600, Satya.Paper, 1.35f))
@@ -344,6 +344,10 @@ fun SetupScreen(nav: Nav) {
                     } else Toaster.show("Pull down twice, tap the pencil, drag Check screen into your tiles.")
                 }
             }
+            SetupCard("8", "Accessibility button", "A third way to start Circle to Check in any app: Android’s floating accessibility button, a two-finger swipe up, or the volume-key shortcut. Turn on “SATYA shortcut” and pick one.", null) {
+                SetupAction("Open SATYA’s accessibility page") { openA11yDetails(ctx) }
+                Text("Needs step 2 (Screen check) on. Tapping the button freezes the screen so you can circle what to check.", style = body(13, 400, Satya.Paper, 1.45f))
+            }
             Spacer(Modifier.height(4.dp))
             YellowButton(if (health.allOn) "Turn on the shield" else "Turn on the shield anyway", {
                 scope.launch {
@@ -354,6 +358,18 @@ fun SetupScreen(nav: Nav) {
             Text("You can finish any step later from Settings.", style = body(13, 400, Satya.Sub), modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
+}
+
+/**
+ * Accessibility settings with SATYA highlighted (the ":settings:" extras are what Settings' own search
+ * uses). From there: SATYA -> SATYA shortcut -> accessibility button, gesture or volume keys.
+ */
+fun openA11yDetails(ctx: Context) {
+    val key = ComponentName(ctx, SatyaA11yService::class.java).flattenToString()
+    val i = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        .putExtra(":settings:fragment_args_key", key)
+        .putExtra(":settings:show_fragment_args", android.os.Bundle().apply { putString(":settings:fragment_args_key", key) })
+    runCatching { ctx.startActivity(i) }
 }
 
 @Composable

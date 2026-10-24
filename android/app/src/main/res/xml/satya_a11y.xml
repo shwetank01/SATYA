@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Section 13.2. Package scope is narrowed at runtime in onServiceConnected (WhatsApp + suspects). -->
+<!-- Section 13.2. Package scope is narrowed at runtime in onServiceConnected (WhatsApp + suspects).
+     flagRequestAccessibilityButton (v0.3): the system accessibility button / gesture / shortcut starts
+     Circle to Check from any app, a third trigger next to the edge strip and the Quick Settings tile. -->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityEventTypes="typeWindowStateChanged|typeWindowContentChanged"
     android:accessibilityFeedbackType="feedbackGeneric"
-    android:accessibilityFlags="flagRetrieveInteractiveWindows|flagReportViewIds|flagIncludeNotImportantViews"
+    android:accessibilityFlags="flagRetrieveInteractiveWindows|flagReportViewIds|flagIncludeNotImportantViews|flagRequestAccessibilityButton"
     android:canRetrieveWindowContent="true"
     android:canTakeScreenshot="true"
     android:notificationTimeout="300"

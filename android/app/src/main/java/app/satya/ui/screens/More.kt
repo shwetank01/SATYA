@@ -307,6 +307,11 @@ fun SettingsScreen(nav: Nav) {
             SettingRow("screen", "Edge strip", "Triple-tap to check. Long-press and drag to move it.", divider = true) {
                 Toggle(s.edgeEnabled, { scope.launch { Config.update { it.edgeEnabled = !s.edgeEnabled } } })
             }
+            SettingRow("app", "Accessibility button", if (SatyaA11yService.instance?.buttonAvailable == true) "On. Tap Android’s accessibility button to check any screen." else "Start Circle to Check from Android’s floating button or shortcut.", divider = true) {
+                Box(Modifier.height(40.dp).press { openA11yDetails(ctx) }.clip(RoundedCornerShape(20.dp)).background(Satya.Blue.copy(alpha = .07f)).border(1.dp, Satya.Blue.copy(alpha = .25f), RoundedCornerShape(20.dp)).padding(horizontal = 14.dp), contentAlignment = Alignment.Center) {
+                    Text("Set up", style = body(14, 600, Satya.Blue))
+                }
+            }
             Row(Modifier.fillMaxWidth().drawBehind { drawLine(Satya.Line, Offset.Zero, Offset(size.width, 0f), 1.dp.toPx()) }.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text("Strip side", style = body(15, 600), modifier = Modifier.weight(1f))
                 listOf("auto" to (if (Config.isSamsung) "Auto (left)" else "Auto (right)"), "left" to "Left", "right" to "Right").forEach { (id, label) ->
@@ -337,7 +342,7 @@ fun SettingsScreen(nav: Nav) {
                 Triple("VACHAN", "Promises", "Each bank’s signed list of things it will never ask you to do, checked against SATYA’s pinned key."),
                 Triple("SANGH", "Counts", "How many SATYA phones saw the same UPI ID, number or site, using 5 characters of a fingerprint."),
                 Triple("DOOT", "Delivers", "Seals your report so only the bank can open it, then tracks what the bank does."),
-                Triple("VIVEK", "Labels", "Optional cloud help: an AI label for unclear messages and a deepfake score. Signal, never the verdict."),
+                Triple("SATYA AI", "Explains", "Sarvam AI reads the masked text you chose to check and explains it in English and Hindi. It can say “Looks like a scam”; only the rules say “Breaks promise”."),
             ).forEachIndexed { i, (n, role, line) ->
                 Column(Modifier.fillMaxWidth().then(if (i > 0) Modifier.drawBehind { drawLine(Satya.Line, Offset.Zero, Offset(size.width, 0f), 1.dp.toPx()) } else Modifier).padding(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) { Text(n, style = display(14, 600, Satya.Blue, 1f, .12f)); Text(role, style = body(13, 600, Satya.Muted)) }
