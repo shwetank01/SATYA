@@ -31,6 +31,17 @@ MAX_VOICE = 15 * 1024 * 1024
 MAX_FACE_BODY = 5 * 300 * 1024 * 4 // 3 + 4096  # 5 frames of 300 KB, base64
 
 
+def _private_tmp():
+    """VIVEK's own temp dir, so tmp_files (C10) counts only what this process could have written,
+    not every other program's files on a shared machine's %TEMP%."""
+    d = os.environ.get("VIVEK_TMPDIR") or os.path.join(tempfile.gettempdir(), f"vivek-{os.getpid()}")
+    os.makedirs(d, exist_ok=True)
+    tempfile.tempdir = d
+    for var in ("TMPDIR", "TEMP", "TMP"):  # child processes (ffmpeg) inherit it too
+        os.environ[var] = d
+    return d
+
+
 def _tmp_count():
     try:
         return len(os.listdir(tempfile.gettempdir()))
@@ -39,6 +50,7 @@ def _tmp_count():
 
 
 def create_app(scorer: Scorer | None = None) -> FastAPI:
+    _private_tmp()
     app = FastAPI(title="VIVEK", docs_url=None, redoc_url=None, openapi_url=None)
     sc = scorer or Scorer().load()
     app_key = os.environ.get("SATYA_APP_KEY", "")

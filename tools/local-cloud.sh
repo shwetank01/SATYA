@@ -14,7 +14,8 @@ ALIAS="qwen3-4b"
 LOGS="$L/logs"; mkdir -p "$LOGS"
 LOCAL_ONLY=0; [ "${1:-}" = "--local" ] && LOCAL_ONLY=1
 
-read -r APP_KEY AI_KEY < <(python -c "import json; k=json.load(open('keys/server.json')); print(k['app_key'], k['ai_api_key'])" | tr -d '')
+# Windows Python ends lines with CRLF; a stray CR in the key makes llama-server answer 401/400.
+read -r APP_KEY AI_KEY < <(python -c "import json; k=json.load(open('keys/server.json')); print(k['app_key'], k['ai_api_key'])" | tr -d '[:cntrl:]'; echo)
 cat > vivek/.env <<EOF
 SATYA_APP_KEY=$APP_KEY
 AI_BASE_URL=http://127.0.0.1:8081/v1

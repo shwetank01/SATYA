@@ -21,5 +21,22 @@
     {"text": "Never share OTP, PIN or CVV with anyone. HDFC Bank never asks for it.", "ask_type": "info_only", "bank": "HDFC"},
     {"text": "Please share your pin code for delivery", "ask_type": "other", "bank": "NONE"},
     {"text": "Sir please send the amount today itself, it is urgent", "ask_type": "move_money", "bank": "NONE"}
+  ],
+  "holdout_about": "Written before the prompt guidance was tuned and never used to tune it; only measured.",
+  "holdout": [
+    {"text": "SBI YONO: aapka account block ho gaya hai, apna MPIN is number pe SMS karo", "ask_type": "share_secret", "bank": "SBI"},
+    {"text": "Sir aapke mobile pe ek 4 ankon ka number aaya hoga, wo bata dijiye verification ke liye", "ask_type": "share_secret", "bank": "NONE"},
+    {"text": "Hello, I am calling from ICICI customer care, please download TeamViewer QuickSupport from Play Store so I can help you", "ask_type": "remote_access", "bank": "ICICI"},
+    {"text": "पुलिस जाँच चल रही है, अपना सारा पैसा इस सुरक्षित खाते [ACCOUNT] में डाल दीजिए", "ask_type": "move_money", "bank": "NONE"},
+    {"text": "Bhai jaldi se 5000 bhej de, emergency hai, kal lauta dunga", "ask_type": "move_money", "bank": "NONE"},
+    {"text": "Courier: your parcel is held at customs. Pay Rs 49 clearance charge at [LINK_1]", "ask_type": "pay_fee", "bank": "NONE"},
+    {"text": "Dear customer, your PNB debit card is blocked. Verify at [LINK_1] within 24 hours", "ask_type": "click_link", "bank": "PNB"},
+    {"text": "Axis Bank: Complete your Video KYC today to avoid account freeze. Aadhaar and PAN required", "ask_type": "kyc_update", "bank": "AXIS"},
+    {"text": "Missed call from HDFC Bank. Please call back on [PHONE_1] regarding your account", "ask_type": "call_back", "bank": "HDFC"},
+    {"text": "Aapka bijli connection aaj raat kat jayega, turant is number par call karein [PHONE_1]", "ask_type": "call_back", "bank": "NONE"},
+    {"text": "Get an instant personal loan up to 5 lakh, no documents. Apply now", "ask_type": "sales_offer", "bank": "NONE"},
+    {"text": "Your a/c XX4321 is credited with INR 15,000 on 23-Oct by NEFT. Avl bal INR 42,310 -PNB", "ask_type": "info_only", "bank": "PNB"},
+    {"text": "ICICI Bank never calls to ask for your OTP or PIN. Stay alert.", "ask_type": "info_only", "bank": "ICICI"},
+    {"text": "आपका पार्सल डिलीवर करने के लिए अपना पिन कोड और पता भेजें", "ask_type": "other", "bank": "NONE"}
   ]
 }

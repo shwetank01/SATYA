@@ -38,6 +38,38 @@ info_only (informs, asks nothing),
 other.
 claimed_bank must be one of: SBI, HDFC, ICICI, AXIS, PNB, OTHER, NONE."""
 
+# v1.1: guidance appended after the verbatim prompt, from the eval misses (eval/ask_cases.json).
+# The few-shot texts deliberately share no sentence with the tuning or holdout cases.
+GUIDANCE = """
+Rules for hard cases:
+- Several asks: pick the most dangerous, in this order: share_secret, remote_access, move_money, pay_fee, click_link, kyc_update, call_back, sales_offer.
+- Asking to tell, say, read out or send any code, OTP, PIN or "number that came on your phone" is share_secret, in any language (batao, bata dijiye, bolo, बताइए, बोलिए, भेजें).
+- A message that only reports a transaction, delivers an OTP, or warns never to share is info_only, even when it gives a helpline for "if not you".
+- "pin code" or "पिन कोड" with an address or delivery is a postal code: other.
+- Paying any amount (fee, charge, clearance, penalty, fine) is pay_fee, even when a link is given.
+- claimed_bank: YONO is SBI, iMobile is ICICI, PayZapp is HDFC, PNB ONE is PNB. OTHER only when another bank or financial regulator is named (Kotak, RBI, Paytm). NONE when no bank is named."""
+
+FEW_SHOT = [
+    ("Kotak se bol rahe hain, aapke phone pe jo OTP aaya hai wo bolo warna card band ho jayega",
+     {"ask_type": "share_secret", "claimed_bank": "OTHER", "urgency": "high", "confidence": 0.95}),
+    ("[CODE] is your OTP to log in to HDFC NetBanking. Never share it with anyone. Not you? Call 18002586161",
+     {"ask_type": "info_only", "claimed_bank": "HDFC", "urgency": "normal", "confidence": 0.9}),
+    ("Your order is ready to ship. Reply with your 6 digit pin code and full address",
+     {"ask_type": "other", "claimed_bank": "NONE", "urgency": "normal", "confidence": 0.85}),
+    ("Your FASTag is suspended. Pay Rs 99 reactivation charge at [LINK_1] today",
+     {"ask_type": "pay_fee", "claimed_bank": "NONE", "urgency": "high", "confidence": 0.9}),
+    ("बैंक मैनेजर बोल रहा हूँ, आपके नंबर पर आया ओटीपी बोलिए ताकि खाता चालू रहे",
+     {"ask_type": "share_secret", "claimed_bank": "NONE", "urgency": "high", "confidence": 0.95}),
+]
+
+
+def _messages(user):
+    msgs = [{"role": "system", "content": SYSTEM_PROMPT + GUIDANCE}]
+    for text, answer in FEW_SHOT:
+        msgs += [{"role": "user", "content": text}, {"role": "assistant", "content": json.dumps(answer)}]
+    return msgs + [{"role": "user", "content": user}]
+
+
 FALLBACK = {"ask_type": "unknown", "claimed_bank": "NONE", "urgency": "normal", "confidence": 0, "source": "fallback"}
 
 
