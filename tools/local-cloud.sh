@@ -14,7 +14,7 @@ ALIAS="qwen3-4b"
 LOGS="$L/logs"; mkdir -p "$LOGS"
 LOCAL_ONLY=0; [ "${1:-}" = "--local" ] && LOCAL_ONLY=1
 
-read -r APP_KEY AI_KEY < <(python -c "import json; k=json.load(open('keys/server.json')); print(k['app_key'], k['ai_api_key'])")
+read -r APP_KEY AI_KEY < <(python -c "import json; k=json.load(open('keys/server.json')); print(k['app_key'], k['ai_api_key'])" | tr -d '')
 cat > vivek/.env <<EOF
 SATYA_APP_KEY=$APP_KEY
 AI_BASE_URL=http://127.0.0.1:8081/v1
@@ -32,12 +32,14 @@ start_llama() {
   "$L/$dir/llama-server.exe" -m "$MODEL" --alias "$ALIAS" --host 127.0.0.1 --port 8081 --api-key "$AI_KEY" \
     -c 4096 --parallel 2 --no-webui "$@" > "$LOGS/llama.log" 2>&1 &
   pids+=($!)
-  for _ in $(seq 1 60); do
-    curl -sf -H "Authorization: Bearer $AI_KEY" http://127.0.0.1:8081/v1/models >/dev/null 2>&1 && return 0
-    kill -0 "${pids[-1]}" 2>/dev/null || return 1
+  local code=""
+  for _ in $(seq 1 120); do
+    code=$(curl -s -o /dev/null -w "%{http_code}" -m 3 -H "Authorization: Bearer $AI_KEY" http://127.0.0.1:8081/v1/models || true)
+    [ "$code" = 200 ] && return 0
+    kill -0 "${pids[-1]}" 2>/dev/null || { echo "      llama-server exited (last HTTP $code)"; return 1; }
     sleep 1
   done
-  return 1
+  echo "      not ready after 120 s (last HTTP $code)"; return 1
 }
 echo "[1/3] Qwen on llama.cpp (GPU, Vulkan)…"
 if ! start_llama llama-vulkan -ngl 99; then
