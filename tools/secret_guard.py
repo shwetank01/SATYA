@@ -47,7 +47,7 @@ def collect_secret_values():
                 walk_json(v, key)
         elif isinstance(obj, str):
             k = key.lower()
-            if (k == "sk" or k.endswith("_sk") or k.endswith("sk64") or any(w in k for w in ("secret", "seed", "private", "password", "token"))) and not k.endswith("_pk"):
+            if (k == "sk" or k.endswith("_sk") or k.endswith("sk64") or k.endswith("key") or any(w in k for w in ("secret", "seed", "private", "password", "token"))) and not k.endswith("_pk"):
                 add(obj)
 
     keys_dir = os.path.join(ROOT, "keys")
