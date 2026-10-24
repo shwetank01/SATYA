@@ -3,7 +3,7 @@
 | Phase | Started | Gate | Result | Notes |
 |---|---|---|---|---|
 | 0 Scaffold | 2026-10-24 12:55 IST | rules_ref / mask_ref / pay_ref ALL PASS | **PASS** | rules 17/17 (15 v1.0 + T09, N08), mask 10/10, pay 3/3. Registry authored from official sources (`spec/satya_bank_promises.json`). |
-| 1 Core | | gradle :core:test, vitest, pytest mask | | |
+| 1 Core | 2026-10-24 13:05 IST | gradle :core:test, vitest, pytest mask | **PASS** | Kotlin :core 11 tests (17 rule cases, 10 mask, 9 hash + day token + ticket, router, verdict); vitest 48 (rules, mask, hash, Pay Check P01-P03, crypto App. D); pytest 11 (mask vectors + oracle parity). |
 | 2 DB + seed | | doctor --only db (C5, C11), seed idempotent | | |
 | 3 Gateway | | doctor C1 C2 C3 C4 C6 C7 (local, prod) | | |
 | 4 VIVEK + AI | | doctor C8 C9 C10, model eval | | |
