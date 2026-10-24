@@ -7,7 +7,7 @@ const hanken = Hanken_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600'
 
 export const metadata: Metadata = {
   title: 'NYAYA · SATYA console',
-  description: 'Impersonation Radar, sealed reports, One-Click Kill and Pay Check for banks and companies.',
+  description: 'SATYA for banks: sealed customer reports, AI scam check and a blocklist every SATYA phone follows.',
   robots: { index: false, follow: false },
 };
 
