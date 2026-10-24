@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,500&amp;family=Sora:wght@300;600;700&amp;display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#1F5FC4}
+body{font-family:'Hanken Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#F4F3EE}
+a{color:#F7C800;text-decoration:none}a:hover{text-decoration:underline;text-underline-offset:3px}
+button{font:inherit;-webkit-tap-highlight-color:transparent}
+input::placeholder{color:rgba(14,35,72,.5)}
+::-webkit-scrollbar{width:0;height:0}
+@keyframes scrIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pushIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes sheetUp{from{transform:translateY(105%)}to{transform:none}}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes pillIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.55);filter:blur(10px)}100%{opacity:1;transform:translate(-50%,-50%) scale(1);filter:blur(0)}}
+@keyframes shimmer{from{transform:translateX(-140%)}to{transform:translateX(320%)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(247,200,0,.75)}100%{box-shadow:0 0 0 9px rgba(247,200,0,0)}}
+@keyframes ring{0%{transform:scale(.55);opacity:.6}100%{transform:scale(1.55);opacity:0}}
+@keyframes pupilS{0%,100%{transform:translateX(-7px)}50%{transform:translateX(7px)}}
+@keyframes pupilL{0%,18%{transform:translateX(-18px)}50%,68%{transform:translateX(18px)}100%{transform:translateX(-18px)}}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-5px)}}
+@keyframes selIn{from{opacity:0;transform:scale(1.06)}to{opacity:1;transform:none}}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,-14px) scale(.96)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes growX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes peek{from{transform:translateY(16px)}to{transform:none}}
+</style>
+</helmet>
+<div style="position:relative;min-height:100vh;background:#1F5FC4;overflow:hidden;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:48px 80px;padding:48px 28px;box-sizing:border-box">
+  <div style="position:absolute;inset:0;opacity:.1;pointer-events:none;background-image:url(assets/lattice-paper.svg);background-size:800px 800px;background-position:center top"></div>
+  <div style="position:absolute;width:720px;height:720px;right:-260px;top:-300px;border-radius:50%;background:radial-gradient(circle,rgba(226,236,255,.4),rgba(226,236,255,0) 66%);pointer-events:none"></div>
+  <div style="position:absolute;width:820px;height:820px;left:-320px;bottom:-380px;border-radius:50%;background:radial-gradient(circle,rgba(140,190,255,.5),rgba(140,190,255,0) 66%);pointer-events:none"></div>
+  <div style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:160px 160px;mix-blend-mode:overlay;opacity:.45;pointer-events:none"></div>
+
+  <aside style="position:relative;z-index:1;flex:0 1 340px;display:flex;flex-direction:column;gap:26px;color:#F4F3EE">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:40px;height:40px">{{ sealSolid }}</div>
+      <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:20px;letter-spacing:.1em;color:#F7C800">SATYA</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase">Mobile app prototype · v0.1</span>
+      <h1 style="margin:0;font-family:'Sora',sans-serif;font-weight:700;font-size:48px;line-height:1;letter-spacing:-.025em;color:#F7C800">Satya for Android &amp; iOS</h1>
+      <p style="margin:0;font-size:16px;line-height:1.55;text-wrap:pretty">Tap through the phone, or jump straight to a screen.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <sc-for list="{{ jumps }}" as="j" hint-placeholder-count="5">
+        <button onClick="{{ j.go }}" style="position:relative;overflow:hidden;height:54px;padding:0 18px 0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:27px;border:1px solid rgba(255,255,255,.4);background:linear-gradient(160deg,rgba(255,255,255,.26),rgba(255,255,255,.06));backdrop-filter:blur(16px) saturate(1.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 10px 26px rgba(6,22,60,.25);color:#F4F3EE;font-size:15px;font-weight:600;cursor:pointer;text-align:left;transition:transform .14s cubic-bezier(.2,.8,.2,1),background .2s" style-hover="background:linear-gradient(160deg,rgba(255,255,255,.36),rgba(255,255,255,.12))" style-active="transform:scale(.97)">
+          <span style="position:absolute;inset:0;border-radius:inherit;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.55;pointer-events:none"></span>
+          <span style="position:relative;display:flex;flex-direction:column;gap:2px"><span>{{ j.label }}</span><span style="font-size:12px;font-weight:500">{{ j.hint }}</span></span>
+          <span style="position:relative">{{ j.icon }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </aside>
+
+  <div style="position:relative;z-index:1;flex:none">
+    <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ statusDark }}" hint-size="402px,874px">
+      <div ref="{{ rootRef }}" style="position:relative;width:402px;height:874px;overflow:hidden;background:#F4F3EE;color:#0E2348;font-family:'Hanken Grotesk',sans-serif">
+
+        <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+          <div data-screen-label="01 Home" style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;animation:scrIn .28s cubic-bezier(.16,1,.3,1) both">
+            <div style="position:relative;background:#1F5FC4;padding:64px 20px 58px;overflow:hidden;color:#F4F3EE">
+              <div style="position:absolute;inset:0;opacity:.16;-webkit-mask-image:linear-gradient(#000,rgba(0,0,0,.2) 90%);mask-image:linear-gradient(#000,rgba(0,0,0,.2) 90%);background-image:url(assets/lattice-paper.svg);background-size:640px 640px;background-position:-40px -20px"></div>
+              <div style="position:absolute;width:320px;height:320px;right:-120px;top:-100px;border-radius:50%;background:radial-gradient(circle,rgba(226,236,255,.6),rgba(226,236,255,0) 68%)"></div>
+              <div style="position:absolute;width:380px;height:380px;left:-170px;bottom:-150px;border-radius:50%;background:radial-gradient(circle,rgba(140,190,255,.6),rgba(140,190,255,0) 68%)"></div>
+              <div style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5"></div>
+              <div style="position:relative;display:flex;flex-direction:column;gap:22px">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <div style="width:34px;height:34px">{{ sealSolid }}</div>
+                    <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:17px;letter-spacing:.1em;color:#F7C800">SATYA</span>
+                  </div>
+                  <button onClick="{{ goDetect }}" aria-label="Alerts" style="position:relative;overflow:hidden;width:46px;height:46px;border-radius:23px;border:1px solid rgba(255,255,255,.42);background:linear-gradient(160deg,rgba(255,255,255,.28),rgba(255,255,255,.06));backdrop-filter:blur(16px) saturate(1.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 8px 20px rgba(6,22,60,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .14s" style-active="transform:scale(.9)">
+                    <span style="position:absolute;inset:0;border-radius:inherit;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.55"></span>
+                    <span style="position:relative">{{ icBellPaper }}</span>
+                    <span style="position:absolute;top:11px;right:12px;width:8px;height:8px;border-radius:50%;background:#F7C800;box-shadow:0 0 0 2px #1F5FC4"></span>
+                  </button>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <span style="font-size:15px;font-weight:500">Namaste, Priya</span>
+                  <h1 style="margin:0;font-family:'Sora',sans-serif;font-weight:700;font-size:46px;line-height:.98;letter-spacing:-.03em;color:#F7C800">You're<br>protected</h1>
+                  <p style="margin:0;font-size:16px;line-height:1.5;max-width:30ch;text-wrap:pretty">{{ heroSub }}</p>
+                </div>
+                <div style="align-self:flex-start;position:relative;overflow:hidden;display:flex;align-items:center;gap:9px;height:34px;padding:0 14px;border-radius:17px;border:1px solid rgba(255,255,255,.38);background:linear-gradient(160deg,rgba(255,255,255,.24),rgba(255,255,255,.06));backdrop-filter:blur(14px);font-size:13px;font-weight:600;white-space:nowrap">
+                  <span style="width:8px;height:8px;border-radius:50%;background:#F7C800;animation:pulse 1.6s ease-out infinite"></span>
+                  <span>{{ chipLive }}</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <button onClick="{{ openChat }}" style="position:relative;overflow:hidden;text-align:left;border:1px solid rgba(255,255,255,.95);border-radius:26px;padding:16px;min-height:164px;display:flex;flex-direction:column;justify-content:space-between;gap:16px;background:linear-gradient(155deg,rgba(255,255,255,.97),rgba(226,235,252,.82));backdrop-filter:blur(18px) saturate(1.6);box-shadow:inset 0 1px 0 #fff,inset 0 -12px 24px rgba(31,95,196,.08),0 16px 36px rgba(6,22,60,.32);color:#1F5FC4;cursor:pointer;transition:transform .14s cubic-bezier(.2,.8,.2,1)" style-active="transform:scale(.96)">
+                    <span style="position:absolute;inset:0;border-radius:inherit;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:multiply;opacity:.22;pointer-events:none"></span>
+                    <span style="position:absolute;width:120px;height:120px;right:-40px;top:-40px;border-radius:50%;background:radial-gradient(circle,rgba(247,200,0,.5),rgba(247,200,0,0) 70%)"></span>
+                    <span style="position:relative;width:46px;height:46px;border-radius:16px;background:#1F5FC4;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 14px rgba(31,95,196,.35)">{{ icLassoPaper }}</span>
+                    <span style="position:relative;display:flex;flex-direction:column;gap:4px">
+                      <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:18px;line-height:1.15">Circle to Check</span>
+                      <span style="font-size:13px;line-height:1.35;color:#2A3B5E">Long-press any app, circle what looks off</span>
+                    </span>
+                  </button>
+                  <button onClick="{{ goSearch }}" style="position:relative;overflow:hidden;text-align:left;border:1px solid rgba(255,255,255,.42);border-radius:26px;padding:16px;min-height:164px;display:flex;flex-direction:column;justify-content:space-between;gap:16px;background:linear-gradient(155deg,rgba(255,255,255,.28),rgba(255,255,255,.07));backdrop-filter:blur(18px) saturate(1.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 16px 36px rgba(6,22,60,.28);color:#F4F3EE;cursor:pointer;transition:transform .14s cubic-bezier(.2,.8,.2,1)" style-active="transform:scale(.96)">
+                    <span style="position:absolute;inset:0;border-radius:inherit;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.6;pointer-events:none"></span>
+                    <span style="position:relative;width:46px;height:46px;border-radius:16px;background:#F7C800;display:flex;align-items:center;justify-content:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 14px rgba(6,22,60,.3)">{{ icSearchInk }}</span>
+                    <span style="position:relative;display:flex;flex-direction:column;gap:4px">
+                      <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:18px;line-height:1.15">KYC Scam Search</span>
+                      <span style="font-size:13px;line-height:1.35">Numbers, UPI IDs, links, SMS, apps</span>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div style="position:relative;margin-top:-28px;background:#F4F3EE;border-radius:28px 28px 0 0;padding:26px 16px 132px;display:flex;flex-direction:column;gap:28px">
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 4px">
+                  <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:21px;color:#1F5FC4;letter-spacing:-.01em">Needs a look</span>
+                  <span style="font-size:13px;font-weight:600;color:#4A5672">{{ pendingCount }}</span>
+                </div>
+                <sc-for list="{{ pending }}" as="r" hint-placeholder-count="1">
+                  <button onClick="{{ r.open }}" style="text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:12px;background:#fff;border:1px solid rgba(14,35,72,.08);border-radius:22px;padding:16px;box-shadow:0 1px 2px rgba(14,35,72,.04),0 10px 26px rgba(14,35,72,.07);color:#0E2348;animation:cardIn .34s cubic-bezier(.16,1,.3,1) both;transition:transform .14s" style-active="transform:scale(.98)">
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <span style="display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px 0 8px;border-radius:13px;background:{{ r.chipBg }};color:{{ r.chipFg }};font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;flex:none">{{ r.vIcon }}<span>{{ r.vLabel }}</span></span>
+                      <span style="flex:1;font-size:13px;font-weight:600;color:#4A5672">{{ r.kindLabel }} · {{ r.method }}</span>
+                      <span style="font-size:13px;color:#4A5672;font-variant-numeric:tabular-nums">{{ r.when }}</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px">
+                      <span style="font-size:17px;font-weight:600;line-height:1.3">{{ r.category }}</span>
+                      <span style="font-size:15px;line-height:1.45;color:#2A3B5E">{{ r.pre }}<span style="color:{{ r.hlFg }};background:{{ r.hlBg }};font-weight:600;border-radius:6px;padding:0 4px">{{ r.hl }}</span>{{ r.post }}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid rgba(14,35,72,.08)">
+                      <span style="font-size:15px;font-weight:600;color:#1F5FC4">Review now</span>
+                      {{ icChevBlue }}
+                    </div>
+                  </button>
+                </sc-for>
+                <sc-if value="{{ noPending }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:14px;background:#fff;border:1px solid rgba(14,35,72,.08);border-radius:22px;padding:16px">
+                    <span style="width:40px;height:40px;border-radius:14px;background:#E6F4EC;display:flex;align-items:center;justify-content:center">{{ icCheckGreen }}</span>
+                    <span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;font-weight:600">All clear</span><span style="font-size:14px;color:#4A5672">Nothing is waiting for you.</span></span>
+                  </div>
+                </sc-if>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 4px">
+                  <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:21px;color:#1F5FC4;letter-spacing:-.01em">Recent checks</span>
+                  <button onClick="{{ goReports }}" style="border:0;background:none;padding:6px 0;font-size:14px;font-weight:600;color:#1F5FC4;cursor:pointer">See all</button>
+                </div>
+                <div style="background:#fff;border-radius:22px;border:1px solid rgba(14,35,72,.08);box-shadow:0 1px 2px rgba(14,35,72,.04),0 10px 26px rgba(14,35,72,.06);overflow:hidden">
+                  <sc-for list="{{ recent }}" as="r" hint-placeholder-count="3">
+                    <button onClick="{{ r.open }}" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px;border:0;border-top:{{ r.divider }};background:#fff;text-align:left;cursor:pointer;color:#0E2348;transition:background .15s" style-active="background:#F4F3EE">
+                      <span style="width:42px;height:42px;border-radius:14px;background:#F4F3EE;display:flex;align-items:center;justify-content:center;flex:none">{{ r.kIcon }}</span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+                        <span style="font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.hl }}</span>
+                        <span style="font-size:13px;color:#4A5672;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.category }} · {{ r.when }}</span>
+                      </span>
+                      <span style="display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px 0 7px;border-radius:12px;background:{{ r.chipBg }};color:{{ r.chipFg }};font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;flex:none">{{ r.vIcon }}<span>{{ r.vLabel }}</span></span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isDetect }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="02 Detection" style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;animation:scrIn .28s cubic-bezier(.16,1,.3,1) both">
+            <div style="position:relative;background:#1F5FC4;padding:64px 16px 54px;overflow:hidden;color:#F4F3EE">
+              <div style="position:absolute;inset:0;opacity:.14;-webkit-mask-image:radial-gradient(circle at 50% 32%,#000,rgba(0,0,0,.25) 75%);mask-image:radial-gradient(circle at 50% 32%,#000,rgba(0,0,0,.25) 75%);background-image:url(assets/lattice-paper.svg);background-size:640px 640px;background-position:-40px -20px"></div>
+              <div style="position:absolute;width:420px;height:420px;left:50%;top:40px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle,rgba(140,190,255,.5),rgba(140,190,255,0) 65%)"></div>
+              <div style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5"></div>
+              <div style="position:relative;display:flex;flex-direction:column;gap:18px">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px">
+                  <h2 style="margin:0;font-family:'Sora',sans-serif;font-weight:600;font-size:30px;letter-spacing:-.02em;color:#F7C800">Detection</h2>
+                  <div style="position:relative;overflow:hidden;display:flex;align-items:center;gap:8px;height:34px;padding:0 14px;border-radius:17px;border:1px solid rgba(255,255,255,.38);background:linear-gradient(160deg,rgba(255,255,255,.24),rgba(255,255,255,.06));backdrop-filter:blur(14px);font-size:13px;font-weight:600">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#F7C800;animation:pulse 1.6s ease-out infinite"></span>Live
+                  </div>
+                </div>
+                <div style="position:relative;height:196px;display:flex;align-items:center;justify-content:center">
+                  <span style="position:absolute;left:50%;top:50%;margin:-95px 0 0 -95px;width:190px;height:190px;border-radius:50%;border:1.5px solid rgba(244,243,238,.55);animation:ring 2.7s cubic-bezier(.2,.6,.3,1) infinite"></span>
+                  <span style="position:absolute;left:50%;top:50%;margin:-95px 0 0 -95px;width:190px;height:190px;border-radius:50%;border:1.5px solid rgba(244,243,238,.55);animation:ring 2.7s cubic-bezier(.2,.6,.3,1) .9s infinite"></span>
+                  <span style="position:absolute;left:50%;top:50%;margin:-95px 0 0 -95px;width:190px;height:190px;border-radius:50%;border:1.5px solid rgba(244,243,238,.55);animation:ring 2.7s cubic-bezier(.2,.6,.3,1) 1.8s infinite"></span>
+                  <div style="position:relative;width:156px;height:156px">{{ detectEye }}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center">
+                  <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:22px;letter-spacing:-.01em">{{ watchText }}</span>
+                  <span style="font-size:14px">{{ lastThreat }}</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px">
+                  <sc-for list="{{ channels }}" as="ch" hint-placeholder-count="4">
+                    <div style="position:relative;overflow:hidden;display:flex;flex-direction:column;gap:14px;padding:14px;border-radius:22px;border:1px solid rgba(255,255,255,.4);background:linear-gradient(160deg,rgba(255,255,255,.24),rgba(255,255,255,.05));backdrop-filter:blur(16px) saturate(1.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 10px 24px rgba(6,22,60,.2)">
+                      <span style="position:absolute;inset:0;border-radius:inherit;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.55;pointer-events:none"></span>
+                      <div style="position:relative;display:flex;align-items:center;justify-content:space-between">
+                        {{ ch.icon }}
+                        <button onClick="{{ ch.toggle }}" aria-label="Toggle channel" style="position:relative;width:46px;height:28px;border-radius:14px;border:1px solid rgba(255,255,255,.45);background:{{ ch.track }};padding:0;cursor:pointer;transition:background .2s">
+                          <span style="position:absolute;top:3px;left:{{ ch.knob }};width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(6,22,60,.35);transition:left .22s cubic-bezier(.3,1.5,.5,1)"></span>
+                        </button>
+                      </div>
+                      <div style="position:relative;display:flex;flex-direction:column;gap:2px">
+                        <span style="font-size:15px;font-weight:600">{{ ch.label }}</span>
+                        <span style="font-size:13px">{{ ch.stat }}</span>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+            <div style="position:relative;margin-top:-28px;background:#F4F3EE;border-radius:28px 28px 0 0;padding:26px 16px 132px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 4px 2px">
+                <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:21px;color:#1F5FC4;letter-spacing:-.01em">Alerts today</span>
+                <span style="font-size:13px;font-weight:600;color:#4A5672">{{ alertsCount }}</span>
+              </div>
+              <sc-for list="{{ alerts }}" as="r" hint-placeholder-count="3">
+                <button onClick="{{ r.open }}" style="text-align:left;cursor:pointer;display:flex;align-items:center;gap:14px;background:#fff;border:1px solid rgba(14,35,72,.08);border-radius:22px;padding:16px 14px 16px 16px;box-shadow:0 1px 2px rgba(14,35,72,.04),0 10px 26px rgba(14,35,72,.06);color:#0E2348;animation:cardIn .34s cubic-bezier(.16,1,.3,1) both;animation-delay:{{ r.delay }};transition:transform .14s" style-active="transform:scale(.98)">
+                  <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:10px">
+                    <span style="display:flex;align-items:center;gap:8px">
+                      <span style="display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px 0 8px;border-radius:13px;background:{{ r.chipBg }};color:{{ r.chipFg }};font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;flex:none">{{ r.vIcon }}<span>{{ r.vLabel }}</span></span>
+                      <span style="display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:#4A5672">{{ r.sIcon }}{{ r.status }}</span>
+                      <span style="margin-left:auto;font-size:13px;color:#4A5672;font-variant-numeric:tabular-nums">{{ r.when }}</span>
+                    </span>
+                    <span style="font-size:16px;font-weight:600;line-height:1.3">{{ r.category }}</span>
+                    <span style="display:flex;align-items:center;gap:8px;font-size:14px;color:#2A3B5E;min-width:0"><span style="flex:none;display:flex">{{ r.kIcon }}</span><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.hl }}</span></span>
+                  </span>
+                  {{ icChevInk }}
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isReports }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="03 Reports" style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;background:#F4F3EE;animation:scrIn .28s cubic-bezier(.16,1,.3,1) both">
+            <div style="padding:66px 16px 132px;display:flex;flex-direction:column;gap:18px">
+              <div style="display:flex;flex-direction:column;gap:6px;padding:0 4px">
+                <h2 style="margin:0;font-family:'Sora',sans-serif;font-weight:600;font-size:34px;letter-spacing:-.025em;color:#1F5FC4">Reports</h2>
+                <span style="font-size:15px;color:#2A3B5E">Every check you ran, with Satya's verdict.</span>
+              </div>
+              <div style="background:#fff;border-radius:24px;border:1px solid rgba(14,35,72,.08);box-shadow:0 1px 2px rgba(14,35,72,.04),0 10px 26px rgba(14,35,72,.06);padding:18px;display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;justify-content:space-between;align-items:baseline">
+                  <span style="font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1F5FC4">October 2026</span>
+                  <span style="font-size:13px;font-weight:600;color:#4A5672;white-space:nowrap">{{ summary.total }} checks</span>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+                  <div style="display:flex;flex-direction:column;gap:2px"><span style="font-family:'Sora',sans-serif;font-weight:600;font-size:34px;line-height:1.1;color:#B42318">{{ summary.scam }}</span><span style="font-size:13px;font-weight:600;color:#2A3B5E">Scams stopped</span></div>
+                  <div style="display:flex;flex-direction:column;gap:2px"><span style="font-family:'Sora',sans-serif;font-weight:600;font-size:34px;line-height:1.1;color:#7A5A00">{{ summary.suspicious }}</span><span style="font-size:13px;font-weight:600;color:#2A3B5E">Suspicious</span></div>
+                  <div style="display:flex;flex-direction:column;gap:2px"><span style="font-family:'Sora',sans-serif;font-weight:600;font-size:34px;line-height:1.1;color:#146C45">{{ summary.safe }}</span><span style="font-size:13px;font-weight:600;color:#2A3B5E">Safe</span></div>
+                </div>
+                <div style="display:flex;height:8px;gap:3px;border-radius:4px;overflow:hidden;transform-origin:left;animation:growX .6s cubic-bezier(.16,1,.3,1) both">
+                  <div style="flex:{{ summary.scam }};background:#D63A2F"></div>
+                  <div style="flex:{{ summary.suspicious }};background:#F7C800"></div>
+                  <div style="flex:{{ summary.safe }};background:#187A4C"></div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px">
+                <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+                  <button onClick="{{ f.pick }}" style="flex:none;display:flex;align-items:center;gap:6px;height:38px;padding:0 15px;border-radius:19px;border:1px solid {{ f.bd }};background:{{ f.bg }};color:{{ f.fg }};font-size:14px;font-weight:600;cursor:pointer;transition:background .18s,color .18s,transform .12s" style-active="transform:scale(.94)">{{ f.label }}<span style="font-size:12px;font-weight:700;opacity:.8">{{ f.count }}</span></button>
+                </sc-for>
+              </div>
+              <sc-for list="{{ groups }}" as="g" hint-placeholder-count="2">
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <span style="padding:6px 4px 0;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1F5FC4">{{ g.label }}</span>
+                  <sc-for list="{{ g.items }}" as="r" hint-placeholder-count="2">
+                    <button onClick="{{ r.open }}" style="text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:12px;background:#fff;border:1px solid rgba(14,35,72,.08);border-radius:22px;padding:16px;box-shadow:0 1px 2px rgba(14,35,72,.04),0 10px 26px rgba(14,35,72,.06);color:#0E2348;animation:cardIn .34s cubic-bezier(.16,1,.3,1) both;animation-delay:{{ r.delay }};transition:transform .14s" style-active="transform:scale(.98)">
+                      <div style="display:flex;align-items:center;gap:8px;width:100%">
+                        <span style="display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px 0 8px;border-radius:13px;background:{{ r.chipBg }};color:{{ r.chipFg }};font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;flex:none">{{ r.vIcon }}<span>{{ r.vLabel }}</span></span>
+                        <span style="flex:1;min-width:0;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.category }}</span>
+                        <span style="font-size:13px;color:#4A5672;font-variant-numeric:tabular-nums">{{ r.time }}</span>
+                      </div>
+                      <span style="font-size:16px;line-height:1.45;color:#0E2348;max-height:70px;overflow:hidden">{{ r.pre }}<span style="color:{{ r.hlFg }};background:{{ r.hlBg }};font-weight:600;border-radius:6px;padding:0 4px">{{ r.hl }}</span>{{ r.post }}</span>
+                      <div style="display:flex;align-items:center;gap:8px;width:100%;padding-top:12px;border-top:1px solid rgba(14,35,72,.08);font-size:13px;color:#4A5672">
+                        <span style="width:26px;height:26px;border-radius:9px;background:#F4F3EE;display:flex;align-items:center;justify-content:center;flex:none">{{ r.kIconSm }}</span>
+                        <span style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600">{{ r.kindLabel }} · {{ r.source }}</span>
+                        <span style="display:inline-flex;align-items:center;gap:4px;flex:none">{{ r.mIcon }}{{ r.method }}</span>
+                      </div>
+                    </button>
+                  </sc-for>
+                </div>
+              </sc-for>
+              <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:40px 20px;text-align:center;font-size:15px;color:#4A5672">No checks with this verdict yet.</div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isSearch }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="04 KYC Scam Search" style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;animation:scrIn .28s cubic-bezier(.16,1,.3,1) both">
+            <div style="position:relative;background:#1F5FC4;padding:64px 16px 56px;overflow:hidden;color:#F4F3EE">
+              <div style="position:absolute;inset:0;opacity:.16;-webkit-mask-image:linear-gradient(#000,rgba(0,0,0,.2) 90%);mask-image:linear-gradient(#000,rgba(0,0,0,.2) 90%);background-image:url(assets/lattice-paper.svg);background-size:640px 640px;background-position:-40px -20px"></div>
+              <div style="position:absolute;width:340px;height:340px;left:-130px;top:-120px;border-radius:50%;background:radial-gradient(circle,rgba(226,236,255,.55),rgba(226,236,255,0) 68%)"></div>
+              <div style="position:absolute;width:360px;height:360px;right:-160px;bottom:-170px;border-radius:50%;background:radial-gradient(circle,rgba(140,190,255,.6),rgba(140,190,255,0) 68%)"></div>
+              <div style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5"></div>
+              <div style="position:relative;display:flex;flex-direction:column;gap:18px">
+                <div style="display:flex;flex-direction:column;gap:8px;padding:0 4px">
+                  <h2 style="margin:0;font-family:'Sora',sans-serif;font-weight:600;font-size:30px;line-height:1.1;letter-spacing:-.02em;color:#F7C800">KYC Scam Search</h2>
+                  <p style="margin:0;font-size:15px;line-height:1.5;text-wrap:pretty">Check anything before you trust it, pay it or call it back.</p>
+                </div>
+                <div style="position:relative;display:flex;align-items:center;gap:8px;padding:6px 6px 6px 16px;border-radius:26px;background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(234,240,252,.9));border:1px solid #fff;box-shadow:0 16px 36px rgba(6,22,60,.32),inset 0 1px 0 #fff;backdrop-filter:blur(18px)">
+                  {{ icSearchMuted }}
+                  <input value="{{ query }}" onChange="{{ onQuery }}" onKeyDown="{{ onQueryKey }}" placeholder="Paste a number, UPI ID, link…" style="flex:1;min-width:0;height:50px;border:0;outline:0;background:transparent;font:500 16px 'Hanken Grotesk',sans-serif;color:#0E2348">
+                  <button onClick="{{ runSearch }}" aria-label="Search" style="flex:none;width:50px;height:50px;border-radius:25px;border:0;background:linear-gradient(180deg,#3B7BE6,#1F5FC4);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 6px 14px rgba(31,95,196,.45);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:{{ goOpacity }};transition:opacity .2s,transform .14s" style-active="transform:scale(.9)">{{ icArrowPaper }}</button>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <span style="padding:0 4px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase">{{ detectLabel }}</span>
+                  <div style="display:flex;flex-wrap:wrap;gap:8px">
+                    <sc-for list="{{ searchChips }}" as="c" hint-placeholder-count="6">
+                      <button onClick="{{ c.pick }}" style="position:relative;overflow:hidden;display:flex;align-items:center;gap:7px;height:38px;padding:0 14px 0 11px;border-radius:19px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.fg }};backdrop-filter:blur(14px);font-size:14px;font-weight:600;cursor:pointer;transition:background .18s,color .18s,transform .12s" style-active="transform:scale(.94)">{{ c.icon }}{{ c.label }}</button>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="position:relative;margin-top:-28px;background:#F4F3EE;border-radius:28px 28px 0 0;padding:26px 16px 132px;display:flex;flex-direction:column;gap:26px">
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <span style="padding:0 4px;font-family:'Sora',sans-serif;font-weight:600;font-size:21px;color:#1F5FC4;letter-spacing:-.01em">Try an example</span>
+                <div style="background:#fff;border-radius:22px;border:1px solid rgba(14,35,72,.08);box-shadow:0 1px 2px rgba(14,35,72,.04),0 10px 26px rgba(14,35,72,.06);overflow:hidden">
+                  <sc-for list="{{ examples }}" as="x" hint-placeholder-count="6">
+                    <button onClick="{{ x.run }}" style="width:100%;display:flex;align-items:center;gap:12px;padding:13px 14px 13px 16px;border:0;border-top:{{ x.divider }};background:#fff;text-align:left;cursor:pointer;color:#0E2348;transition:background .15s" style-active="background:#F4F3EE">
+                      <span style="width:40px;height:40px;border-radius:14px;background:#F4F3EE;display:flex;align-items:center;justify-content:center;flex:none">{{ x.icon }}</span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                        <span style="font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ x.text }}</span>
+                        <span style="font-size:13px;color:#4A5672">{{ x.label }}</span>
+                      </span>
+                      {{ icChevInk }}
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+              <sc-if value="{{ hasRecentSearches }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <span style="padding:0 4px;font-family:'Sora',sans-serif;font-weight:600;font-size:21px;color:#1F5FC4;letter-spacing:-.01em">Your recent searches</span>
+                  <div style="background:#fff;border-radius:22px;border:1px solid rgba(14,35,72,.08);box-shadow:0 1px 2px rgba(14,35,72,.04),0 10px 26px rgba(14,35,72,.06);overflow:hidden">
+                    <sc-for list="{{ recentSearches }}" as="r" hint-placeholder-count="3">
+                      <button onClick="{{ r.open }}" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px;border:0;border-top:{{ r.divider }};background:#fff;text-align:left;cursor:pointer;color:#0E2348;transition:background .15s" style-active="background:#F4F3EE">
+                        <span style="width:40px;height:40px;border-radius:14px;background:#F4F3EE;display:flex;align-items:center;justify-content:center;flex:none">{{ r.kIcon }}</span>
+                        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                          <span style="font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.hl }}</span>
+                          <span style="font-size:13px;color:#4A5672">{{ r.category }} · {{ r.when }}</span>
+                        </span>
+                        <span style="display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px 0 7px;border-radius:12px;background:{{ r.chipBg }};color:{{ r.chipFg }};font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;flex:none">{{ r.vIcon }}<span>{{ r.vLabel }}</span></span>
+                      </button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showTabs }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute;left:14px;right:14px;bottom:26px;height:70px;z-index:4">
+            <div style="position:absolute;inset:0;border-radius:35px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,255,255,.58));backdrop-filter:blur(22px) saturate(1.8);border:1px solid rgba(255,255,255,.9);box-shadow:0 16px 36px rgba(14,35,72,.2),0 0 0 .5px rgba(14,35,72,.1),inset 0 1px 0 #fff">
+              <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.45"></span>
+            </div>
+            <div style="position:relative;height:100%;display:grid;grid-template-columns:1fr 1fr 78px 1fr 1fr;align-items:center;padding:0 6px">
+              <sc-for list="{{ tabsL }}" as="t" hint-placeholder-count="2">
+                <button onClick="{{ t.go }}" style="height:58px;margin:0 1px;border:0;border-radius:29px;background:{{ t.bg }};color:{{ t.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:background .2s,color .2s,transform .14s" style-active="transform:scale(.9)">{{ t.icon }}<span style="font-size:11px;font-weight:600;letter-spacing:.01em">{{ t.label }}</span></button>
+              </sc-for>
+              <button onClick="{{ openChat }}" aria-label="Circle to Check" style="justify-self:center;width:66px;height:66px;margin-top:-30px;border:0;padding:0;border-radius:50%;background:#1F5FC4;box-shadow:0 12px 26px rgba(31,95,196,.5),0 0 0 5px rgba(255,255,255,.92);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .18s cubic-bezier(.2,.9,.3,1.5)" style-active="transform:scale(.88)"><span style="width:48px;height:48px">{{ sealSolid }}</span></button>
+              <sc-for list="{{ tabsR }}" as="t" hint-placeholder-count="2">
+                <button onClick="{{ t.go }}" style="height:58px;margin:0 1px;border:0;border-radius:29px;background:{{ t.bg }};color:{{ t.fg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:background .2s,color .2s,transform .14s" style-active="transform:scale(.9)">{{ t.icon }}<span style="font-size:11px;font-weight:600;letter-spacing:.01em">{{ t.label }}</span></button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasDetail }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="05 Verdict" style="position:absolute;inset:0;z-index:5;background:#FFFFFF;animation:pushIn .3s cubic-bezier(.16,1,.3,1) both">
+            <div style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:62px 16px 8px">
+                <button onClick="{{ closeDetail }}" aria-label="Back" style="width:46px;height:46px;border-radius:23px;border:1px solid rgba(14,35,72,.1);background:rgba(244,243,238,.9);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .14s" style-active="transform:scale(.9)">{{ icBackInk }}</button>
+                <span style="font-size:16px;font-weight:600">Check report</span>
+                <button onClick="{{ shareDetail }}" aria-label="Share" style="width:46px;height:46px;border-radius:23px;border:1px solid rgba(14,35,72,.1);background:rgba(244,243,238,.9);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .14s" style-active="transform:scale(.9)">{{ icShareInk }}</button>
+              </div>
+              <div style="margin:8px 16px 0;border-radius:28px;background:{{ d.vSoft }};padding:22px 20px 20px;display:flex;flex-direction:column;gap:16px;overflow:hidden">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <span style="width:56px;height:56px;border-radius:20px;background:{{ d.vColor }};display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px rgba(14,35,72,.18)">{{ d.bigIcon }}</span>
+                  <span style="display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:15px;background:#fff;font-size:13px;font-weight:600;color:#0E2348">{{ d.sIcon }}{{ d.status }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font-family:'Sora',sans-serif;font-weight:700;font-size:48px;line-height:1;letter-spacing:-.03em;color:{{ d.vText }}">{{ d.vLabel }}</span>
+                  <span style="font-size:20px;font-weight:600;line-height:1.3">{{ d.category }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;justify-content:space-between;gap:12px;font-size:13px;font-weight:600;white-space:nowrap"><span>Risk score</span><span style="color:{{ d.vText }}">{{ d.riskLabel }}</span></div>
+                  <div style="height:8px;border-radius:4px;background:rgba(14,35,72,.1);overflow:hidden"><div style="height:100%;width:{{ d.riskW }};border-radius:4px;background:{{ d.vColor }};transform-origin:left;animation:growX .7s .1s cubic-bezier(.16,1,.3,1) both"></div></div>
+                </div>
+                <span style="font-size:13px;color:#2A3B5E">{{ d.meta }}</span>
+                <sc-if value="{{ d.isSafe }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin:0 -20px -20px;background:#1F5FC4;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+                    <span style="display:flex;align-items:center;gap:10px"><span style="width:26px;height:26px">{{ sealSolid }}</span><span style="font-family:'Sora',sans-serif;font-weight:600;font-size:20px;letter-spacing:.08em;color:#F7C800">SATYA</span></span>
+                    <span style="font-size:12px;font-weight:600;letter-spacing:.16em;color:#F4F3EE">VERIFIED · {{ d.stamp }}</span>
+                  </div>
+                </sc-if>
+              </div>
+              <div style="margin:26px 16px 0;display:flex;flex-direction:column;gap:10px">
+                <span style="padding:0 4px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1F5FC4">What was checked</span>
+                <div style="border-radius:22px;border:1px solid rgba(14,35,72,.1);padding:16px;display:flex;flex-direction:column;gap:12px">
+                  <div style="display:flex;align-items:center;gap:12px">
+                    <span style="width:40px;height:40px;border-radius:14px;background:#F4F3EE;display:flex;align-items:center;justify-content:center;flex:none">{{ d.kIcon }}</span>
+                    <span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:15px;font-weight:600">{{ d.kindLabel }}</span><span style="font-size:13px;color:#4A5672;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.source }}</span></span>
+                  </div>
+                  <p style="margin:0;padding:14px;border-radius:16px;background:#F4F3EE;font-size:16px;line-height:1.55;color:#0E2348;word-break:break-word">{{ d.pre }}<span style="color:{{ d.hlFg }};background:{{ d.hlBg }};font-weight:700;border-radius:6px;padding:1px 5px;box-shadow:inset 0 0 0 1px {{ d.hlBd }}">{{ d.hl }}</span>{{ d.post }}</p>
+                </div>
+              </div>
+              <div style="margin:26px 16px 0;display:flex;flex-direction:column;gap:10px">
+                <span style="padding:0 4px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1F5FC4">{{ d.whyTitle }}</span>
+                <div style="border-radius:22px;border:1px solid rgba(14,35,72,.1);overflow:hidden">
+                  <sc-for list="{{ d.reasonsV }}" as="w" hint-placeholder-count="3">
+                    <div style="display:flex;gap:14px;padding:16px;border-top:{{ w.divider }};animation:cardIn .34s cubic-bezier(.16,1,.3,1) both;animation-delay:{{ w.delay }}">
+                      <span style="width:30px;height:30px;border-radius:15px;background:{{ w.bg }};display:flex;align-items:center;justify-content:center;flex:none">{{ w.icon }}</span>
+                      <span style="display:flex;flex-direction:column;gap:3px"><span style="font-size:16px;font-weight:600;line-height:1.35">{{ w.title }}</span><span style="font-size:14px;line-height:1.5;color:#2A3B5E">{{ w.body }}</span></span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="margin:26px 16px 0;padding-bottom:140px;display:flex;flex-direction:column;gap:10px">
+                <span style="padding:0 4px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1F5FC4">What to do</span>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <sc-for list="{{ d.stepsV }}" as="st" hint-placeholder-count="3">
+                    <div style="display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:18px;background:#F4F3EE">
+                      <span style="width:26px;height:26px;border-radius:13px;background:#1F5FC4;color:#F4F3EE;font-family:'Sora',sans-serif;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none">{{ st.n }}</span>
+                      <span style="font-size:15px;line-height:1.5;padding-top:2px">{{ st.t }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+            <div style="position:absolute;left:0;right:0;bottom:0;padding:22px 16px 34px;background:linear-gradient(to top,#fff 72%,rgba(255,255,255,0));display:flex;gap:10px">
+              <button onClick="{{ d.onSecondary }}" style="flex:1;height:56px;border-radius:28px;border:1px solid rgba(31,95,196,.22);background:rgba(31,95,196,.07);color:#1F5FC4;font-size:16px;font-weight:600;cursor:pointer;transition:transform .14s" style-active="transform:scale(.96)">{{ d.secondaryLabel }}</button>
+              <button onClick="{{ d.onPrimary }}" style="position:relative;overflow:hidden;flex:1.4;height:56px;border-radius:28px;border:0;background:{{ d.primaryBg }};color:#fff;font-size:16px;font-weight:600;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 10px 22px rgba(14,35,72,.22);transition:transform .14s" style-active="transform:scale(.96)">
+                <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5"></span>
+                <span style="position:relative">{{ d.primaryLabel }}</span>
+              </button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ inChat }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="06 Other app" style="position:absolute;inset:0;z-index:6;background:#050B1C;animation:fadeIn .2s both">
+            <div onPointerDown="{{ chatDown }}" onPointerMove="{{ chatMove }}" onPointerUp="{{ chatUp }}" onPointerLeave="{{ chatUp }}" style="position:absolute;inset:0;background:#ECE8E1;display:flex;flex-direction:column;transform:{{ chatTransform }};border-radius:{{ chatRadius }};overflow:hidden;transition:transform .4s cubic-bezier(.16,1,.3,1),border-radius .4s;user-select:none;-webkit-user-select:none;color:#1B1B1F">
+              <div style="display:flex;align-items:center;gap:10px;padding:60px 12px 12px;background:#FFFFFF;border-bottom:1px solid rgba(0,0,0,.06)">
+                <button onClick="{{ exitChat }}" aria-label="Back to Satya" style="width:40px;height:40px;border:0;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ icBackChat }}</button>
+                <span style="width:40px;height:40px;border-radius:50%;background:#D9D4CB;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#55524C">+91</span>
+                <span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:16px;font-weight:600">+91 70448 21319</span><span style="font-size:12px;color:#6B6862">Not in your contacts</span></span>
+                <span style="padding:8px">{{ icCallChat }}</span>
+              </div>
+              <div style="flex:1;padding:16px 12px;display:flex;flex-direction:column;gap:8px;overflow:hidden">
+                <span style="align-self:center;padding:4px 12px;border-radius:10px;background:rgba(255,255,255,.75);font-size:12px;font-weight:600;color:#6B6862">Today</span>
+                <div ref="{{ bubARef }}" style="align-self:flex-start;max-width:80%;padding:10px 12px 6px;border-radius:4px 18px 18px 18px;background:#fff;box-shadow:0 1px 1px rgba(0,0,0,.06);font-size:15px;line-height:1.42">Dear Consumer, your electricity power will be disconnected tonight at 9:30 PM because your previous month bill was not updated.<span style="display:block;text-align:right;font-size:11px;color:#8A867F;margin-top:2px">10:58</span></div>
+                <div ref="{{ bubBRef }}" style="align-self:flex-start;max-width:80%;padding:10px 12px 6px;border-radius:4px 18px 18px 18px;background:#fff;box-shadow:0 1px 1px rgba(0,0,0,.06);font-size:15px;line-height:1.42">Please contact our electricity officer immediately or update your KYC here: <span style="color:#1F5FC4;text-decoration:underline">bit.ly/eb-kyc-upd</span><span style="display:block;text-align:right;font-size:11px;color:#8A867F;margin-top:2px">10:58</span></div>
+                <div ref="{{ bubQRef }}" style="align-self:flex-start;width:210px;padding:8px;border-radius:4px 18px 18px 18px;background:#fff;box-shadow:0 1px 1px rgba(0,0,0,.06);display:flex;flex-direction:column;gap:8px">
+                  <div style="border-radius:12px;background:#F6F4EF;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px">
+                    <div style="width:132px;height:132px">{{ qrSvg }}</div>
+                    <span style="font-size:13px;font-weight:700;text-align:center;line-height:1.3">Scan &amp; pay ₹10 to avoid disconnection</span>
+                  </div>
+                  <span style="text-align:right;font-size:11px;color:#8A867F;padding-right:4px">10:59</span>
+                </div>
+                <div style="align-self:flex-end;max-width:78%;padding:10px 12px 6px;border-radius:18px 4px 18px 18px;background:#D7E5FF;font-size:15px;line-height:1.42">Which bill? I paid it last week.<span style="display:block;text-align:right;font-size:11px;color:#6C7896;margin-top:2px">11:02</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;padding:8px 10px 34px;background:#F6F3EE">
+                <span style="width:40px;height:40px;display:flex;align-items:center;justify-content:center">{{ icPlusChat }}</span>
+                <span style="flex:1;height:42px;border-radius:21px;background:#fff;display:flex;align-items:center;padding:0 16px;font-size:15px;color:#8A867F">Message</span>
+                <span style="width:40px;height:40px;display:flex;align-items:center;justify-content:center">{{ icMicChat }}</span>
+              </div>
+              <sc-if value="{{ chatHint }}" hint-placeholder-val="{{ true }}">
+                <button onPointerDown="{{ stopProp }}" onClick="{{ armLens }}" style="position:absolute;left:50%;bottom:104px;transform:translateX(-50%);overflow:hidden;display:flex;align-items:center;gap:10px;height:52px;padding:0 20px 0 10px;border-radius:26px;border:1px solid rgba(255,255,255,.25);background:linear-gradient(160deg,rgba(31,95,196,.92),rgba(14,35,72,.92));backdrop-filter:blur(16px);box-shadow:0 14px 30px rgba(14,35,72,.35),inset 0 1px 0 rgba(255,255,255,.3);color:#F4F3EE;font-size:14px;font-weight:600;white-space:nowrap;cursor:pointer;animation:bob 2.2s ease-in-out infinite">
+                  <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5"></span>
+                  <span style="position:relative;width:34px;height:34px">{{ sealSolid }}</span>
+                  <span style="position:relative">Long-press anywhere to check</span>
+                </button>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ lensOn }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="07 Circle to Check" style="position:absolute;inset:0;z-index:8">
+            <sc-if value="{{ lensDimFull }}" hint-placeholder-val="{{ true }}">
+              <div style="position:absolute;inset:0;background:rgba(4,9,24,.5);animation:fadeIn .22s both"></div>
+            </sc-if>
+            <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;left:{{ sel.x }}px;top:{{ sel.y }}px;width:{{ sel.w }}px;height:{{ sel.h }}px;border-radius:22px;box-shadow:0 0 0 1600px rgba(4,9,24,.64),0 0 0 1.5px rgba(255,255,255,.95),0 0 34px rgba(255,255,255,.5);animation:selIn .32s cubic-bezier(.16,1,.3,1) both">
+                <span style="position:absolute;left:-4px;top:-4px;width:26px;height:26px;border-left:4px solid #F7C800;border-top:4px solid #F7C800;border-radius:24px 0 0 0"></span>
+                <span style="position:absolute;right:-4px;top:-4px;width:26px;height:26px;border-right:4px solid #F7C800;border-top:4px solid #F7C800;border-radius:0 24px 0 0"></span>
+                <span style="position:absolute;left:-4px;bottom:-4px;width:26px;height:26px;border-left:4px solid #F7C800;border-bottom:4px solid #F7C800;border-radius:0 0 0 24px"></span>
+                <span style="position:absolute;right:-4px;bottom:-4px;width:26px;height:26px;border-right:4px solid #F7C800;border-bottom:4px solid #F7C800;border-radius:0 0 24px 0"></span>
+              </div>
+            </sc-if>
+            <canvas ref="{{ cvRef }}" width="402" height="874" style="position:absolute;left:0;top:0;width:402px;height:874px;pointer-events:none"></canvas>
+            <sc-if value="{{ lensArmed }}" hint-placeholder-val="{{ true }}">
+              <div onPointerDown="{{ lensDown }}" onPointerMove="{{ lensMove }}" onPointerUp="{{ lensUp }}" onPointerCancel="{{ lensUp }}" style="position:absolute;inset:0;touch-action:none;cursor:crosshair"></div>
+              <div style="position:absolute;left:50%;top:70px;transform:translateX(-50%);pointer-events:none;overflow:hidden;display:flex;align-items:center;gap:8px;height:40px;padding:0 16px 0 8px;border-radius:20px;border:1px solid rgba(255,255,255,.3);background:linear-gradient(160deg,rgba(255,255,255,.22),rgba(255,255,255,.06));backdrop-filter:blur(16px);color:#F4F3EE;font-size:14px;font-weight:600;white-space:nowrap;animation:fadeIn .3s .1s both">
+                <span style="width:26px;height:26px">{{ sealSolid }}</span>Satya is listening
+              </div>
+              <div style="position:absolute;left:16px;right:16px;bottom:34px;height:68px;overflow:hidden;display:flex;align-items:center;gap:12px;padding:0 10px;border-radius:34px;border:1px solid rgba(255,255,255,.32);background:linear-gradient(160deg,rgba(255,255,255,.22),rgba(255,255,255,.06));backdrop-filter:blur(20px) saturate(1.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 16px 36px rgba(4,9,24,.4);color:#F4F3EE;animation:peek .4s cubic-bezier(.16,1,.3,1) both">
+                <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.55;pointer-events:none"></span>
+                <button onClick="{{ closeLens }}" aria-label="Close" style="position:relative;width:48px;height:48px;border-radius:24px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;transition:transform .14s" style-active="transform:scale(.9)">{{ icClosePaper }}</button>
+                <span style="position:relative;flex:1;display:flex;flex-direction:column;gap:2px;pointer-events:none"><span style="font-size:16px;font-weight:600">Circle anything to check</span><span style="font-size:13px">Or tap a message, link or QR</span></span>
+                <button onClick="{{ lensToSearch }}" aria-label="Type instead" style="position:relative;width:48px;height:48px;border-radius:24px;border:0;background:#F7C800;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.6);transition:transform .14s" style-active="transform:scale(.9)">{{ icSearchInk }}</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ lensChecking }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;left:50%;top:{{ pillTop }}px;width:244px;height:68px;transform:translate(-50%,-50%);animation:pillIn .5s cubic-bezier(.2,1.3,.3,1) both">
+                <div style="position:absolute;right:28px;top:-34px;width:52px;height:52px">{{ sealPeek }}</div>
+                <div style="position:absolute;inset:0;border-radius:34px;overflow:hidden;background:radial-gradient(120% 170% at 50% 28%,#FFFFFF 0%,#EDF0F8 42%,#C3CCE3 100%);box-shadow:0 0 0 1px rgba(255,255,255,.7),0 0 26px 6px rgba(255,255,255,.38),0 0 80px 22px rgba(130,170,255,.3),inset 0 -9px 16px rgba(40,70,150,.24),inset 0 3px 3px #fff;display:flex;align-items:center;justify-content:center">
+                  <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:96px 96px;mix-blend-mode:multiply;opacity:.4"></span>
+                  <span style="position:absolute;top:0;bottom:0;left:0;width:36%;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.95),rgba(255,255,255,0));animation:shimmer 1.3s cubic-bezier(.4,0,.2,1) infinite"></span>
+                  <span style="position:relative;font-style:italic;font-weight:500;font-size:22px;color:#18223D">Checking…</span>
+                </div>
+              </div>
+              <div style="position:absolute;left:24px;right:24px;top:{{ statusTop }}px;text-align:center;font-size:14px;font-weight:600;color:#F4F3EE;text-shadow:0 1px 14px rgba(4,9,24,.9);animation:fadeIn .3s .2s both">{{ stepText }}</div>
+            </sc-if>
+            <sc-if value="{{ lensResult }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:30px 30px 0 0;padding:10px 20px 34px;display:flex;flex-direction:column;gap:16px;box-shadow:0 -20px 60px rgba(4,9,24,.4);animation:sheetUp .44s cubic-bezier(.16,1,.3,1) both;color:#0E2348">
+                <div style="align-self:center;width:38px;height:5px;border-radius:3px;background:rgba(14,35,72,.18)"></div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span style="display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 11px 0 9px;border-radius:14px;background:{{ lr.chipBg }};color:{{ lr.chipFg }};font-size:12px;font-weight:700;letter-spacing:.07em;text-transform:uppercase">{{ lr.vIcon }}<span>{{ lr.vLabel }}</span></span>
+                  <span style="font-size:13px;font-weight:700;white-space:nowrap;color:{{ lr.hlFg }}">Risk {{ lr.risk }} / 100</span>
+                  <button onClick="{{ closeLens }}" aria-label="Close" style="margin-left:auto;width:38px;height:38px;border-radius:19px;border:0;background:#F4F3EE;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ icCloseInk }}</button>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:26px;line-height:1.15;letter-spacing:-.015em">{{ lr.category }}</span>
+                  <span style="font-size:14px;color:#4A5672">{{ lr.kindLabel }} · {{ lr.source }}</span>
+                </div>
+                <div style="padding:12px 14px;border-radius:16px;background:#F4F3EE;font-size:15px;line-height:1.5;word-break:break-word">{{ lr.pre }}<span style="color:{{ lr.hlFg }};background:{{ lr.hlBg }};font-weight:700;border-radius:6px;padding:1px 5px">{{ lr.hl }}</span>{{ lr.post }}</div>
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <sc-for list="{{ lr.top }}" as="w" hint-placeholder-count="2">
+                    <div style="display:flex;gap:12px;animation:cardIn .34s cubic-bezier(.16,1,.3,1) both;animation-delay:{{ w.delay }}">
+                      <span style="width:28px;height:28px;border-radius:14px;background:{{ w.bg }};display:flex;align-items:center;justify-content:center;flex:none">{{ w.icon }}</span>
+                      <span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600;line-height:1.35">{{ w.title }}</span><span style="font-size:14px;line-height:1.45;color:#2A3B5E">{{ w.body }}</span></span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:2px">
+                  <button onClick="{{ lensFull }}" style="flex:1;height:54px;border-radius:27px;border:1px solid rgba(31,95,196,.22);background:rgba(31,95,196,.07);color:#1F5FC4;font-size:16px;font-weight:600;cursor:pointer;transition:transform .14s" style-active="transform:scale(.96)">Full report</button>
+                  <button onClick="{{ lensBlock }}" style="position:relative;overflow:hidden;flex:1.3;height:54px;border-radius:27px;border:0;background:linear-gradient(180deg,#E5544A,#C93127);color:#fff;font-size:16px;font-weight:600;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 10px 22px rgba(201,49,39,.3);transition:transform .14s" style-active="transform:scale(.96)"><span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5"></span><span style="position:relative">Block &amp; report</span></button>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ searching }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="08 Searching" style="position:absolute;inset:0;z-index:8;background:radial-gradient(110% 70% at 50% 50%,#0D1F4A 0%,#050B1C 72%);animation:fadeIn .22s both">
+            <div style="position:absolute;inset:0;opacity:.06;background-image:url(assets/lattice-paper.svg);background-size:640px 640px;background-position:-40px 0"></div>
+            <canvas ref="{{ cvRef }}" width="402" height="874" style="position:absolute;left:0;top:0;width:402px;height:874px;pointer-events:none"></canvas>
+            <div style="position:absolute;left:16px;right:16px;top:64px;display:flex;align-items:center;gap:10px">
+              <button onClick="{{ cancelSearch }}" aria-label="Cancel" style="position:relative;overflow:hidden;width:46px;height:46px;border-radius:23px;border:1px solid rgba(255,255,255,.3);background:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.05));backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none">{{ icClosePaper }}</button>
+              <div style="position:relative;overflow:hidden;flex:1;min-width:0;display:flex;align-items:center;gap:10px;height:46px;padding:0 16px 0 12px;border-radius:23px;border:1px solid rgba(255,255,255,.3);background:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.05));backdrop-filter:blur(14px);color:#F4F3EE;animation:fadeIn .3s both">
+                <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5"></span>
+                <span style="position:relative;display:flex">{{ sq.icon }}</span>
+                <span style="position:relative;flex:1;min-width:0;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ sq.q }}</span>
+                <span style="position:relative;font-size:12px;font-weight:600;flex:none">{{ sq.typeLabel }}</span>
+              </div>
+            </div>
+            <div style="position:absolute;left:50%;top:{{ pillTop }}px;width:244px;height:68px;transform:translate(-50%,-50%);animation:pillIn .5s .15s cubic-bezier(.2,1.3,.3,1) both">
+              <div style="position:absolute;right:28px;top:-34px;width:52px;height:52px">{{ sealPeek }}</div>
+              <div style="position:absolute;inset:0;border-radius:34px;overflow:hidden;background:radial-gradient(120% 170% at 50% 28%,#FFFFFF 0%,#EDF0F8 42%,#C3CCE3 100%);box-shadow:0 0 0 1px rgba(255,255,255,.7),0 0 26px 6px rgba(255,255,255,.38),0 0 80px 22px rgba(130,170,255,.3),inset 0 -9px 16px rgba(40,70,150,.24),inset 0 3px 3px #fff;display:flex;align-items:center;justify-content:center">
+                <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:96px 96px;mix-blend-mode:multiply;opacity:.4"></span>
+                <span style="position:absolute;top:0;bottom:0;left:0;width:36%;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.95),rgba(255,255,255,0));animation:shimmer 1.3s cubic-bezier(.4,0,.2,1) infinite"></span>
+                <span style="position:relative;font-style:italic;font-weight:500;font-size:22px;color:#18223D">Searching…</span>
+              </div>
+            </div>
+            <div style="position:absolute;left:24px;right:24px;top:{{ statusTop }}px;text-align:center;font-size:14px;font-weight:600;color:#F4F3EE;text-shadow:0 1px 14px rgba(4,9,24,.9);animation:fadeIn .3s .3s both">{{ stepText }}</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;top:66px;left:50%;z-index:9;transform:translateX(-50%);width:max-content;max-width:350px;display:flex;align-items:center;gap:10px;padding:12px 16px 12px 12px;border-radius:22px;background:rgba(14,35,72,.86);backdrop-filter:blur(16px) saturate(1.5);border:1px solid rgba(255,255,255,.18);color:#F4F3EE;font-size:14px;font-weight:600;line-height:1.35;box-shadow:0 14px 30px rgba(4,9,24,.3);animation:toastIn .32s cubic-bezier(.16,1,.3,1) both">
+            <span style="width:28px;height:28px;border-radius:14px;background:#F7C800;display:flex;align-items:center;justify-content:center;flex:none">{{ icCheckInk }}</span>
+            <span>{{ toast }}</span>
+          </div>
+        </sc-if>
+      </div>
+    </x-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;ribbonPalette&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Brand&quot;,&quot;Spectrum&quot;],&quot;default&quot;:&quot;Brand&quot;,&quot;tsType&quot;:&quot;'Brand'|'Spectrum'&quot;,&quot;section&quot;:&quot;Search animation&quot;},&quot;ribbonGrain&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.05,&quot;default&quot;:0.85,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Search animation&quot;},&quot;motionSpeed&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0.5,&quot;max&quot;:2,&quot;step&quot;:0.05,&quot;default&quot;:1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Search animation&quot;}}">
+const BLUE = '#1F5FC4', YEL = '#F7C800', PAPER = '#F4F3EE', INK = '#0E2348', RED = '#D63A2F', GREEN = '#187A4C', MUTED = '#4A5672';
+const h = React.createElement;
+const W = 402, H = 874, RW = 402, RH = 874;
+
+/* ---------- brand: lattice + seal (from Satya Brand Guide) ---------- */
+const SW = 2.4;
+const FRAME = ['M14 14H41A9 9 0 0 1 59 14H86V41A9 9 0 0 1 86 59V86H59A9 9 0 0 1 41 86H14V59A9 9 0 0 1 14 41Z', 'M19 27L27 19', 'M73 19L81 27', 'M81 73L73 81', 'M27 81L19 73'];
+const MOTIFS = {
+  detect: { p: ['M27 50Q50 27 73 50Q50 73 27 50Z'], c: [[50, 50, 9]], d: [[50, 50, 2.8]] },
+  verify: { p: ['M45 61V55A5 5 0 0 1 55 55V59', 'M39 67V55A11 11 0 0 1 61 55V69', 'M33 64V55A17 17 0 0 1 67 55V71', 'M27 58V55A23 23 0 0 1 73 55V63'] },
+  lock: { p: ['M40 47V40A10 10 0 0 1 60 40V47', 'M37 47H63A4 4 0 0 1 67 51V69A4 4 0 0 1 63 73H37A4 4 0 0 1 33 69V51A4 4 0 0 1 37 47Z', 'M50 61V66'], c: [[50, 57, 3.5]] },
+  protect: { p: ['M50 27L70 34V50C70 61 61 69 50 74C39 69 30 61 30 50V34Z', 'M41 51L48 58L60 45'] },
+};
+const ORDER = ['detect', 'verify', 'lock', 'protect'];
+const LEAF = 'M50 43Q59 29 50 15Q41 29 50 43Z';
+const BRACKETS = ['M7 19V7H19', 'M81 7H93V19', 'M93 81V93H81', 'M19 93H7V81'];
+const ROT = [0, 90, 180, 270];
+const G = (color, sw, extra) => Object.assign({ fill: 'none', stroke: color, strokeWidth: sw, strokeLinecap: 'round', strokeLinejoin: 'round' }, extra || {});
+function kindAt(i, j) { if ((((i + j) % 2) + 2) % 2 !== 0) return 'node'; return ORDER[((Math.floor((i - j) / 2) % 4) + 4) % 4]; }
+function tile(kind, x, y, L, D) {
+  const tr = `translate(${x} ${y})`, l = [], d = [];
+  const P = (dd, t) => l.push(h('path', { d: dd, transform: t }));
+  if (kind === 'node') {
+    ROT.forEach((a) => { const t = a ? `rotate(${a} 50 50)` : undefined; P(LEAF, t); d.push(h('circle', { cx: 50, cy: 29, r: 2.2, transform: t })); });
+    l.push(h('circle', { cx: 50, cy: 50, r: 3.5 }));
+    BRACKETS.forEach((b) => P(b));
+  } else {
+    FRAME.forEach((f) => P(f));
+    const m = MOTIFS[kind];
+    m.p.forEach((p) => P(p));
+    (m.c || []).forEach((c) => l.push(h('circle', { cx: c[0], cy: c[1], r: c[2] })));
+    (m.d || []).forEach((c) => d.push(h('circle', { cx: c[0], cy: c[1], r: c[2] })));
+  }
+  L.push(h('g', { transform: tr }, ...l));
+  if (d.length) D.push(h('g', { transform: tr }, ...d));
+}
+function lattice(cols, rows, color) {
+  const L = [], D = [];
+  for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) tile(kindAt(i, j), i * 100, j * 100, L, D);
+  for (let j = 0; j <= rows; j++) for (let i = 0; i <= cols; i++) D.push(h('circle', { cx: i * 100, cy: j * 100, r: 2 }));
+  return h('svg', { viewBox: `0 0 ${cols * 100} ${rows * 100}`, preserveAspectRatio: 'xMidYMid slice', width: '100%', height: '100%', style: { display: 'block' } },
+    h('g', G(color, SW), ...L), h('g', { fill: color }, ...D));
+}
+function notchedDisc(cx, cy, R, nr) {
+  const d = Math.asin(nr / R);
+  const pt = (a) => (cx + R * Math.cos(a)).toFixed(2) + ' ' + (cy + R * Math.sin(a)).toFixed(2);
+  let p = '';
+  for (let k = 0; k < 4; k++) {
+    const a = -Math.PI / 2 + (k * Math.PI) / 2;
+    if (k === 0) p += 'M' + pt(a + d);
+    p += `A${R} ${R} 0 0 1 ${pt(a + Math.PI / 2 - d)}A${nr} ${nr} 0 0 0 ${pt(a + Math.PI / 2 + d)}`;
+  }
+  return p + 'Z';
+}
+const DISC = notchedDisc(120, 120, 116, 10);
+const EYE = 'M52 120Q120 58 188 120Q120 182 52 120Z';
+const KEYHOLE = 'M114.6 121A8 8 0 1 1 125.4 121L128 133H112Z';
+const TICKS = Array.from({ length: 24 }, (_, k) => {
+  const a = ((7.5 + k * 15) * Math.PI) / 180, sn = Math.sin(a), cs = Math.cos(a);
+  return `M${(120 + 100 * sn).toFixed(2)} ${(120 - 100 * cs).toFixed(2)}L${(120 + 107 * sn).toFixed(2)} ${(120 - 107 * cs).toFixed(2)}`;
+}).join('');
+function seal(animated) {
+  const uid = animated ? 'satyaEyeAnim' : 'satyaEyeSolid';
+  const iris = [h('circle', { key: 'i', cx: 120, cy: 120, r: 30, fill: 'none', stroke: BLUE, strokeWidth: 8 }), h('path', { key: 'k', d: KEYHOLE, fill: BLUE })];
+  return h('svg', { viewBox: '0 0 240 240', width: '100%', height: '100%', style: { display: 'block', overflow: 'visible' } },
+    h('defs', null, h('clipPath', { id: uid }, h('path', { d: EYE }))),
+    h('path', { d: DISC, fill: YEL }),
+    h('path', { d: TICKS, stroke: BLUE, strokeWidth: 3, strokeLinecap: 'round' }),
+    h('circle', { cx: 120, cy: 120, r: 91, fill: 'none', stroke: BLUE, strokeWidth: 4 }),
+    h('g', { clipPath: `url(#${uid})` }, animated ? h('g', { style: { animation: 'pupilL 2.4s cubic-bezier(.6,0,.3,1) infinite' } }, ...iris) : iris),
+    h('path', { d: EYE, fill: 'none', stroke: BLUE, strokeWidth: 8, strokeLinejoin: 'round' }),
+    h('circle', { cx: 120, cy: 52, r: 4.5, fill: BLUE }), h('circle', { cx: 120, cy: 188, r: 4.5, fill: BLUE }));
+}
+function detectEye() {
+  const eye = MOTIFS.detect.p[0];
+  return h('svg', { viewBox: '0 0 100 100', width: '100%', height: '100%', style: { display: 'block', overflow: 'visible' } },
+    h('defs', null, h('clipPath', { id: 'detEyeClip' }, h('path', { d: eye }))),
+    h('g', G(PAPER, SW), ...FRAME.map((d, i) => h('path', { key: i, d })), h('path', { d: eye })),
+    h('g', { clipPath: 'url(#detEyeClip)' }, h('g', { style: { animation: 'pupilS 2.6s cubic-bezier(.6,0,.3,1) infinite' } },
+      h('circle', { cx: 50, cy: 50, r: 9, fill: 'none', stroke: PAPER, strokeWidth: SW }), h('circle', { cx: 50, cy: 50, r: 3.2, fill: YEL }))));
+}
+function qrSvg() {
+  const N = 25; let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const inF = (x, y) => (x < 8 && y < 8) || (x > N - 9 && y < 8) || (x < 8 && y > N - 9);
+  let d = '';
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) if (!inF(x, y) && rnd() > 0.52) d += `M${x} ${y}h1v1h-1z`;
+  const F = (x, y) => [h('rect', { key: 'a' + x + y, x, y, width: 7, height: 7, fill: '#1B1B1F' }), h('rect', { key: 'b' + x + y, x: x + 1, y: y + 1, width: 5, height: 5, fill: '#F6F4EF' }), h('rect', { key: 'c' + x + y, x: x + 2, y: y + 2, width: 3, height: 3, fill: '#1B1B1F' })];
+  return h('svg', { viewBox: `0 0 ${N} ${N}`, width: '100%', height: '100%', shapeRendering: 'crispEdges', style: { display: 'block' } },
+    h('path', { d, fill: '#1B1B1F' }), ...F(0, 0), ...F(N - 7, 0), ...F(0, N - 7));
+}
+
+/* ---------- icons (single-line, round caps — matches lattice stroke) ---------- */
+const SH = 'M12 3 19 6v5.5c0 4.6-3 7.9-7 9.5-4-1.6-7-4.9-7-9.5V6z';
+const IP = {
+  home: ['M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z'],
+  eye: ['M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z', 'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'],
+  reports: ['M7 3.5h7l4.5 4.5v11.5a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-15a1 1 0 0 1 1-1z', 'M14 3.5V8h4.5', 'M9 12.5h6', 'M9 16h4'],
+  search: ['M18 11a7 7 0 1 1-14 0 7 7 0 0 1 14 0z', 'M16.2 16.2 20.5 20.5'],
+  bell: ['M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z', 'M10 20.5a2 2 0 0 0 4 0'],
+  sms: ['M5 4.5h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-8.5L6 21v-3.5H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z', 'M7.5 9.5h9', 'M7.5 13h6'],
+  call: ['M6.5 3.5h3l1.8 4.6-2.3 1.4a11 11 0 0 0 5.5 5.5l1.4-2.3 4.6 1.8v3a2 2 0 0 1-2 2A16 16 0 0 1 4.5 5.5a2 2 0 0 1 2-2z'],
+  upi: ['M7 5h10', 'M7 9h10', 'M9.5 5c3.5 0 5.5 1.6 5.5 4s-2 4-5.5 4H8l7 6.5'],
+  link: ['M10 14a4 4 0 0 0 5.7 0l3-3A4 4 0 0 0 13 5.3l-1 1', 'M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1'],
+  qr: ['M4 4h6v6H4z', 'M14 4h6v6h-6z', 'M4 14h6v6H4z', 'M14 14h2.5v2.5H14z', 'M17.5 17.5H20V20h-2.5z', 'M14 19.5h1', 'M19.5 14v1'],
+  bank: ['M3.5 9 12 4.5 20.5 9', 'M5.5 10.5v7', 'M10 10.5v7', 'M14 10.5v7', 'M18.5 10.5v7', 'M3.5 20h17'],
+  app: ['M5 4h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z', 'M14 4h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z', 'M5 13h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1z', 'M16.5 13v7', 'M13 16.5h7'],
+  lasso: ['M12 4.5c4.7 0 8.5 2.3 8.5 5.2s-3.8 5.3-8.5 5.3-8.5-2.4-8.5-5.3S7.3 4.5 12 4.5z', 'M6.5 13.6c-1.3 1.6-.8 3.6 1.3 4.4', 'M7.8 18l-1.3 2.5'],
+  back: ['M14.5 5 7.5 12l7 7'],
+  close: ['M6.5 6.5l11 11', 'M17.5 6.5l-11 11'],
+  chev: ['M9.5 5.5 16 12l-6.5 6.5'],
+  check: ['M5 12.5 9.5 17 19 7.5'],
+  alert: ['M12 6.5v7', 'M12 17.6v.1'],
+  shieldX: [SH, 'M9.5 9.5l5 5', 'M14.5 9.5l-5 5'],
+  shieldAlert: [SH, 'M12 8v4.5', 'M12 15.6v.1'],
+  shieldCheck: [SH, 'M8.8 12.2l2.2 2.2 4.4-4.6'],
+  share: ['M12 14.5V3.5', 'M7.5 8 12 3.5 16.5 8', 'M5 13v6a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6'],
+  arrow: ['M5 12h14', 'M13 6l6 6-6 6'],
+  lock: ['M8 10.5V8a4 4 0 0 1 8 0v2.5', 'M6.5 10.5h11a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-7.5a1 1 0 0 1 1-1z'],
+  flag: ['M5 21V4', 'M5 4.5h11l-2 4 2 4H5'],
+  mic: ['M12 3.5a3 3 0 0 1 3 3V12a3 3 0 0 1-6 0V6.5a3 3 0 0 1 3-3z', 'M6 11.5a6 6 0 0 0 12 0', 'M12 17.5V20.5'],
+  plus: ['M12 5v14', 'M5 12h14'],
+};
+function ic(name, color, size, sw) {
+  return h('svg', { width: size || 20, height: size || 20, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: sw || 2, strokeLinecap: 'round', strokeLinejoin: 'round', style: { display: 'block', flex: 'none' } },
+    ...(IP[name] || []).map((d, i) => h('path', { key: i, d })));
+}
+
+/* ---------- verdicts + data ---------- */
+const V = {
+  scam: { label: 'Scam', c: RED, soft: '#FDECEA', text: '#B42318', bd: 'rgba(180,35,24,.25)', chipBg: RED, chipFg: '#fff', icon: 'shieldX' },
+  suspicious: { label: 'Suspicious', c: YEL, soft: '#FFF6CF', text: '#7A5A00', bd: 'rgba(122,90,0,.25)', chipBg: YEL, chipFg: INK, icon: 'shieldAlert' },
+  safe: { label: 'Safe', c: GREEN, soft: '#E5F3EB', text: '#146C45', bd: 'rgba(20,108,69,.25)', chipBg: GREEN, chipFg: '#fff', icon: 'shieldCheck' },
+};
+const KIND = {
+  sms: { label: 'SMS', icon: 'sms' }, upi: { label: 'UPI ID', icon: 'upi' }, call: { label: 'Call', icon: 'call' }, phone: { label: 'Phone number', icon: 'call' },
+  link: { label: 'Link', icon: 'link' }, qr: { label: 'QR code', icon: 'qr' }, app: { label: 'App', icon: 'app' }, bank: { label: 'Bank account', icon: 'bank' },
+};
+const METHOD_IC = { 'Circle to Check': 'lasso', 'KYC Search': 'search', 'Auto-detected': 'eye' };
+const STEPS = {
+  scam: ["Don't open the link, scan the code or call the number back.", 'Block the sender. Satya has already stopped the link on this phone.', 'If you shared details or lost money, call 1930 or report at cybercrime.gov.in right away.'],
+  suspicious: ["Don't share an OTP, UPI PIN, Aadhaar or card details.", "Hang up and call the bank or agency on a number you find yourself.", 'Block and report it if they contact you again.'],
+  safe: ['This looks fine to use.', 'Satya keeps watching and will alert you if it gets reported later.'],
+};
+const R_ = (type, title, body) => ({ type, title, body });
+const SEED = [
+  { id: 'r1', kind: 'sms', source: 'VM-SBIUPD', method: 'Circle to Check', verdict: 'scam', category: 'Fake KYC update', risk: 97, day: 'Today', date: '23 Oct', time: '10:42', stamp: '23.10.2026', status: 'Blocked',
+    pre: 'Dear Customer, your SBI account will be blocked today. Update PAN & KYC now: ', hl: 'sbi-kyc-verify.in/upd', post: '',
+    reasons: [R_('bad', 'Not an SBI website', 'sbi-kyc-verify.in was registered 3 days ago. SBI only uses onlinesbi.sbi and its official app.'), R_('bad', 'Banks never send KYC links by SMS', 'KYC is updated at your branch or inside your bank’s own app.'), R_('bad', 'Reported 1,284 times this week', 'Other Satya users flagged the same sender and link.'), R_('warn', 'Built to rush you', '“Blocked today” is there to stop you from checking first.')] },
+  { id: 'r2', kind: 'upi', source: 'UPI collect request', method: 'Auto-detected', verdict: 'scam', category: 'Collect-request fraud', risk: 94, day: 'Today', date: '23 Oct', time: '09:15', stamp: '23.10.2026', status: 'Blocked',
+    pre: '', hl: 'kyc.refund.help@okaxis', post: ' asked you to approve ₹4,999 for “KYC refund processing”.',
+    reasons: [R_('bad', 'You would pay, not receive', 'Approving a collect request takes money out of your account. Refunds never need your PIN.'), R_('bad', 'UPI ID is 2 days old', 'New IDs using words like “refund” and “help” are a common scam pattern.'), R_('bad', 'Name does not match', 'The ID belongs to “M K Traders”, not a bank or company.')] },
+  { id: 'r3', kind: 'call', source: '+91 98201 44730', method: 'Auto-detected', verdict: 'suspicious', category: 'Impersonation call', risk: 68, day: 'Today', date: '23 Oct', time: '08:02', stamp: '23.10.2026', status: 'Needs review',
+    pre: 'Caller said they were from ', hl: 'TRAI', post: ' and asked for your Aadhaar number to stop your SIM being cut.',
+    reasons: [R_('warn', 'TRAI does not call about SIMs', 'The telecom regulator does not disconnect numbers or ask for Aadhaar over a call.'), R_('warn', 'Number reported 37 times', 'Mostly for “SIM block” and “courier parcel” calls.'), R_('good', 'No money has moved', 'Your bank accounts and UPI were not touched during or after the call.')] },
+  { id: 'r4', kind: 'link', source: 'Searched by you', method: 'KYC Search', verdict: 'scam', category: 'Phishing site', risk: 92, day: 'Yesterday', date: '22 Oct', time: '19:30', stamp: '22.10.2026', status: 'Checked',
+    pre: '', hl: 'kyc-wallet-verify.co/login', post: '',
+    reasons: [R_('bad', 'Copies a wallet login page', 'The page asks for your mobile number, OTP and UPI PIN.'), R_('bad', 'Five days old, hosted abroad', 'Real payment apps don’t launch new login sites.'), R_('bad', 'On 3 phishing blocklists', 'Flagged by Satya and two partner security feeds.')] },
+  { id: 'r5', kind: 'upi', source: 'Searched by you', method: 'KYC Search', verdict: 'safe', category: 'Verified individual', risk: 6, day: 'Yesterday', date: '22 Oct', time: '13:10', stamp: '22.10.2026', status: 'Verified',
+    pre: '', hl: 'ramesh.kumar@oksbi', post: ' · Ramesh Kumar',
+    reasons: [R_('good', 'Name matches bank records', 'The ID is registered to RAMESH KUMAR.'), R_('good', 'Active since 2019', 'Long-running accounts are rarely used for fraud.'), R_('good', 'No scam reports', 'Nobody has reported this ID to Satya.')] },
+  { id: 'r6', kind: 'app', source: 'Searched by you', method: 'KYC Search', verdict: 'suspicious', category: 'Remote-access app', risk: 61, day: 'Yesterday', date: '22 Oct', time: '11:45', stamp: '22.10.2026', status: 'Checked',
+    pre: '', hl: 'AnyDesk', post: ' · Remote desktop app',
+    reasons: [R_('warn', 'Lets someone control your phone', 'The app is genuine, but scammers ask people to install it and then open their bank apps.'), R_('good', 'Official Play Store listing', 'The publisher is verified.'), R_('warn', 'Common in “refund” scams', 'If a caller asked you to install it, uninstall it now.')] },
+  { id: 'r7', kind: 'qr', source: 'QR in a group chat', method: 'Circle to Check', verdict: 'scam', category: 'QR payment trap', risk: 95, day: '21 Oct', date: '21 Oct', time: '17:20', stamp: '21.10.2026', status: 'Reported',
+    pre: 'QR labelled “', hl: 'Scan to receive ₹2,000 cashback', post: '”',
+    reasons: [R_('bad', 'Scanning a QR only sends money', 'You never scan a code or enter a PIN to receive money.'), R_('bad', 'Pays an unknown merchant', 'The code sends money to “Shop 4412”.')] },
+  { id: 'r8', kind: 'phone', source: 'Searched by you', method: 'KYC Search', verdict: 'safe', category: 'Official helpline', risk: 3, day: '19 Oct', date: '19 Oct', time: '12:05', stamp: '19.10.2026', status: 'Verified',
+    pre: '', hl: '1800 1234', post: ' · SBI customer care',
+    reasons: [R_('good', 'Listed on the bank’s official site', 'Matches the number on sbi.co.in.'), R_('good', 'No scam reports', 'Nobody has reported this number.')] },
+];
+const LENS = {
+  A: { kind: 'sms', source: '+91 70448 21319 · Chat', verdict: 'scam', category: 'Fake electricity bill', risk: 95,
+    pre: '“Your electricity power will be disconnected tonight at 9:30 PM… contact our officer ', hl: '70448 21319', post: '”',
+    reasons: [R_('bad', 'Power companies don’t text from mobiles', 'Real notices come from your power company’s official SMS ID, not a 10-digit number.'), R_('bad', 'Number reported 412 times', 'Satya users flagged it this month for the same message.'), R_('warn', 'Deadline of tonight', 'A same-day cut-off is meant to stop you from checking first.')] },
+  B: { kind: 'link', source: 'Link in chat · +91 70448 21319', verdict: 'scam', category: 'Phishing link', risk: 98,
+    pre: '', hl: 'bit.ly/eb-kyc-upd', post: '',
+    reasons: [R_('bad', 'Short link hides the real site', 'It opens eb-kyc-update.top, a fake bill payment page.'), R_('bad', 'Asks for card number and UPI PIN', 'No electricity board needs your PIN to update KYC.'), R_('bad', 'Site is 1 day old', 'Registered yesterday and hosted outside India.')] },
+  Q: { kind: 'qr', source: 'QR image in chat', verdict: 'scam', category: 'QR payment trap', risk: 96,
+    pre: 'QR labelled “', hl: 'Scan & pay ₹10 to avoid disconnection', post: '”',
+    reasons: [R_('bad', 'Pays a personal UPI ID', 'The code sends money to shop4412@ybl, not a power company.'), R_('bad', 'Small amount, big risk', 'A ₹10 payment is a common trick to capture your UPI PIN.'), R_('warn', 'Sent with a threat', 'It arrived with a disconnection warning.')] },
+};
+const DB = {
+  '9820144730': { kind: 'phone', verdict: 'suspicious', category: 'Reported caller', risk: 68, reasons: SEED[2].reasons.slice(0, 2) },
+  'kyc.refund.help@okaxis': { kind: 'upi', verdict: 'scam', category: 'Collect-request fraud', risk: 94, reasons: SEED[1].reasons },
+  'sbi-kyc-verify.in/upd': { kind: 'link', verdict: 'scam', category: 'Fake bank KYC site', risk: 97, reasons: [SEED[0].reasons[0], SEED[0].reasons[2]] },
+  'sbi-kyc-verify.in': { kind: 'link', verdict: 'scam', category: 'Fake bank KYC site', risk: 97, reasons: [SEED[0].reasons[0], SEED[0].reasons[2]] },
+  'ramesh.kumar@oksbi': { kind: 'upi', verdict: 'safe', category: 'Verified individual', risk: 6, reasons: SEED[4].reasons, post: ' · Ramesh Kumar' },
+  'anydesk': { kind: 'app', verdict: 'suspicious', category: 'Remote-access app', risk: 61, reasons: SEED[5].reasons, post: ' · Remote desktop app' },
+  '50100231874417': { kind: 'bank', verdict: 'suspicious', category: 'Possible mule account', risk: 74,
+    reasons: [R_('bad', 'Linked to 12 fraud complaints', 'Victims were told to send “refunds” and “fees” to this account.'), R_('warn', '40+ small deposits this week', 'Many small payments from strangers is a mule-account pattern.'), R_('good', 'Bank and IFSC are real', 'The account exists at a licensed bank.')] },
+};
+const CHIPS = [['phone', 'Phone number', 'call'], ['upi', 'UPI ID', 'upi'], ['link', 'Link', 'link'], ['sms', 'SMS text', 'sms'], ['bank', 'Bank account', 'bank'], ['app', 'App name', 'app']];
+const TYPE_LABEL = { phone: 'Phone number', upi: 'UPI ID', link: 'Link', sms: 'SMS text', bank: 'Bank account', app: 'App name' };
+const EXAMPLES = [
+  ['+91 98201 44730', 'phone'], ['kyc.refund.help@okaxis', 'upi'], ['sbi-kyc-verify.in/upd', 'link'],
+  ['Your parcel is held at customs. Pay ₹49 duty at indiapost-track.top', 'sms'], ['50100231874417', 'bank'], ['AnyDesk', 'app'], ['ramesh.kumar@oksbi', 'upi'],
+];
+const RISKY = /(kyc|verify|refund|update|help|support|bit\.ly|login|\.top|\.xyz|reward|cashback|lottery|blocked|customs|duty|prize|winner|otp|disconnect)/i;
+function detectType(q) {
+  const s = q.trim(), compact = s.replace(/[\s-]/g, '');
+  if (!s) return null;
+  if (/^\d{11,18}$/.test(compact)) return 'bank';
+  if (/^(\+?91)?[6-9]\d{9}$/.test(compact) || /^1800\d{3,7}$/.test(compact) || /^\+?\d{8,13}$/.test(compact)) return 'phone';
+  if (/^[\w.\-]{2,}@[a-z]{2,}$/i.test(s)) return 'upi';
+  if (s.split(/\s+/).length >= 5) return 'sms';
+  if (/^(https?:\/\/)?[\w-]+(\.[\w-]+)+(\/\S*)?$/i.test(s)) return 'link';
+  return 'app';
+}
+const hm = () => { const d = new Date(); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
+const stampNow = () => { const d = new Date(); return String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear(); };
+
+/* ---------- ribbons (grainy, vertical) ---------- */
+const RIB = [
+  [[-0.3, 0.95], [0.06, 0.84], [0.26, 0.7], [0.1, 0.52], [0.2, 0.34], [0.42, 0.37], [0.4, 0.47], [0.5, 0.5]],
+  [[1.3, 0.04], [0.92, 0.12], [0.68, 0.24], [0.88, 0.38], [0.76, 0.5], [0.62, 0.505], [0.5, 0.5]],
+  [[1.3, 1.02], [0.94, 0.92], [0.62, 0.88], [0.84, 0.72], [0.72, 0.58], [0.6, 0.52], [0.5, 0.5]],
+  [[0.18, 1.3], [0.32, 1.02], [0.58, 0.84], [0.34, 0.68], [0.36, 0.57], [0.5, 0.5]],
+  [[-0.3, 0.14], [0.06, 0.2], [0.3, 0.12], [0.5, 0.2], [0.34, 0.34], [0.42, 0.46], [0.5, 0.5]],
+];
+const hex = (s) => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16)];
+const PAL = {
+  Brand: [['#1F5FC4', '#5B95FF', '#C4DAFF', '#5B95FF'], ['#F7C800', '#FFE36A', '#FFF6C9', '#FFD43B'], ['#2F6FE4', '#8FBAFF', '#F4F3EE', '#8FBAFF'], ['#FFE36A', '#F4F3EE', '#7FB0FF', '#F7C800'], ['#9CC3FF', '#3A78E0', '#F7C800', '#5B95FF']].map((r) => r.map(hex)),
+  Spectrum: [['#2B6BFF', '#7B3CFF', '#C23CFF', '#7B3CFF'], ['#FFB200', '#FF6A2B', '#FF3D6E', '#FF6A2B'], ['#22D3EE', '#3BE07A', '#B6F03C', '#3BE07A'], ['#F2E83A', '#9BE15D', '#2BC5FF', '#9BE15D'], ['#8B5CF6', '#3B82F6', '#22D3EE', '#3B82F6']].map((r) => r.map(hex)),
+};
+const cl = (u) => (u < 0 ? 0 : u > 1 ? 1 : u);
+const expoOut = (u) => { u = cl(u); return u >= 1 ? 1 : 1 - Math.pow(2, -10 * u); };
+const inCubic = (u) => { u = cl(u); return u * u * u; };
+function cr(P, s) {
+  const n = P.length - 1, f = Math.min(Math.max(s, 0), 0.99999) * n, i = Math.floor(f), u = f - i;
+  const p0 = P[Math.max(i - 1, 0)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(i + 2, n)], u2 = u * u, u3 = u2 * u;
+  const k = (a, b, c, d) => 0.5 * (2 * b + (-a + c) * u + (2 * a - 5 * b + 4 * c - d) * u2 + (-a + 3 * b - 3 * c + d) * u3);
+  return { x: k(p0.x, p1.x, p2.x, p3.x), y: k(p0.y, p1.y, p2.y, p3.y) };
+}
+function colAt(stops, x) {
+  x = ((x % 1) + 1) % 1;
+  const n = stops.length, f = x * n, i = Math.floor(f), u = f - i, a = stops[i], b = stops[(i + 1) % n];
+  return `rgb(${(a[0] + (b[0] - a[0]) * u) | 0},${(a[1] + (b[1] - a[1]) * u) | 0},${(a[2] + (b[2] - a[2]) * u) | 0})`;
+}
+
+class Component extends DCLogic {
+  state = {
+    tab: 'home', detail: null, records: SEED, filter: 'all',
+    channels: { sms: true, calls: true, upi: true, links: true },
+    chat: false, chatHint: true, lens: null, sel: null, lensRec: null, pillTop: 600, step: 0,
+    searching: null, query: '', forced: null, toast: null,
+  };
+  timers = []; anim = null; path = []; pathFade = 0; drawing = false; uid = 0; frame = 0; off = 0;
+  rootRef = (el) => { this.rootEl = el; };
+  cvRef = (el) => { this.cv = el; this.cx = el ? el.getContext('2d') : null; };
+  bubARef = (el) => { this.bubA = el; };
+  bubBRef = (el) => { this.bubB = el; };
+  bubQRef = (el) => { this.bubQ = el; };
+
+  componentDidMount() {
+    this.raw = document.createElement('canvas'); this.raw.width = RW; this.raw.height = RH; this.rx = this.raw.getContext('2d');
+    this.blr = document.createElement('canvas'); this.blr.width = RW; this.blr.height = RH; this.bx = this.blr.getContext('2d', { willReadFrequently: true });
+    this.noise = new Uint8Array(RW * RH + 8192);
+    for (let i = 0; i < this.noise.length; i++) this.noise[i] = (Math.random() * 256) | 0;
+    this.raf = requestAnimationFrame(this.tick);
+  }
+  componentWillUnmount() { cancelAnimationFrame(this.raf); this.clearTimers(); clearTimeout(this.toastT); clearTimeout(this.lpT); }
+
+  sp() { const s = Number(this.props.motionSpeed); return s > 0 ? s : 1; }
+  grain() { const g = this.props.ribbonGrain; return g == null ? 0.85 : cl(Number(g)); }
+  later(ms, fn) { this.timers.push(setTimeout(fn, ms)); }
+  clearTimers() { this.timers.forEach(clearTimeout); this.timers = []; }
+  setAnim(mode, py) { this.anim = mode ? { mode, py: py == null ? 0.5 : py, t0: performance.now() } : null; }
+
+  tick = (now) => {
+    this.raf = requestAnimationFrame(this.tick);
+    const cx = this.cx; if (!cx || !this.rx) return;
+    const A = this.anim;
+    const hasPath = this.path.length > 1 && (!this.pathFade || now - this.pathFade < 420);
+    if (!A && !hasPath) { if (this.dirty) { cx.clearRect(0, 0, RW, RH); this.dirty = false; } return; }
+    this.dirty = true;
+    const t = A ? ((now - A.t0) / 1000) * this.sp() : 0, T = now / 1000;
+    const r = this.rx;
+    r.clearRect(0, 0, RW, RH); r.lineCap = 'round'; r.lineJoin = 'round';
+    if (A) {
+      const pal = PAL[this.props.ribbonPalette === 'Spectrum' ? 'Spectrum' : 'Brand'];
+      RIB.forEach((R, i) => {
+        let head, tail = 0;
+        if (A.mode === 'armed') head = 0.22 + 0.05 * Math.sin(T * 1.7 + i * 1.3) + 0.08 * expoOut(t / 0.6);
+        else if (A.mode === 'check') head = 0.27 + 0.73 * expoOut((t - i * 0.07) / 0.9);
+        else { head = 1; tail = inCubic(t / 0.48); }
+        if (head - tail < 0.004) return;
+        const last = R.length - 1;
+        const P = R.map(([u, v], k) => {
+          const e = k === 0 || k === last ? 0.15 : 1;
+          return { x: (u + 0.03 * e * Math.sin(T * 0.9 + k * 1.9 + i * 2.3)) * RW, y: (v + (A.py - 0.5) * (k / last) + 0.022 * e * Math.cos(T * 0.75 + k * 1.4 + i * 1.7)) * RH };
+        });
+        r.lineWidth = (A.mode === 'armed' ? 30 : 42) * (0.9 + 0.1 * Math.sin(T * 2 + i));
+        const steps = Math.max(2, Math.ceil(80 * (head - tail)));
+        let prev = cr(P, tail);
+        for (let k = 1; k <= steps; k++) {
+          const s = tail + ((head - tail) * k) / steps, p = cr(P, s);
+          r.strokeStyle = colAt(pal[i], s * 0.85 - T * 0.2 + i * 0.13);
+          r.beginPath(); r.moveTo(prev.x, prev.y); r.lineTo(p.x, p.y); r.stroke();
+          prev = p;
+        }
+      });
+      if (A.mode === 'absorb' && t > 0.6) this.anim = null;
+    }
+    if (hasPath) {
+      const a = this.pathFade ? Math.max(0, 1 - (now - this.pathFade) / 420) : 1, P = this.path;
+      r.globalAlpha = a;
+      [[18, '#F7C800'], [7, '#FFFFFF']].forEach(([lw, c]) => {
+        r.lineWidth = lw; r.strokeStyle = c; r.beginPath(); r.moveTo(P[0].x, P[0].y);
+        for (let k = 1; k < P.length; k++) r.lineTo(P[k].x, P[k].y);
+        r.stroke();
+      });
+      r.globalAlpha = 1;
+    }
+    const b = this.bx;
+    b.clearRect(0, 0, RW, RH); b.filter = 'blur(6px)'; b.drawImage(this.raw, 0, 0); b.filter = 'none';
+    const img = b.getImageData(0, 0, RW, RH), d = img.data, nz = this.noise, g = this.grain(), n = RW * RH;
+    if ((this.frame++ & 1) === 0) this.off = (Math.random() * 8192) | 0;
+    const off = this.off;
+    for (let p = 0, i = 0; p < n; p++, i += 4) {
+      const al = d[i + 3]; if (!al) continue;
+      const z = nz[p + off];
+      d[i + 3] = (1 - g) * al + g * (al > z ? 255 : 0);
+      const k = 1 + (z - 128) * 0.0016 * g;
+      d[i] *= k; d[i + 1] *= k; d[i + 2] *= k;
+    }
+    b.putImageData(img, 0, 0);
+    cx.clearRect(0, 0, RW, RH);
+    cx.filter = 'blur(16px)'; cx.globalAlpha = 0.45; cx.drawImage(this.raw, 0, 0); cx.filter = 'none'; cx.globalAlpha = 1;
+    cx.drawImage(this.blr, 0, 0);
+  };
+
+  pt(e) {
+    const el = this.rootEl; if (!el) return { x: 0, y: 0 };
+    const r = el.getBoundingClientRect(), s = r.width / W || 1;
+    return { x: (e.clientX - r.left) / s, y: (e.clientY - r.top) / s };
+  }
+  rel(el) {
+    if (!el || !this.rootEl) return null;
+    const R = this.rootEl.getBoundingClientRect(), r = el.getBoundingClientRect(), s = R.width / W || 1;
+    return { x: (r.left - R.left) / s, y: (r.top - R.top) / s, w: r.width / s, h: r.height / s };
+  }
+
+  toastMsg(msg) { clearTimeout(this.toastT); this.setState({ toast: msg }); this.toastT = setTimeout(() => this.setState({ toast: null }), 2600); }
+  updateRec(id, patch) { this.setState((s) => ({ records: s.records.map((r) => (r.id === id ? { ...r, ...patch } : r)) })); }
+  makeRec(base, method, status, extra) {
+    return { ...base, ...(extra || {}), id: 'n' + ++this.uid, method, status, day: 'Today', date: 'Today', time: hm(), stamp: stampNow() };
+  }
+
+  goTab = (tab) => { this.clearTimers(); this.setAnim(null); this.setState({ tab, detail: null, chat: false, lens: null, searching: null, sel: null }); };
+  openDetail = (id) => this.setState({ detail: id });
+  closeDetail = () => this.setState({ detail: null });
+  openChat = () => this.setState({ chat: true, chatHint: true, detail: null, lens: null, sel: null });
+  exitChat = () => { this.closeLens(); this.setState({ chat: false, tab: 'home' }); };
+  stopProp = (e) => e.stopPropagation();
+
+  chatDown = (e) => {
+    if (this.state.lens) return;
+    this.lpStart = this.pt(e); clearTimeout(this.lpT);
+    this.lpT = setTimeout(() => { this.lpT = null; this.armLens(); }, 450 / Math.max(0.75, this.sp()));
+  };
+  chatMove = (e) => {
+    if (!this.lpT) return;
+    const p = this.pt(e);
+    if (Math.hypot(p.x - this.lpStart.x, p.y - this.lpStart.y) > 10) { clearTimeout(this.lpT); this.lpT = null; }
+  };
+  chatUp = () => { clearTimeout(this.lpT); this.lpT = null; };
+
+  armLens = () => {
+    if (this.state.lens) return;
+    this.clearTimers(); this.path = []; this.pathFade = 0;
+    this.setState({ lens: 'armed', sel: null, chatHint: false, step: 0 });
+    this.setAnim('armed', 0.5);
+  };
+  closeLens = () => {
+    this.clearTimers(); this.setAnim(null); this.path = []; this.drawing = false;
+    this.setState({ lens: null, sel: null, lensRec: null, chatHint: true });
+  };
+  lensToSearch = () => { this.closeLens(); this.setState({ chat: false, tab: 'search', detail: null }); };
+
+  lensDown = (e) => { try { e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {} this.drawing = true; this.pathFade = 0; this.path = [this.pt(e)]; };
+  lensMove = (e) => {
+    if (!this.drawing) return;
+    const p = this.pt(e), l = this.path[this.path.length - 1];
+    if (Math.hypot(p.x - l.x, p.y - l.y) > 2) this.path.push(p);
+  };
+  lensUp = () => { if (!this.drawing) return; this.drawing = false; this.finishSel(); };
+
+  finishSel() {
+    const P = this.path;
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    P.forEach((p) => { x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); x1 = Math.max(x1, p.x); y1 = Math.max(y1, p.y); });
+    const bubs = { A: this.rel(this.bubA), B: this.rel(this.bubB), Q: this.rel(this.bubQ) };
+    let sel;
+    if (x1 - x0 < 36 && y1 - y0 < 36) {
+      const c = P[0];
+      const hit = Object.keys(bubs).find((k) => { const b = bubs[k]; return b && c.x >= b.x && c.x <= b.x + b.w && c.y >= b.y && c.y <= b.y + b.h; });
+      const b = hit ? bubs[hit] : bubs.B || { x: c.x - 140, y: c.y - 50, w: 280, h: 100 };
+      sel = { x: b.x - 8, y: b.y - 8, w: b.w + 16, h: b.h + 16 };
+    } else sel = { x: x0 - 12, y: y0 - 12, w: x1 - x0 + 24, h: y1 - y0 + 24 };
+    sel.x = Math.max(6, sel.x); sel.y = Math.max(64, sel.y);
+    sel.w = Math.min(W - 6 - sel.x, sel.w); sel.h = Math.min(H - 40 - sel.y, sel.h);
+    let key = 'B', best = 0;
+    Object.keys(bubs).forEach((k) => {
+      const b = bubs[k]; if (!b) return;
+      const ox = Math.max(0, Math.min(sel.x + sel.w, b.x + b.w) - Math.max(sel.x, b.x)), oy = Math.max(0, Math.min(sel.y + sel.h, b.y + b.h) - Math.max(sel.y, b.y));
+      const a = (ox * oy) / (b.w * b.h);
+      if (a > best) { best = a; key = k; }
+    });
+    const below = sel.y + sel.h + 84;
+    const pillTop = below <= H - 150 ? below : Math.max(140, sel.y - 84);
+    this.pathFade = performance.now();
+    ['x', 'y', 'w', 'h'].forEach((k) => (sel[k] = Math.round(sel[k])));
+    this.setState({ lens: 'check', sel, pillTop, step: 0 });
+    this.setAnim('check', pillTop / H);
+    const sp = this.sp(), T = (ms) => ms / sp;
+    this.later(T(1000), () => this.setState({ step: 1 }));
+    this.later(T(2000), () => this.setState({ step: 2 }));
+    this.later(T(3000), () => this.setAnim('absorb', pillTop / H));
+    this.later(T(3420), () => {
+      const rec = this.makeRec(LENS[key], 'Circle to Check', 'Blocked');
+      this.setState((s) => ({ records: [rec, ...s.records], lens: 'result', lensRec: rec.id }));
+    });
+  }
+  lensBlock = () => {
+    const id = this.state.lensRec;
+    if (id) this.updateRec(id, { status: 'Reported' });
+    this.closeLens();
+    this.toastMsg('Blocked and reported. Nothing was paid.');
+  };
+  lensFull = () => {
+    const id = this.state.lensRec;
+    this.clearTimers(); this.setAnim(null); this.path = [];
+    this.setState({ lens: null, sel: null, chat: false, tab: 'reports', detail: id });
+  };
+
+  onQuery = (e) => this.setState({ query: e.target.value, forced: null });
+  onQueryKey = (e) => { if (e.key === 'Enter') this.runSearch(); };
+  runSearch = (q) => {
+    const query = (typeof q === 'string' ? q : this.state.query).trim();
+    if (!query || this.state.searching) return;
+    const type = (typeof q === 'string' ? null : this.state.forced) || detectType(query);
+    this.clearTimers();
+    this.setState({ searching: { q: query, type }, query, step: 0, pillTop: Math.round(H * 0.5), detail: null });
+    this.setAnim('check', 0.5);
+    const sp = this.sp(), T = (ms) => ms / sp;
+    this.later(T(950), () => this.setState({ step: 1 }));
+    this.later(T(1900), () => this.setState({ step: 2 }));
+    this.later(T(2800), () => this.setAnim('absorb', 0.5));
+    this.later(T(3250), () => {
+      const rec = this.searchResult(query, type);
+      this.setAnim(null);
+      this.setState((s) => ({ records: [rec, ...s.records], searching: null, detail: rec.id }));
+    });
+  };
+  cancelSearch = () => { this.clearTimers(); this.setAnim(null); this.setState({ searching: null }); };
+  searchResult(q, type) {
+    const norm = q.toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '').trim();
+    const digits = q.replace(/\D/g, '');
+    const hit = DB[norm] || (type === 'phone' && DB[digits.slice(-10)]) || (type === 'bank' && DB[digits]);
+    const base = { source: 'Searched by you', pre: '', hl: q, post: '' };
+    if (hit) return this.makeRec({ ...base, ...hit, kind: hit.kind || type }, 'KYC Search', 'Checked');
+    const kind = type || 'app', m = q.match(RISKY), tl = TYPE_LABEL[kind].toLowerCase();
+    if (m) {
+      const word = m[1];
+      let pre = '', hl = q, post = '';
+      if (kind === 'sms') {
+        const u = q.match(/((https?:\/\/)?[\w-]+(\.[\w-]+)+(\/\S*)?)/);
+        if (u) { pre = q.slice(0, u.index); hl = u[0]; post = q.slice(u.index + u[0].length); }
+      }
+      const reasons = {
+        link: [R_('bad', 'Uses words scammers rely on', `“${word}” in a web address is a common phishing trick.`), R_('bad', 'Website is under 30 days old', 'New sites asking for payments are high risk.'), R_('warn', 'Not on any bank or government list', 'Satya could not match it to a real organisation.')],
+        sms: [R_('bad', 'Asks you to pay or click to avoid a penalty', 'Official notices never ask for payment through a link in an SMS.'), R_('bad', 'Link points to an unverified site', `${hl} is not run by the organisation it names.`), R_('warn', 'Sent from a personal number', 'Real alerts come from registered sender IDs.')],
+        upi: [R_('bad', `UPI ID uses “${word}”`, 'IDs named after refunds, help or KYC are a known scam pattern.'), R_('bad', 'Account opened recently', 'Fresh IDs are often used once and dropped.'), R_('warn', 'Name not verified', 'The registered name does not match a business.')],
+      }[kind] || [R_('bad', 'Matches known scam patterns', `“${word}” shows up in thousands of fraud reports.`), R_('warn', 'Few genuine records', `Satya found little trustworthy history for this ${tl}.`)];
+      const category = { link: 'Phishing link', sms: 'Scam message', upi: 'Suspicious UPI ID' }[kind] || 'Likely scam';
+      return this.makeRec({ ...base, kind, pre, hl, post, verdict: 'scam', category, risk: 88, reasons }, 'KYC Search', 'Checked');
+    }
+    return this.makeRec({ ...base, kind, verdict: 'safe', category: 'No reports found', risk: 14,
+      reasons: [R_('good', 'No scam reports', `Nobody has reported this ${tl} to Satya.`), R_('warn', 'Not a verified business', 'Still check who you are paying before you send money.')] }, 'KYC Search', 'Checked');
+  }
+
+  vm(r, i) {
+    const v = V[r.verdict], k = KIND[r.kind] || KIND.app;
+    return {
+      ...r, vLabel: v.label, chipBg: v.chipBg, chipFg: v.chipFg, vIcon: ic(v.icon, v.chipFg, 14, 2.4),
+      kIcon: ic(k.icon, BLUE, 20), kIconSm: ic(k.icon, BLUE, 15), kindLabel: k.label, mIcon: ic(METHOD_IC[r.method] || 'eye', MUTED, 14),
+      sIcon: ic(r.status === 'Needs review' ? 'alert' : r.status === 'Verified' ? 'check' : r.status === 'Reported' ? 'flag' : 'lock', MUTED, 14, 2.2),
+      hlFg: v.text, hlBg: v.soft, hlBd: v.bd, delay: (i || 0) * 45 + 'ms', when: r.day === 'Today' ? r.time : r.date,
+      divider: i ? '1px solid rgba(14,35,72,.07)' : '0', open: () => this.openDetail(r.id),
+    };
+  }
+  reasonsVm(list) {
+    const S = { bad: ['#FDECEA', 'close', RED], warn: ['#FFF0B3', 'alert', '#7A5A00'], good: ['#E5F3EB', 'check', GREEN] };
+    return list.map((w, i) => { const s = S[w.type]; return { ...w, bg: s[0], icon: ic(s[1], s[2], 15, 2.6), delay: 80 + i * 60 + 'ms', divider: i ? '1px solid rgba(14,35,72,.08)' : '0' }; });
+  }
+  detailVm(base) {
+    const r = base, v = V[r.verdict], safe = r.verdict === 'safe', reported = r.status === 'Reported';
+    const blueBtn = 'linear-gradient(180deg,#3B7BE6,#1F5FC4)', redBtn = 'linear-gradient(180deg,#E5544A,#C93127)';
+    return {
+      ...r, vText: v.text, vSoft: v.soft, vColor: v.c, isSafe: safe,
+      bigIcon: ic(v.icon, r.verdict === 'suspicious' ? INK : '#fff', 30, 2.2),
+      riskW: r.risk + '%', riskLabel: r.risk + ' / 100',
+      meta: `Checked ${r.day === 'Today' ? 'today' : r.date} at ${r.time} · ${r.method}`,
+      whyTitle: `Why Satya says ${v.label.toLowerCase()}`,
+      reasonsV: this.reasonsVm(r.reasons), stepsV: STEPS[r.verdict].map((t, i) => ({ n: i + 1, t })),
+      primaryLabel: safe ? 'Done' : reported ? 'Reported' : 'Block & report',
+      primaryBg: safe || reported ? blueBtn : r.verdict === 'scam' ? redBtn : blueBtn,
+      secondaryLabel: safe ? 'Report anyway' : r.verdict === 'scam' ? 'Not a scam' : 'Mark as safe',
+      onPrimary: () => {
+        if (safe || reported) return this.closeDetail();
+        this.updateRec(r.id, { status: 'Reported' });
+        this.toastMsg('Blocked and reported. If you lost money, call 1930.');
+      },
+      onSecondary: () => this.toastMsg(safe ? 'Sent for review. Thanks for reporting.' : 'Noted. Satya will learn from this.'),
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    if (!this.cache) {
+      this.cache = {
+        sealSolid: seal(false), sealPeek: seal(true), detectEye: detectEye(), qrSvg: qrSvg(),
+        icLassoPaper: ic('lasso', PAPER, 24), icSearchInk: ic('search', INK, 22, 2.2), icSearchMuted: ic('search', MUTED, 22), icBellPaper: ic('bell', PAPER, 21),
+        icChevBlue: ic('chev', BLUE, 18, 2.4), icChevInk: ic('chev', 'rgba(14,35,72,.4)', 18, 2.2), icCheckGreen: ic('check', GREEN, 20, 2.6), icCheckInk: ic('check', INK, 16, 2.8),
+        icArrowPaper: ic('arrow', PAPER, 22, 2.4), icBackInk: ic('back', INK, 22, 2.2), icShareInk: ic('share', INK, 20), icClosePaper: ic('close', PAPER, 20, 2.2), icCloseInk: ic('close', INK, 18, 2.2),
+        icBackChat: ic('back', '#1B1B1F', 24, 2.2), icCallChat: ic('call', '#1B1B1F', 22), icMicChat: ic('mic', '#55524C', 22), icPlusChat: ic('plus', '#55524C', 24),
+      };
+    }
+    const c = this.cache;
+    const vms = s.records.map((r, i) => this.vm(r, i));
+    const byId = {}; vms.forEach((v) => (byId[v.id] = v));
+    const counts = { scam: 0, suspicious: 0, safe: 0 }; s.records.forEach((r) => counts[r.verdict]++);
+    const todayScams = s.records.filter((r) => r.day === 'Today' && r.verdict === 'scam').length;
+    const pending = vms.filter((r) => r.status === 'Needs review');
+    const chOn = Object.values(s.channels).filter(Boolean).length;
+    const lastScam = s.records.find((r) => r.day === 'Today' && r.verdict === 'scam');
+
+    const filtered = vms.filter((r) => s.filter === 'all' || r.verdict === s.filter);
+    const groups = [];
+    filtered.forEach((r) => {
+      const label = r.day === 'Today' || r.day === 'Yesterday' ? r.day : 'Earlier this month';
+      let g = groups.find((x) => x.label === label);
+      if (!g) { g = { label, items: [] }; groups.push(g); }
+      g.items.push({ ...r, delay: g.items.length * 45 + 'ms' });
+    });
+
+    const tab = (id, label, icon) => {
+      const on = s.tab === id && !s.detail;
+      return { label, icon: ic(icon, on ? BLUE : '#55617C', 23, on ? 2.3 : 2), fg: on ? BLUE : '#55617C', bg: on ? 'rgba(31,95,196,.11)' : 'transparent', go: () => this.goTab(id) };
+    };
+    const chDef = [['sms', 'SMS', 'sms', '42 checked today'], ['calls', 'Calls', 'call', '6 screened today'], ['upi', 'UPI requests', 'upi', '3 checked · 1 blocked'], ['links', 'Links & QR', 'link', '11 opened safely']];
+    const detected = detectType(s.query);
+    const activeType = s.query.trim() ? s.forced || detected : null;
+    const lr = s.lensRec && byId[s.lensRec] ? byId[s.lensRec] : null;
+    const sq = s.searching ? { q: s.searching.q, typeLabel: TYPE_LABEL[s.searching.type] || 'Search', icon: ic(CHIPS.find((x) => x[0] === s.searching.type)?.[2] || 'search', PAPER, 18) } : {};
+    const tl = s.searching ? (TYPE_LABEL[s.searching.type] || 'item').toLowerCase() : '';
+    const stepsLens = ['Reading what you circled', 'Checking links, numbers and QR codes', 'Matching against scam reports'];
+    const stepsSearch = [`Looking up this ${tl}`, 'Checking community scam reports', 'Verifying with banks and registries'];
+    const darkTop = s.lens || s.searching ? true : s.chat || s.detail ? false : s.tab !== 'reports';
+
+    return {
+      ...c,
+      statusDark: !!darkTop,
+      jumps: [
+        ['Home', 'Status, shortcuts, recent checks', () => this.goTab('home')],
+        ['Detection', 'Live shield and alerts', () => this.goTab('detect')],
+        ['Reports', 'Every check, with verdicts', () => this.goTab('reports')],
+        ['KYC Scam Search', 'Search, then watch it search', () => this.goTab('search')],
+        ['Circle to Check', 'Long-press the chat, then circle', () => { this.goTab('home'); this.openChat(); }],
+      ].map(([label, hint, go]) => ({ label, hint, go, icon: ic('arrow', PAPER, 18, 2.2) })),
+      isHome: s.tab === 'home', isDetect: s.tab === 'detect', isReports: s.tab === 'reports', isSearch: s.tab === 'search',
+      showTabs: !s.detail,
+      goSearch: () => this.goTab('search'), goReports: () => this.goTab('reports'), goDetect: () => this.goTab('detect'), openChat: this.openChat,
+      heroSub: `Satya stopped ${todayScams} scam${todayScams === 1 ? '' : 's'} today.` + (pending.length ? ` ${pending.length} ${pending.length === 1 ? 'item needs' : 'items need'} your review.` : ' Nothing needs you right now.'),
+      chipLive: chOn ? `Shield on · ${chOn} channel${chOn === 1 ? '' : 's'} live` : 'Shield paused',
+      pending, noPending: !pending.length, pendingCount: pending.length ? pending.length + ' pending' : '',
+      recent: vms.slice(0, 3).map((r, i) => ({ ...r, divider: i ? '1px solid rgba(14,35,72,.07)' : '0' })),
+      watchText: chOn ? `Watching ${chOn} of 4 channels` : 'Shield is paused',
+      lastThreat: lastScam ? `Last scam stopped today at ${lastScam.time}` : 'No scams today',
+      channels: chDef.map(([k, label, icon, stat]) => {
+        const on = s.channels[k];
+        return { label, stat: on ? stat : 'Paused', icon: ic(icon, PAPER, 22), track: on ? YEL : 'rgba(255,255,255,.16)', knob: on ? '21px' : '3px', toggle: () => this.setState((st) => ({ channels: { ...st.channels, [k]: !st.channels[k] } })) };
+      }),
+      alerts: vms.filter((r) => r.day === 'Today' && r.verdict !== 'safe').map((r, i) => ({ ...r, delay: i * 50 + 'ms' })),
+      alertsCount: vms.filter((r) => r.day === 'Today' && r.verdict !== 'safe').length + ' today',
+      summary: { ...counts, total: s.records.length },
+      filters: [['all', 'All', s.records.length], ['scam', 'Scam', counts.scam], ['suspicious', 'Suspicious', counts.suspicious], ['safe', 'Safe', counts.safe]].map(([id, label, count]) => {
+        const on = s.filter === id;
+        return { label, count, bg: on ? BLUE : '#fff', fg: on ? PAPER : INK, bd: on ? BLUE : 'rgba(14,35,72,.12)', pick: () => this.setState({ filter: id }) };
+      }),
+      groups, noResults: !filtered.length,
+      query: s.query, onQuery: this.onQuery, onQueryKey: this.onQueryKey, runSearch: this.runSearch, goOpacity: s.query.trim() ? 1 : 0.45,
+      detectLabel: activeType ? `Checking as ${TYPE_LABEL[activeType]}` : 'Satya can check',
+      searchChips: CHIPS.map(([id, label, icon]) => {
+        const on = activeType === id;
+        return { label, icon: ic(icon, on ? INK : PAPER, 16, 2.2), bg: on ? YEL : 'linear-gradient(160deg,rgba(255,255,255,.22),rgba(255,255,255,.05))', fg: on ? INK : PAPER, bd: on ? YEL : 'rgba(255,255,255,.38)', pick: () => this.setState((st) => ({ forced: st.forced === id ? null : id })) };
+      }),
+      examples: EXAMPLES.map(([text, type], i) => ({ text, label: TYPE_LABEL[type], icon: ic(CHIPS.find((x) => x[0] === type)[2], BLUE, 20), divider: i ? '1px solid rgba(14,35,72,.07)' : '0', run: () => this.runSearch(text) })),
+      recentSearches: vms.filter((r) => r.method === 'KYC Search').slice(0, 3).map((r, i) => ({ ...r, divider: i ? '1px solid rgba(14,35,72,.07)' : '0' })),
+      hasRecentSearches: vms.some((r) => r.method === 'KYC Search'),
+      tabsL: [tab('home', 'Home', 'home'), tab('detect', 'Detection', 'eye')],
+      tabsR: [tab('reports', 'Reports', 'reports'), tab('search', 'Search', 'search')],
+      hasDetail: !!(s.detail && byId[s.detail]), d: s.detail && byId[s.detail] ? this.detailVm(byId[s.detail]) : {},
+      closeDetail: this.closeDetail, shareDetail: () => this.toastMsg('Report copied. Share it to warn family.'),
+      inChat: s.chat, chatHint: s.chatHint && !s.lens,
+      chatTransform: s.lens ? 'scale(.965)' : 'none', chatRadius: s.lens ? '40px' : '0px',
+      chatDown: this.chatDown, chatMove: this.chatMove, chatUp: this.chatUp, exitChat: this.exitChat, stopProp: this.stopProp, armLens: this.armLens,
+      bubARef: this.bubARef, bubBRef: this.bubBRef, bubQRef: this.bubQRef, rootRef: this.rootRef, cvRef: this.cvRef,
+      lensOn: !!s.lens, lensDimFull: s.lens === 'armed', hasSel: !!s.sel, sel: s.sel || { x: 0, y: 0, w: 0, h: 0 },
+      lensArmed: s.lens === 'armed', lensChecking: s.lens === 'check', lensResult: s.lens === 'result' && !!lr,
+      lensDown: this.lensDown, lensMove: this.lensMove, lensUp: this.lensUp, closeLens: this.closeLens, lensToSearch: this.lensToSearch,
+      lensBlock: this.lensBlock, lensFull: this.lensFull,
+      lr: lr ? { ...lr, top: this.reasonsVm(lr.reasons.slice(0, 2)) } : { top: [] },
+      pillTop: s.pillTop, statusTop: s.pillTop + 62,
+      stepText: (s.searching ? stepsSearch : stepsLens)[s.step] || '',
+      searching: !!s.searching, sq, cancelSearch: this.cancelSearch,
+      hasToast: !!s.toast, toast: s.toast || '',
+    };
+  }
+}
+</script>
+</body>
+</html>

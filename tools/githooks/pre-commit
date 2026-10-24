@@ -1,0 +1,3 @@
+#!/bin/sh
+# SATYA pre-commit: refuse any commit that contains a real secret (repo is public).
+exec python "$(git rev-parse --show-toplevel)/tools/secret_guard.py"

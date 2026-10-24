@@ -1,0 +1,14 @@
+{
+  "vectors": [
+    {"in":"Dear Ravi, OTP 482913 for a/c 50100123456780. Pay to sbi.kyc@ybl or visit sbi-kyc-update.in/verify. PAN ABCDE1234F","my_names":["Ravi"],"my_phones":["9876543210"],"out":"Dear [NAME], OTP [CODE] for a/c [ACCOUNT]. Pay to [UPI_1] or visit [LINK_1]. PAN [PAN]"},
+    {"in":"Card 4111 1111 1111 1111 exp 12/27","my_names":[],"my_phones":[],"out":"Card [CARD] exp 12/27"},
+    {"in":"Aadhaar 2345 6789 0123 linked","my_names":[],"my_phones":[],"out":"Aadhaar [AADHAAR] linked"},
+    {"in":"Call +91 70123 45645 now, Rs 10,000 debited","my_names":[],"my_phones":["9876543210"],"out":"Call [PHONE_1] now, Rs 10,000 debited"},
+    {"in":"My number is 9876543210, call me","my_names":[],"my_phones":["9876543210"],"out":"My number is [MY_PHONE], call me"},
+    {"in":"Email a.b@gmail.com for refund of Rs 5000","my_names":[],"my_phones":[],"out":"Email [EMAIL] for refund of Rs 5000"},
+    {"in":"Call 1600108333 or 18002026161","my_names":[],"my_phones":[],"out":"Call 1600108333 or 18002026161"},
+    {"in":"IFSC HDFC0001234 a/c 50100123456780","my_names":[],"my_phones":[],"out":"IFSC [IFSC] a/c [ACCOUNT]"},
+    {"in":"Pay sbi.kyc@ybl then pay sbi.kyc@ybl again, or hdfc.help@okaxis","my_names":[],"my_phones":[],"out":"Pay [UPI_1] then pay [UPI_1] again, or [UPI_2]"},
+    {"in":"Visit https://WWW.SBI-KYC-update.in/verify?id=9.","my_names":[],"my_phones":[],"out":"Visit [LINK_1]."}
+  ]
+}

@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,500&amp;family=Sora:wght@300;400;600;700&amp;family=Noto+Sans+Devanagari:wght@400;600;700&amp;family=Roboto:wght@300;400;500&amp;display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#1F5FC4}
+body{font-family:'Hanken Grotesk','Noto Sans Devanagari',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#F4F3EE}
+a{color:#F7C800;text-decoration:none}a:hover{text-decoration:underline;text-underline-offset:3px}
+button{font:inherit;-webkit-tap-highlight-color:transparent}
+::-webkit-scrollbar{width:0;height:0}
+@keyframes scrIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pushIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes sheetUp{from{transform:translateY(110%)}to{transform:none}}
+@keyframes shadeDown{from{transform:translateY(-102%)}to{transform:none}}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes pillIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.55);filter:blur(10px)}100%{opacity:1;transform:translate(-50%,-50%) scale(1);filter:blur(0)}}
+@keyframes shimmer{from{transform:translateX(-140%)}to{transform:translateX(320%)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(247,200,0,.75)}100%{box-shadow:0 0 0 9px rgba(247,200,0,0)}}
+@keyframes tileRing{0%{box-shadow:0 0 0 0 rgba(247,200,0,.7)}100%{box-shadow:0 0 0 12px rgba(247,200,0,0)}}
+@keyframes pupilL{0%,18%{transform:translateX(-18px)}50%,68%{transform:translateX(18px)}100%{transform:translateX(-18px)}}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-5px)}}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,14px) scale(.96)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes notifIn{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:none}}
+@keyframes flash{0%{opacity:.95}100%{opacity:0}}
+@keyframes stampIn{0%{opacity:0;transform:scale(1.9) rotate(-16deg)}60%{opacity:1;transform:scale(.94) rotate(-7deg)}100%{opacity:1;transform:scale(1) rotate(-8deg)}}
+@keyframes sealDrop{0%{opacity:0;transform:translate(-50%,-50%) scale(2.2)}55%{opacity:1;transform:translate(-50%,-50%) scale(.92)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes qsMove{0%{opacity:0;transform:none}8%,16%{opacity:1;transform:none}24%{transform:scale(1.06)}54%{transform:translate(120px,-100px) scale(1.06)}62%,88%{opacity:1;transform:translate(120px,-100px)}96%,100%{opacity:0;transform:translate(120px,-100px)}}
+@keyframes qsFinger{0%{opacity:0;transform:scale(1.4)}10%{opacity:1;transform:scale(1)}16%{transform:scale(.85)}54%{transform:translate(120px,-100px) scale(.85)}62%{opacity:1;transform:translate(120px,-100px) scale(1)}70%,100%{opacity:0;transform:translate(120px,-100px) scale(1.3)}}
+</style>
+</helmet>
+<div style="position:relative;min-height:100vh;background:#1F5FC4;overflow:hidden;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:48px 80px;padding:48px 28px;box-sizing:border-box">
+  <div style="position:absolute;inset:0;opacity:.1;pointer-events:none;background-image:url(assets/lattice-paper.svg);background-size:800px 800px;background-position:center top"></div>
+  <div style="position:absolute;width:720px;height:720px;right:-260px;top:-300px;border-radius:50%;background:radial-gradient(circle,rgba(226,236,255,.4),rgba(226,236,255,0) 66%);pointer-events:none"></div>
+  <div style="position:absolute;width:820px;height:820px;left:-320px;bottom:-380px;border-radius:50%;background:radial-gradient(circle,rgba(140,190,255,.5),rgba(140,190,255,0) 66%);pointer-events:none"></div>
+  <div style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:160px 160px;mix-blend-mode:overlay;opacity:.45;pointer-events:none"></div>
+
+  <aside style="position:relative;z-index:1;flex:0 1 340px;display:flex;flex-direction:column;gap:24px;color:#F4F3EE">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="width:40px;height:40px">{{ sealSolid }}</div>
+      <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:20px;letter-spacing:.1em;color:#F7C800">SATYA</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase">Android prototype · v0.2</span>
+      <h1 style="margin:0;font-family:'Sora',sans-serif;font-weight:700;font-size:46px;line-height:1;letter-spacing:-.025em;color:#F7C800">SATYA for Android</h1>
+      <p style="margin:0;font-size:16px;line-height:1.55;text-wrap:pretty">Tap through the phone, or jump straight to a screen.</p>
+    </div>
+    <sc-for list="{{ jumpGroups }}" as="g" hint-placeholder-count="2">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="padding:0 4px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase">{{ g.label }}</span>
+        <div style="position:relative;overflow:hidden;border-radius:22px;border:1px solid rgba(255,255,255,.38);background:linear-gradient(160deg,rgba(255,255,255,.22),rgba(255,255,255,.06));backdrop-filter:blur(16px) saturate(1.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 10px 26px rgba(6,22,60,.22)">
+          <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5;pointer-events:none"></span>
+          <sc-for list="{{ g.items }}" as="j" hint-placeholder-count="3">
+            <button onClick="{{ j.go }}" style="position:relative;width:100%;display:flex;align-items:center;gap:12px;padding:11px 16px 11px 18px;border:0;border-top:{{ j.divider }};background:transparent;color:#F4F3EE;text-align:left;cursor:pointer;transition:background .15s" style-hover="background:rgba(255,255,255,.12)">
+              <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px"><span style="font-size:15px;font-weight:600">{{ j.label }}</span><span style="font-size:12.5px;font-weight:500">{{ j.hint }}</span></span>
+              {{ j.icon }}
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </aside>
+
+  <div style="position:relative;z-index:1;flex:none">
+    <x-import component-from-global-scope="AndroidDevice" from="./android-frame.jsx" full-bleed="{{ true }}" dark="{{ statusDark }}" width="{{ 416 }}" height="{{ 900 }}" hint-size="416px,900px">
+      <div style="position:relative;width:396px;height:880px;overflow:hidden;background:#F4F3EE;color:#0E2348;font-family:'Hanken Grotesk','Noto Sans Devanagari',sans-serif">
+
+        <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+          <div data-screen-label="01 Home" style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;background:#F4F3EE;animation:scrIn .28s cubic-bezier(.16,1,.3,1) both">
+            <div style="padding:50px 16px 44px;display:flex;flex-direction:column;gap:18px">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:0 2px 0 4px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:34px;height:34px">{{ sealSolid }}</div>
+                  <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:17px;letter-spacing:.1em;color:#1F5FC4">SATYA</span>
+                </div>
+                <button onClick="{{ goSettings }}" aria-label="Settings" style="width:46px;height:46px;border-radius:23px;border:1px solid rgba(14,35,72,.1);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .14s" style-active="transform:scale(.9)">{{ icGear }}</button>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px;padding:0 4px">
+                <span style="font-size:14px;font-weight:600;color:#4A5672">Friday, 23 October</span>
+                <h1 style="margin:0;font-family:'Sora',sans-serif;font-weight:700;font-size:44px;line-height:1.02;letter-spacing:-.03em;color:#1F5FC4">Shield on.<br><span style="font-weight:600;color:#7A849A">No account, no login.</span></h1>
+              </div>
+              <div style="position:relative;overflow:hidden;border-radius:28px;background:#1F5FC4;color:#F4F3EE;padding:18px 20px 18px;display:flex;flex-direction:column;gap:18px;box-shadow:0 18px 40px rgba(31,95,196,.28)">
+                <div style="position:absolute;inset:0;opacity:.15;background-image:url(assets/lattice-paper.svg);background-size:520px 520px;background-position:-30px -10px;pointer-events:none"></div>
+                <div style="position:absolute;width:300px;height:300px;right:-120px;top:-130px;border-radius:50%;background:radial-gradient(circle,rgba(226,236,255,.5),rgba(226,236,255,0) 68%);pointer-events:none"></div>
+                <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5;pointer-events:none"></span>
+                <div style="position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px">
+                  <span style="display:flex;align-items:center;gap:9px;height:32px;padding:0 13px;border-radius:16px;border:1px solid rgba(255,255,255,.38);background:linear-gradient(160deg,rgba(255,255,255,.24),rgba(255,255,255,.06));font-size:13px;font-weight:600;white-space:nowrap"><span style="width:8px;height:8px;border-radius:50%;background:#F7C800;animation:pulse 1.6s ease-out infinite"></span>Shield on</span>
+                  <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase">Prahari</span>
+                </div>
+                <div style="position:relative;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                  <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;font-weight:600">Last sync</span><span style="font-family:'Sora',sans-serif;font-weight:600;font-size:28px;line-height:1.1;letter-spacing:-.02em">{{ syncLabel }}</span></div>
+                  <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;font-weight:600">Promise Cards</span><span style="font-family:'Sora',sans-serif;font-weight:600;font-size:28px;line-height:1.1;letter-spacing:-.02em">{{ bankCount }} banks</span></div>
+                </div>
+                <span style="position:relative;font-size:13px;line-height:1.45;padding-top:14px;border-top:1px solid rgba(244,243,238,.28)">Syncs in the background every few hours. The app can stay closed.</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px">
+                <sc-for list="{{ counters }}" as="k" hint-placeholder-count="3">
+                  <button onClick="{{ k.go }}" style="position:relative;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:14px;padding:12px 12px 14px 14px;border-radius:22px;background:#fff;border:1px solid rgba(14,35,72,.08);box-shadow:0 1px 2px rgba(14,35,72,.04),0 10px 26px rgba(14,35,72,.06);color:#0E2348;transition:transform .14s" style-active="transform:scale(.96)">
+                    <span style="align-self:flex-end;width:28px;height:28px;border-radius:14px;background:#F4F3EE;display:flex;align-items:center;justify-content:center">{{ k.icon }}</span>
+                    <span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:'Sora',sans-serif;font-weight:300;font-size:40px;line-height:1;letter-spacing:-.04em">{{ k.n }}</span><span style="font-size:13px;font-weight:600;line-height:1.25;color:#4A5672">{{ k.label }}</span></span>
+                  </button>
+                </sc-for>
+              </div>
+              <button onClick="{{ checkNow }}" style="position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;height:78px;padding:0 13px;border-radius:39px;border:0;background:#0E2348;color:#F4F3EE;cursor:pointer;text-align:left;box-shadow:0 14px 30px rgba(14,35,72,.28);transition:transform .14s" style-active="transform:scale(.97)">
+                <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5;pointer-events:none"></span>
+                <span style="position:relative;width:52px;height:52px;flex:none">{{ sealSolid }}</span>
+                <span style="position:relative;flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-family:'Sora',sans-serif;font-weight:600;font-size:21px;letter-spacing:-.01em">Check now</span><span style="font-size:13px;color:#C9D3E6">Same as the Check screen tile</span></span>
+                <span style="position:relative;width:52px;height:52px;border-radius:26px;background:#F7C800;display:flex;align-items:center;justify-content:center;flex:none">{{ icArrowInk }}</span>
+              </button>
+              <div style="display:flex;flex-direction:column;gap:12px;padding-top:6px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 4px">
+                  <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:21px;color:#1F5FC4;letter-spacing:-.01em">Last receipts</span>
+                  <button onClick="{{ goChecks }}" style="border:0;background:none;padding:6px 0;font-size:14px;font-weight:600;color:#1F5FC4;cursor:pointer">All checks</button>
+                </div>
+                <div style="background:#fff;border:1px solid rgba(14,35,72,.08);border-radius:22px;box-shadow:0 1px 2px rgba(14,35,72,.04),0 10px 26px rgba(14,35,72,.06);overflow:hidden">
+                  <sc-for list="{{ lastReceipts }}" as="r" hint-placeholder-count="3">
+                    <button onClick="{{ r.open }}" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px 14px 14px 14px;border:0;border-top:{{ r.divider }};background:#fff;text-align:left;cursor:pointer;color:#0E2348;transition:background .15s" style-active="background:#F4F3EE">
+                      <span style="width:42px;height:42px;border-radius:14px;background:#F4F3EE;display:flex;align-items:center;justify-content:center;flex:none">{{ r.srcIcon }}</span>
+                      <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px">
+                        <span style="font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.ask }}</span>
+                        <span style="font-size:13px;color:#4A5672;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.bankShort }} · {{ r.src }} · {{ r.when }}</span>
+                      </span>
+                      <span style="flex:none;display:inline-flex;align-items:center;height:26px;padding:0 7px;border:3px double #0E2348;border-radius:7px;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#0E2348;white-space:nowrap;box-sizing:border-box">{{ r.word }}</span>
+                    </button>
+                  </sc-for>
+                  <sc-if value="{{ noChecks }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding:22px 18px;font-size:15px;line-height:1.5;color:#4A5672">No receipts yet. Tap Check now or use the tile.</div>
+                  </sc-if>
+                </div>
+              </div>
+              <button onClick="{{ goApps }}" style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:22px;background:#fff;border:1px solid rgba(14,35,72,.08);box-shadow:0 1px 2px rgba(14,35,72,.04),0 10px 26px rgba(14,35,72,.06);text-align:left;cursor:pointer;color:#0E2348;transition:transform .14s" style-active="transform:scale(.98)">
+                <span style="width:46px;height:46px;border-radius:16px;background:#F4F3EE;display:flex;align-items:center;justify-content:center;flex:none">{{ icAppBlue }}</span>
+                <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-family:'Sora',sans-serif;font-weight:600;font-size:17px">Know your apps</span><span style="font-size:13px;color:#4A5672">{{ appsSummary }}</span></span>
+                {{ icChevInk }}
+              </button>
+              <button onClick="{{ goPrivacy }}" style="position:relative;overflow:hidden;display:flex;align-items:center;gap:16px;padding:20px 20px 20px 22px;border-radius:26px;border:0;background:#F7C800;text-align:left;cursor:pointer;color:#0E2348;transition:transform .14s" style-active="transform:scale(.98)">
+                <div style="position:absolute;inset:0;opacity:.08;background-image:url(assets/lattice-ink.svg);background-size:440px 440px;pointer-events:none"></div>
+                <span style="position:relative;font-family:'Sora',sans-serif;font-weight:300;font-size:68px;line-height:.9;letter-spacing:-.05em">{{ logCount }}</span>
+                <span style="position:relative;flex:1;display:flex;flex-direction:column;gap:6px"><span style="font-family:'Sora',sans-serif;font-weight:600;font-size:18px;line-height:1.2">things left your phone this week.</span><span style="font-size:15px;font-weight:700;text-decoration:underline;text-underline-offset:3px">See them.</span></span>
+              </button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isOnb }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="00 Onboarding" style="position:absolute;inset:0;background:#1F5FC4;color:#F4F3EE;overflow:hidden;animation:fadeIn .3s both">
+            <div style="position:absolute;inset:0;opacity:.14;background-image:url(assets/lattice-paper.svg);background-size:640px 640px;background-position:-40px -20px;pointer-events:none"></div>
+            <div style="position:absolute;width:420px;height:420px;right:-180px;top:-160px;border-radius:50%;background:radial-gradient(circle,rgba(226,236,255,.5),rgba(226,236,255,0) 68%);pointer-events:none"></div>
+            <div style="position:absolute;width:460px;height:460px;left:-200px;bottom:-200px;border-radius:50%;background:radial-gradient(circle,rgba(140,190,255,.55),rgba(140,190,255,0) 68%);pointer-events:none"></div>
+            <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5;pointer-events:none"></span>
+            <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:52px 24px 40px;box-sizing:border-box">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px">{{ sealSolid }}</div><span style="font-family:'Sora',sans-serif;font-weight:600;font-size:16px;letter-spacing:.1em;color:#F7C800">SATYA</span></div>
+                <button onClick="{{ onbFinish }}" style="height:40px;padding:0 6px;border:0;background:none;color:#F4F3EE;font-size:15px;font-weight:600;cursor:pointer">Skip</button>
+              </div>
+              <div style="flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0">
+                <sc-if value="{{ onb0 }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;flex-direction:column;gap:26px;animation:scrIn .4s cubic-bezier(.16,1,.3,1) both">
+                    <div style="width:164px;height:164px">{{ sealAnim }}</div>
+                    <h1 style="margin:0;font-family:'Sora',sans-serif;font-weight:700;font-size:44px;line-height:1;letter-spacing:-.03em;color:#F7C800">Check before<br>you pay.</h1>
+                    <p style="margin:0;font-size:19px;line-height:1.5;max-width:30ch;text-wrap:pretty">SATYA checks a payment request on your screen against your bank’s own promises.</p>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ onb1 }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:22px;animation:scrIn .4s cubic-bezier(.16,1,.3,1) both">
+                    <h1 style="margin:0;font-family:'Sora',sans-serif;font-weight:700;font-size:34px;line-height:1.05;letter-spacing:-.025em;color:#F7C800">Add the tile to your Quick Settings</h1>
+                    <div style="align-self:center">{{ qsGif }}</div>
+                    <div style="display:flex;flex-direction:column;gap:10px">
+                      <div style="display:flex;align-items:center;gap:12px;font-size:15px;font-weight:600"><span style="width:26px;height:26px;border-radius:13px;background:#F7C800;color:#0E2348;font-family:'Sora',sans-serif;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none">1</span>Swipe down twice from the top</div>
+                      <div style="display:flex;align-items:center;gap:12px;font-size:15px;font-weight:600"><span style="width:26px;height:26px;border-radius:13px;background:#F7C800;color:#0E2348;font-family:'Sora',sans-serif;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none">2</span>Tap the pencil to edit tiles</div>
+                      <div style="display:flex;align-items:center;gap:12px;font-size:15px;font-weight:600"><span style="width:26px;height:26px;border-radius:13px;background:#F7C800;color:#0E2348;font-family:'Sora',sans-serif;font-size:13px;display:flex;align-items:center;justify-content:center;flex:none">3</span>Drag Check screen into your tiles</div>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ onb2 }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:18px;animation:scrIn .4s cubic-bezier(.16,1,.3,1) both">
+                    <h1 style="margin:0;font-family:'Sora',sans-serif;font-weight:700;font-size:34px;line-height:1.05;letter-spacing:-.025em;color:#F7C800">Two permissions, and why</h1>
+                    <sc-for list="{{ permRows }}" as="p" hint-placeholder-count="2">
+                      <div style="position:relative;overflow:hidden;display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:24px;border:1px solid rgba(255,255,255,.4);background:linear-gradient(160deg,rgba(255,255,255,.24),rgba(255,255,255,.06));backdrop-filter:blur(16px)">
+                        <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5;pointer-events:none"></span>
+                        <div style="position:relative;display:flex;align-items:center;gap:12px">
+                          <span style="width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;flex:none">{{ p.icon }}</span>
+                          <span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:17px;font-weight:700">{{ p.title }}</span><span style="font-size:13px;font-weight:600">{{ p.state }}</span></span>
+                          <button onClick="{{ p.toggle }}" aria-label="Allow" style="position:relative;width:52px;height:32px;border-radius:16px;border:1px solid rgba(255,255,255,.45);background:{{ p.track }};padding:0;cursor:pointer;transition:background .2s;flex:none"><span style="position:absolute;top:3px;left:{{ p.knob }};width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(6,22,60,.35);transition:left .22s cubic-bezier(.3,1.5,.5,1)"></span></button>
+                        </div>
+                        <span style="position:relative;font-size:15px;line-height:1.45">{{ p.body }}</span>
+                      </div>
+                    </sc-for>
+                    <div style="display:flex;flex-direction:column;gap:4px;padding:4px 4px 0">
+                      <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:18px;color:#F7C800">No signup. No login. No account.</span>
+                      <span style="font-size:14px;line-height:1.45">Screen capture is asked for each time you check, never in advance.</span>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:16px">
+                <div style="display:flex;gap:6px"><sc-for list="{{ onbDots }}" as="d" hint-placeholder-count="3"><span style="height:8px;width:{{ d.w }};border-radius:4px;background:{{ d.bg }};transition:width .3s"></span></sc-for></div>
+                <sc-if value="{{ onbNotLast }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ onbNext }}" aria-label="Next" style="width:68px;height:68px;border-radius:34px;border:0;background:#F7C800;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 12px 26px rgba(6,22,60,.3);transition:transform .14s" style-active="transform:scale(.92)">{{ icArrowInk }}</button>
+                </sc-if>
+                <sc-if value="{{ onbLast }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ onbFinish }}" style="height:64px;padding:0 28px;border-radius:32px;border:0;background:#F7C800;color:#0E2348;font-size:17px;font-weight:700;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 12px 26px rgba(6,22,60,.3);transition:transform .14s" style-active="transform:scale(.95)">Start using SATYA</button>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isChecks }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="02 Checks" style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;background:#F4F3EE;animation:scrIn .28s cubic-bezier(.16,1,.3,1) both">
+            <div style="padding:50px 16px 44px;display:flex;flex-direction:column;gap:18px">
+              <div style="display:flex"><button onClick="{{ goHome }}" aria-label="Back" style="width:46px;height:46px;border-radius:23px;border:1px solid rgba(14,35,72,.1);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .14s" style-active="transform:scale(.9)">{{ icBackInk }}</button></div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:0 4px">
+                <h1 style="margin:0;font-family:'Sora',sans-serif;font-weight:600;font-size:36px;line-height:1.05;letter-spacing:-.025em;color:#1F5FC4">Checks <span style="font-weight:300;color:#7A849A">({{ checksCount }})</span></h1>
+                <span style="font-size:15px;line-height:1.5;color:#2A3B5E">Every screen you checked. Kept only on this phone.</span>
+              </div>
+              <div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px">
+                <sc-for list="{{ checkFilters }}" as="f" hint-placeholder-count="4">
+                  <button onClick="{{ f.pick }}" style="flex:none;display:flex;align-items:center;gap:6px;height:38px;padding:0 15px;border-radius:19px;border:1px solid {{ f.bd }};background:{{ f.bg }};color:{{ f.fg }};font-size:14px;font-weight:600;cursor:pointer;transition:background .18s,color .18s,transform .12s" style-active="transform:scale(.94)">{{ f.label }}<span style="font-size:12px;font-weight:700">{{ f.count }}</span></button>
+                </sc-for>
+              </div>
+              <sc-for list="{{ checkGroups }}" as="g" hint-placeholder-count="2">
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <span style="padding:4px 4px 0;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1F5FC4">{{ g.label }}</span>
+                  <div style="background:#fff;border:1px solid rgba(14,35,72,.08);border-radius:22px;box-shadow:0 1px 2px rgba(14,35,72,.04),0 10px 26px rgba(14,35,72,.06);overflow:hidden">
+                    <sc-for list="{{ g.items }}" as="r" hint-placeholder-count="2">
+                      <button onClick="{{ r.open }}" style="width:100%;display:flex;align-items:flex-start;gap:12px;padding:16px;border:0;border-top:{{ r.divider }};background:#fff;text-align:left;cursor:pointer;color:#0E2348;transition:background .15s" style-active="background:#F4F3EE">
+                        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px">
+                          <span style="display:flex;gap:6px;flex-wrap:wrap">
+                            <span style="display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px 0 7px;border-radius:12px;background:#F4F3EE;font-size:12px;font-weight:600;color:#2A3B5E">{{ r.srcIconSm }}{{ r.src }}</span>
+                            <span style="display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:12px;background:#F4F3EE;font-size:12px;font-weight:600;color:#2A3B5E;font-variant-numeric:tabular-nums">{{ r.when }}</span>
+                          </span>
+                          <span style="font-size:17px;font-weight:600;line-height:1.3;text-wrap:pretty">{{ r.ask }}</span>
+                          <span style="font-size:13px;font-weight:600;color:#4A5672">{{ r.bank }}</span>
+                        </span>
+                        <span style="flex:none;display:inline-flex;align-items:center;height:26px;padding:0 7px;border:3px double #0E2348;border-radius:7px;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#0E2348;white-space:nowrap;box-sizing:border-box">{{ r.word }}</span>
+                      </button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ noCheckResults }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:36px 20px;text-align:center;font-size:15px;line-height:1.5;color:#4A5672">No checks here yet.</div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasReceipt }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="03 Proof receipt" style="position:absolute;inset:0;z-index:{{ receiptZ }};background:#F4F3EE;animation:pushIn .3s cubic-bezier(.16,1,.3,1) both">
+            <div style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none">
+              <div style="padding:50px 16px 124px;display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <button onClick="{{ closeReceipt }}" aria-label="Back" style="width:46px;height:46px;border-radius:23px;border:1px solid rgba(14,35,72,.1);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .14s" style-active="transform:scale(.9)">{{ icBackInk }}</button>
+                  <span style="font-size:16px;font-weight:600">Proof receipt</span>
+                  <span style="width:46px"></span>
+                </div>
+                <div style="position:relative;background:#fff;border-radius:24px;box-shadow:0 1px 2px rgba(14,35,72,.05),0 16px 36px rgba(14,35,72,.08)">
+                  <div style="position:absolute;inset:0;border-radius:24px;opacity:.05;background-image:url(assets/lattice-blue.svg);background-size:460px 460px;pointer-events:none"></div>
+                  <div style="position:relative;padding:20px 20px 20px;display:flex;flex-direction:column;gap:18px">
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div style="width:38px;height:38px;flex:none">{{ sealSolid }}</div>
+                      <span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-family:'Sora',sans-serif;font-weight:600;font-size:15px;letter-spacing:.1em;color:#1F5FC4">SATYA</span><span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">Proof receipt</span></span>
+                      <span style="display:flex;flex-direction:column;align-items:flex-end;gap:1px"><span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">No.</span><span style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums">{{ rc.no }}</span></span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px">
+                      <span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">{{ rc.lVerdict }}</span>
+                      <span style="font-family:'Sora','Noto Sans Devanagari',sans-serif;font-weight:700;font-size:40px;line-height:1.05;letter-spacing:-.03em">{{ rc.word }}</span>
+                      <span style="font-size:16px;font-weight:600;color:#2A3B5E">{{ rc.bankT }}</span>
+                    </div>
+                  </div>
+                  <div style="position:relative;height:0;margin:0 18px;border-top:2px dashed rgba(14,35,72,.16)">
+                    <span style="position:absolute;left:-30px;top:-12px;width:22px;height:22px;border-radius:50%;background:#F4F3EE"></span>
+                    <span style="position:absolute;right:-30px;top:-12px;width:22px;height:22px;border-radius:50%;background:#F4F3EE"></span>
+                  </div>
+                  <div style="position:relative;padding:20px 20px 22px;display:flex;flex-direction:column;gap:22px">
+                    <div style="display:flex;flex-direction:column;gap:6px">
+                      <span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">{{ rc.lAsked }}</span>
+                      <span style="font-size:20px;font-weight:600;line-height:1.35;text-wrap:pretty">{{ rc.askT }}</span>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:8px">
+                      <span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">{{ rc.lPromise }}</span>
+                      <div style="display:flex;gap:8px">
+                        <span style="font-family:'Sora',sans-serif;font-weight:700;font-size:40px;line-height:.85;color:#1F5FC4;flex:none">“</span>
+                        <span style="display:flex;flex-direction:column;gap:6px"><span style="font-size:17px;font-style:italic;font-weight:500;line-height:1.5;text-wrap:pretty">{{ rc.promiseT }}</span><span style="font-size:12.5px;font-weight:600;color:#4A5672">{{ rc.promiseRef }}</span></span>
+                      </div>
+                    </div>
+                    <sc-if value="{{ rc.hasStage }}" hint-placeholder-val="{{ true }}">
+                      <div style="display:flex;flex-direction:column;gap:10px">
+                        <span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">{{ rc.lChain }}</span>
+                        <span style="font-size:17px;font-weight:600;line-height:1.35">{{ rc.stageLine }}</span>
+                        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px">
+                          <sc-for list="{{ rc.chain }}" as="ch" hint-placeholder-count="4">
+                            <div style="display:flex;flex-direction:column;gap:6px"><span style="height:8px;border-radius:4px;background:{{ ch.bg }};box-shadow:inset 0 0 0 1.5px #0E2348"></span><span style="font-size:12px;font-weight:700;color:{{ ch.fg }}">{{ ch.label }}</span></div>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-if>
+                    <div style="display:flex;flex-direction:column;gap:10px">
+                      <span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">{{ rc.lEvidence }}</span>
+                      <div style="border-radius:18px;background:#ECE8E1;padding:10px;display:flex;flex-direction:column;gap:7px;border:1px solid rgba(14,35,72,.08)">
+                        <div style="display:flex;align-items:center;gap:8px;padding:2px 2px 4px">
+                          <span style="width:26px;height:26px;border-radius:13px;background:#0E2348;flex:none"></span>
+                          <span style="flex:1;min-width:0;font-size:13px;font-weight:600;color:#1B1B1F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ rc.from }}</span>
+                          <span style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#4A5672">{{ rc.srcUpper }}</span>
+                        </div>
+                        <div style="align-self:flex-start;max-width:86%;padding:8px 10px;border-radius:4px 14px 14px 14px;background:#fff;font-size:13px;line-height:1.45;color:#1B1B1F">{{ rc.ctxPre }}<span style="display:inline-block;width:58px;height:11px;border-radius:3px;background:#0E2348;vertical-align:-1px"></span>{{ rc.ctxPost }}</div>
+                        <div style="align-self:flex-start;max-width:86%;padding:8px 10px;border-radius:4px 14px 14px 14px;background:#fff;font-size:13px;line-height:1.45;font-weight:600;color:#1B1B1F;box-shadow:0 0 0 2px #1F5FC4">{{ rc.ask }}</div>
+                        <div style="align-self:flex-end;display:flex;flex-direction:column;align-items:flex-end;gap:5px;padding:9px 10px;border-radius:14px 4px 14px 14px;background:#D7E5FF"><span style="width:110px;height:9px;border-radius:3px;background:#0E2348"></span><span style="width:64px;height:9px;border-radius:3px;background:#0E2348"></span></div>
+                      </div>
+                      <span style="font-size:13px;line-height:1.45;color:#4A5672">{{ rc.maskNote }}</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;padding-top:18px;border-top:2px dashed rgba(14,35,72,.12)">
+                      <sc-for list="{{ rc.meta }}" as="m" hint-placeholder-count="4">
+                        <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#4A5672">{{ m.k }}</span><span style="font-size:14px;font-weight:600">{{ m.v }}</span></div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="position:absolute;left:0;right:0;bottom:0;padding:16px 16px 30px;background:linear-gradient(to top,#F4F3EE 72%,rgba(244,243,238,0));display:flex;gap:10px">
+              <button onClick="{{ rc.del }}" aria-label="Delete" style="width:60px;height:60px;border-radius:22px;border:1px solid rgba(14,35,72,.1);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;transition:transform .14s" style-active="transform:scale(.92)">{{ icTrash }}</button>
+              <button onClick="{{ toggleHindi }}" style="height:60px;padding:0 16px;border-radius:22px;border:1px solid rgba(14,35,72,.1);background:#fff;display:flex;align-items:center;gap:8px;cursor:pointer;flex:none;color:#0E2348;font-size:15px;font-weight:600;font-family:'Hanken Grotesk','Noto Sans Devanagari',sans-serif;transition:transform .14s" style-active="transform:scale(.95)">{{ icSpeaker }}<span>{{ rc.hindiLabel }}</span></button>
+              <button onClick="{{ rc.onPrimary }}" style="position:relative;overflow:hidden;flex:1;height:60px;border-radius:22px;border:0;background:#0E2348;color:#F4F3EE;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 10px 22px rgba(14,35,72,.22);transition:transform .14s" style-active="transform:scale(.96)"><span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5"></span><span style="position:relative">{{ rc.primaryLabel }}</span></button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasCompose }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="03b Report to bank" style="position:absolute;inset:0;z-index:12;background:#F4F3EE;animation:sheetUp .36s cubic-bezier(.16,1,.3,1) both">
+            <div style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none">
+              <div style="padding:50px 16px 124px;display:flex;flex-direction:column;gap:18px">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <button onClick="{{ closeCompose }}" aria-label="Close" style="width:46px;height:46px;border-radius:23px;border:1px solid rgba(14,35,72,.1);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .14s" style-active="transform:scale(.9)">{{ icCloseInk }}</button>
+                  <span style="font-size:16px;font-weight:600">Report to {{ cp.bankShort }}</span>
+                  <span style="width:46px"></span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:12px;padding:6px 4px 0">
+                  <span style="width:56px;height:56px;border-radius:20px;background:#1F5FC4;display:flex;align-items:center;justify-content:center">{{ icLockPaper }}</span>
+                  <h1 style="margin:0;font-family:'Sora',sans-serif;font-weight:700;font-size:32px;line-height:1.05;letter-spacing:-.025em;color:#1F5FC4">Sealed so only {{ cp.bank }} can open it.</h1>
+                  <p style="margin:0;font-size:15px;line-height:1.5;color:#2A3B5E;text-wrap:pretty">SATYA’s relay carries the box but can’t read it. This is everything inside.</p>
+                </div>
+                <div style="background:#fff;border:1px solid rgba(14,35,72,.08);border-radius:22px;box-shadow:0 1px 2px rgba(14,35,72,.04),0 10px 26px rgba(14,35,72,.06);overflow:hidden">
+                  <sc-for list="{{ cp.items }}" as="it" hint-placeholder-count="5">
+                    <div style="display:flex;flex-direction:column;gap:3px;padding:14px 16px;border-top:{{ it.divider }}">
+                      <span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">{{ it.k }}</span>
+                      <span style="font-size:15px;font-weight:600;line-height:1.4">{{ it.v }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:22px;background:#fff;border:1px solid rgba(14,35,72,.08)">
+                  <span style="width:42px;height:42px;border-radius:14px;background:#F4F3EE;display:flex;align-items:center;justify-content:center;flex:none">{{ icCallBlue }}</span>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Ask the bank to call me</span><span style="font-size:13px;line-height:1.4;color:#4A5672">Adds your number inside the sealed box. Off by default.</span></span>
+                  <button onClick="{{ toggleCallback }}" aria-label="Callback" style="position:relative;width:52px;height:32px;border-radius:16px;border:0;background:{{ cbTrack }};padding:0;cursor:pointer;transition:background .2s;flex:none"><span style="position:absolute;top:4px;left:{{ cbKnob }};width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(14,35,72,.3);transition:left .22s cubic-bezier(.3,1.5,.5,1)"></span></button>
+                </div>
+              </div>
+            </div>
+            <div style="position:absolute;left:0;right:0;bottom:0;padding:16px 16px 30px;background:linear-gradient(to top,#F4F3EE 72%,rgba(244,243,238,0))">
+              <button onClick="{{ sealNow }}" style="position:relative;overflow:hidden;width:100%;height:62px;border-radius:31px;border:0;background:#0E2348;color:#F4F3EE;font-size:17px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 12px 26px rgba(14,35,72,.26);transition:transform .14s" style-active="transform:scale(.97)"><span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5"></span><span style="position:relative;display:flex">{{ icLockPaper }}</span><span style="position:relative">Seal and send to {{ cp.bankShort }}</span></button>
+            </div>
+            <sc-if value="{{ sealing }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;inset:0;z-index:2;background:#1F5FC4;color:#F4F3EE;animation:fadeIn .25s both">
+                <div style="position:absolute;inset:0;opacity:.14;background-image:url(assets/lattice-paper.svg);background-size:640px 640px;background-position:-40px -20px"></div>
+                <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5"></span>
+                <div style="position:absolute;left:50%;top:42%;width:150px;height:150px;animation:sealDrop .7s cubic-bezier(.2,1.3,.3,1) both">{{ sealSolid }}</div>
+                <div style="position:absolute;left:24px;right:24px;top:58%;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;animation:fadeIn .3s .5s both">
+                  <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:22px;color:#F7C800">Sealing your report</span>
+                  <span style="font-size:15px">Encrypted with {{ cp.bank }}’s public key</span>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isReports }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="04 Reports" style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;background:#1F5FC4;color:#F4F3EE;animation:scrIn .28s cubic-bezier(.16,1,.3,1) both">
+            <div style="position:relative;min-height:100%">
+              <div style="position:absolute;inset:0;opacity:.14;background-image:url(assets/lattice-paper.svg);background-size:640px 640px;background-position:-40px -20px;pointer-events:none"></div>
+              <div style="position:absolute;width:420px;height:420px;right:-180px;top:-160px;border-radius:50%;background:radial-gradient(circle,rgba(226,236,255,.45),rgba(226,236,255,0) 68%);pointer-events:none"></div>
+              <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5;pointer-events:none"></span>
+              <div style="position:relative;padding:50px 16px 44px;display:flex;flex-direction:column;gap:18px">
+                <div style="display:flex"><button onClick="{{ goHome }}" aria-label="Back" style="width:46px;height:46px;border-radius:23px;border:1px solid rgba(255,255,255,.38);background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .14s" style-active="transform:scale(.9)">{{ icBackPaper }}</button></div>
+                <div style="display:flex;flex-direction:column;gap:6px;padding:0 4px">
+                  <h1 style="margin:0;font-family:'Sora',sans-serif;font-weight:600;font-size:36px;line-height:1.05;letter-spacing:-.025em;color:#F7C800">Reports <span style="font-weight:300;color:#F4F3EE">({{ reportsCount }})</span></h1>
+                  <span style="font-size:15px;line-height:1.5">Sealed on this phone. Only the bank can open them.</span>
+                </div>
+                <sc-for list="{{ reportRows }}" as="p" hint-placeholder-count="3">
+                  <button onClick="{{ p.open }}" style="position:relative;overflow:hidden;display:flex;flex-direction:column;gap:14px;padding:16px 16px 16px 18px;border-radius:24px;border:1px solid rgba(255,255,255,.38);background:linear-gradient(160deg,rgba(255,255,255,.22),rgba(255,255,255,.06));backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 10px 26px rgba(6,22,60,.2);color:#F4F3EE;text-align:left;cursor:pointer;animation:cardIn .4s cubic-bezier(.16,1,.3,1) both;animation-delay:{{ p.delay }};transition:transform .14s" style-active="transform:scale(.98)">
+                    <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5;pointer-events:none"></span>
+                    <span style="position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px">
+                      <span style="font-size:12px;font-weight:700;letter-spacing:.1em;font-variant-numeric:tabular-nums">{{ p.no }}</span>
+                      <sc-if value="{{ p.live }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700"><span style="width:7px;height:7px;border-radius:50%;background:#F7C800;animation:pulse 1.6s ease-out infinite"></span>Live</span></sc-if>
+                    </span>
+                    <span style="position:relative;display:flex;flex-direction:column;gap:3px">
+                      <span style="font-family:'Sora',sans-serif;font-weight:600;font-size:22px;letter-spacing:-.01em">{{ p.status }}</span>
+                      <span style="font-size:14px;font-weight:500">{{ p.bank }} · about {{ p.payee }}</span>
+                    </span>
+                    <span style="position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px">
+                      <sc-for list="{{ p.segs }}" as="sg" hint-placeholder-count="5"><span style="height:6px;border-radius:3px;background:{{ sg.bg }};box-shadow:inset 0 0 0 1px rgba(255,255,255,.4)"></span></sc-for>
+                    </span>
+                    <span style="position:relative;display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span>{{ p.stepLabel }}</span><span>Sent {{ p.dateLabel }} · updated {{ p.updated }}</span></span>
+                  </button>
+                </sc-for>
+                <sc-if value="{{ noReports }}" hint-placeholder-val="{{ false }}">
+                  <div style="padding:30px 8px;font-size:15px;line-height:1.5">No reports yet. When a check breaks a promise, you can report it to the bank from the receipt.</div>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasReport }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="05 Report status" style="position:absolute;inset:0;z-index:14;overflow-y:auto;scrollbar-width:none;background:#F4F3EE;animation:pushIn .3s cubic-bezier(.16,1,.3,1) both">
+            <div style="padding:50px 16px 44px;display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <button onClick="{{ closeReport }}" aria-label="Back" style="width:46px;height:46px;border-radius:23px;border:1px solid rgba(14,35,72,.1);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .14s" style-active="transform:scale(.9)">{{ icBackInk }}</button>
+                <span style="font-size:14px;font-weight:700;letter-spacing:.08em;font-variant-numeric:tabular-nums">{{ rd.no }}</span>
+                <span style="width:46px"></span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:0 4px">
+                <span style="font-size:14px;font-weight:600;color:#4A5672">{{ rd.bank }} · about {{ rd.payee }}</span>
+                <h1 style="margin:0;font-family:'Sora',sans-serif;font-weight:700;font-size:36px;line-height:1.05;letter-spacing:-.025em;color:#1F5FC4">{{ rd.status }}</h1>
+              </div>
+              <div style="position:relative;overflow:hidden;border-radius:28px;background:#1F5FC4;color:#F4F3EE;padding:18px 14px 14px;display:flex;flex-direction:column;gap:8px;box-shadow:0 18px 40px rgba(31,95,196,.26)">
+                <div style="position:absolute;inset:0;opacity:.14;background-image:url(assets/lattice-paper.svg);background-size:520px 520px;pointer-events:none"></div>
+                <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5;pointer-events:none"></span>
+                <div style="position:relative;display:flex;flex-direction:column;gap:8px;padding:0 4px 8px">
+                  <span style="display:flex;justify-content:space-between;font-size:13px;font-weight:700"><span>{{ rd.stepLabel }}</span><span>Only {{ rd.bankShort }} can read it</span></span>
+                  <span style="height:6px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden"><span style="display:block;height:100%;width:{{ rd.fillW }};background:#F7C800;border-radius:3px;transition:width .6s cubic-bezier(.16,1,.3,1)"></span></span>
+                </div>
+                <sc-for list="{{ rd.steps }}" as="st" hint-placeholder-count="5">
+                  <button onClick="{{ st.toggle }}" style="position:relative;display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:18px;border:{{ st.bd }};background:{{ st.bg }};color:#F4F3EE;text-align:left;cursor:pointer;transition:background .25s">
+                    <span style="display:flex;align-items:center;gap:10px">
+                      <sc-if value="{{ st.now }}" hint-placeholder-val="{{ false }}"><span style="width:8px;height:8px;border-radius:50%;background:#F7C800;animation:pulse 1.6s ease-out infinite;flex:none"></span></sc-if>
+                      <span style="flex:1;font-size:16px;font-weight:600">{{ st.label }}</span>
+                      <span style="font-size:13px;font-weight:600;font-variant-numeric:tabular-nums">{{ st.date }} · {{ st.time }}</span>
+                      <span style="display:flex;transform:{{ st.rot }};transition:transform .25s">{{ icChevDownPaper }}</span>
+                    </span>
+                    <sc-if value="{{ st.open }}" hint-placeholder-val="{{ false }}">
+                      <span style="font-size:14px;line-height:1.5;animation:fadeIn .25s both">{{ st.body }}</span>
+                    </sc-if>
+                  </button>
+                </sc-for>
+              </div>
+              <div style="display:flex;align-items:center;gap:14px;padding:16px;border-radius:22px;background:#fff;border:1px solid rgba(14,35,72,.08)">
+                <span style="width:42px;height:42px;border-radius:14px;background:#F4F3EE;display:flex;align-items:center;justify-content:center;flex:none">{{ icCallBlue }}</span>
+                <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Callback</span><span style="font-size:13px;line-height:1.4;color:#4A5672">{{ rd.callbackText }}</span></span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <button onClick="{{ rd.openReceipt }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:16px;padding:16px;border-radius:22px;border:1px solid rgba(14,35,72,.08);background:#fff;color:#0E2348;text-align:left;cursor:pointer;transition:transform .14s" style-active="transform:scale(.97)">
+                  {{ icReceiptBlue }}<span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Proof receipt</span><span style="font-size:13px;color:#4A5672">What SATYA found</span></span>
+                </button>
+                <button onClick="{{ openBankView }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:16px;padding:16px;border-radius:22px;border:0;background:#0E2348;color:#F4F3EE;text-align:left;cursor:pointer;transition:transform .14s" style-active="transform:scale(.97)">
+                  {{ icLockPaper }}<span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">What the bank sees</span><span style="font-size:13px;color:#C9D3E6">The sealed report, opened</span></span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasBankView }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="06 What the bank receives" style="position:absolute;inset:0;z-index:16;overflow-y:auto;scrollbar-width:none;background:#0E2348;color:#F4F3EE;animation:sheetUp .36s cubic-bezier(.16,1,.3,1) both">
+            <div style="padding:50px 16px 44px;display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <button onClick="{{ closeBankView }}" aria-label="Close" style="width:46px;height:46px;border-radius:23px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;cursor:pointer">{{ icClosePaper }}</button>
+                <span style="font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase">Bank view · {{ bv.bankShort }}</span>
+                <span style="width:46px"></span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:0 4px">
+                <h1 style="margin:0;font-family:'Sora',sans-serif;font-weight:600;font-size:28px;line-height:1.1;letter-spacing:-.02em;color:#F7C800">{{ bv.title }}</h1>
+                <span style="font-size:14px;line-height:1.5;color:#C9D3E6">The customer’s name, number and photo were masked on their phone. Only {{ bv.bank }}’s private key opens this.</span>
+              </div>
+              <div style="position:relative;background:#F4F3EE;color:#0E2348;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:2px dashed rgba(14,35,72,.14)">
+                  <div style="width:34px;height:34px;flex:none">{{ sealSolid }}</div>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">Sealed report</span><span style="font-size:14px;font-weight:700;font-variant-numeric:tabular-nums">{{ bv.no }}</span></span>
+                  <span style="font-size:11px;font-weight:600;color:#4A5672;font-variant-numeric:tabular-nums">{{ bv.hash }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">Request</span><span style="font-size:18px;font-weight:600;line-height:1.35">{{ bv.ask }}</span></div>
+                <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">Promise broken</span><span style="font-size:15px;font-style:italic;font-weight:500;line-height:1.5">“{{ bv.promise }}”</span><span style="font-size:12.5px;font-weight:600;color:#4A5672">{{ bv.promiseRef }}</span></div>
+                <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">Kill chain</span><span style="font-size:15px;font-weight:600">{{ bv.stageLine }}</span></div>
+                <div style="border-radius:14px;background:#ECE8E1;padding:10px;display:flex;flex-direction:column;gap:6px">
+                  <span style="font-size:12px;font-weight:700;color:#1B1B1F">{{ bv.from }} · {{ bv.src }}</span>
+                  <span style="align-self:flex-start;max-width:90%;padding:8px 10px;border-radius:4px 14px 14px 14px;background:#fff;font-size:13px;line-height:1.45;color:#1B1B1F">{{ bv.ctxPre }}<span style="display:inline-block;width:58px;height:11px;border-radius:3px;background:#0E2348;vertical-align:-1px"></span>{{ bv.ctxPost }}</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:14px;border-top:2px dashed rgba(14,35,72,.14)">
+                  <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#4A5672">{{ bv.payeeType }}</span><span style="font-size:14px;font-weight:600;word-break:break-all">{{ bv.payee }}</span></div>
+                  <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#4A5672">Amount</span><span style="font-size:14px;font-weight:600">{{ bv.amount }}</span></div>
+                  <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#4A5672">Seen</span><span style="font-size:14px;font-weight:600">{{ bv.when }}</span></div>
+                  <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#4A5672">Sealed · Opened</span><span style="font-size:14px;font-weight:600">{{ bv.sealed }} · {{ bv.opened }}</span></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#4A5672">Callback</span><span style="font-size:14px;font-weight:600">{{ bv.callback }}</span></div>
+                <sc-if value="{{ bv.confirmed }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;right:16px;top:150px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 12px;border:4px double #1F5FC4;border-radius:10px;color:#1F5FC4;background:rgba(244,243,238,.86);animation:stampIn .5s cubic-bezier(.2,1.3,.3,1) both;pointer-events:none">
+                    <span style="font-family:'Sora',sans-serif;font-weight:700;font-size:17px;letter-spacing:.08em;text-transform:uppercase">Confirmed fake</span>
+                    <span style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase">{{ bv.bankShort }} · {{ bv.stampDate }}</span>
+                  </div>
+                </sc-if>
+              </div>
+              <span style="padding:0 4px;font-size:13px;line-height:1.5;color:#C9D3E6">{{ bv.size }} · end-to-end encrypted · SATYA keeps no copy</span>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isApps }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="07 Apps" style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;background:#F4F3EE;animation:scrIn .28s cubic-bezier(.16,1,.3,1) both">
+            <div style="padding:50px 16px 44px;display:flex;flex-direction:column;gap:18px">
+              <div style="display:flex"><button onClick="{{ goHome }}" aria-label="Back" style="width:46px;height:46px;border-radius:23px;border:1px solid rgba(14,35,72,.1);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .14s" style-active="transform:scale(.9)">{{ icBackInk }}</button></div>
+              <div style="display:flex;flex-direction:column;gap:6px;padding:0 4px">
+                <h1 style="margin:0;font-family:'Sora',sans-serif;font-weight:600;font-size:36px;line-height:1.05;letter-spacing:-.025em;color:#1F5FC4">Know your apps</h1>
+                <span style="font-size:15px;line-height:1.5;color:#2A3B5E">{{ verifiedCount }} verified, {{ unknownCount }} unknown. Each finance app is matched against the official list. The app list stays on this phone.</span>
+              </div>
+              <div style="background:#fff;border:1px solid rgba(14,35,72,.08);border-radius:22px;box-shadow:0 1px 2px rgba(14,35,72,.04),0 10px 26px rgba(14,35,72,.06);overflow:hidden">
+                <sc-for list="{{ appRows }}" as="a" hint-placeholder-count="6">
+                  <button onClick="{{ a.open }}" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px;border:0;border-top:{{ a.divider }};background:#fff;text-align:left;cursor:pointer;color:#0E2348;transition:background .15s" style-active="background:#F4F3EE">
+                    <span style="width:44px;height:44px;border-radius:14px;background:{{ a.tileBg }};color:{{ a.tileFg }};border:{{ a.tileBd }};box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:700;font-size:19px;flex:none">{{ a.mono }}</span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">{{ a.name }}</span><span style="font-size:13px;color:#4A5672;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ a.source }}</span></span>
+                    <span style="flex:none;display:inline-flex;align-items:center;height:26px;padding:0 7px;border:3px double #0E2348;border-radius:7px;font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#0E2348;box-sizing:border-box">{{ a.word }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasApp }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="07b App detail" style="position:absolute;inset:0;z-index:10;overflow-y:auto;scrollbar-width:none;background:#F4F3EE;animation:pushIn .3s cubic-bezier(.16,1,.3,1) both">
+            <div style="padding:50px 16px 44px;display:flex;flex-direction:column;gap:18px">
+              <div style="display:flex"><button onClick="{{ closeApp }}" aria-label="Back" style="width:46px;height:46px;border-radius:23px;border:1px solid rgba(14,35,72,.1);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .14s" style-active="transform:scale(.9)">{{ icBackInk }}</button></div>
+              <div style="display:flex;flex-direction:column;align-items:flex-start;gap:14px;padding:0 4px">
+                <span style="width:84px;height:84px;border-radius:26px;background:{{ ad.tileBg }};color:{{ ad.tileFg }};border:{{ ad.tileBd }};box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:700;font-size:38px">{{ ad.mono }}</span>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <h1 style="margin:0;font-family:'Sora',sans-serif;font-weight:600;font-size:32px;line-height:1.05;letter-spacing:-.02em;color:#1F5FC4">{{ ad.name }}</h1>
+                  <span style="font-size:15px;font-weight:600;color:#2A3B5E">{{ ad.listLine }}</span>
+                </div>
+                <span style="display:inline-flex;align-items:center;height:34px;padding:0 12px;border:4px double #0E2348;border-radius:9px;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;box-sizing:border-box">{{ ad.word }}</span>
+              </div>
+              <div style="background:#fff;border:1px solid rgba(14,35,72,.08);border-radius:22px;overflow:hidden">
+                <sc-for list="{{ ad.rows }}" as="r" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;gap:3px;padding:14px 16px;border-top:{{ r.divider }}">
+                    <span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">{{ r.k }}</span>
+                    <span style="font-size:15px;font-weight:600;line-height:1.4">{{ r.v }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:22px;background:#fff;border:1px solid rgba(14,35,72,.08)">
+                <span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">What a check sends</span>
+                <div style="display:flex;gap:6px">
+                  <sc-for list="{{ ad.fpChars }}" as="f" hint-placeholder-count="5"><span style="width:38px;height:46px;border-radius:10px;background:#F4F3EE;border:1px solid rgba(14,35,72,.1);display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:600;font-size:20px;color:#1F5FC4">{{ f.ch }}</span></sc-for>
+                </div>
+                <span style="font-size:14px;line-height:1.5;color:#2A3B5E">Only these 5 characters of the app’s fingerprint leave your phone. Never the app list.</span>
+                <sc-if value="{{ ad.checked }}" hint-placeholder-val="{{ false }}">
+                  <span style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;line-height:1.4;animation:fadeIn .3s both">{{ icCheckBlue }}{{ ad.checkedText }}</span>
+                </sc-if>
+              </div>
+              <button onClick="{{ checkApp }}" style="position:relative;overflow:hidden;height:60px;border-radius:30px;border:0;background:#0E2348;color:#F4F3EE;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .14s" style-active="transform:scale(.97)">
+                <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5"></span>
+                <sc-if value="{{ appChecking }}" hint-placeholder-val="{{ false }}"><span style="position:relative;width:18px;height:18px;border-radius:50%;border:2.5px solid rgba(244,243,238,.3);border-top-color:#F7C800;animation:spin .8s linear infinite"></span><span style="position:relative">Checking the official list</span></sc-if>
+                <sc-if value="{{ appIdle }}" hint-placeholder-val="{{ true }}"><span style="position:relative">Check against the official list</span></sc-if>
+              </button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isPrivacy }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="08 Privacy Log" style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;background:#F4F3EE;animation:scrIn .28s cubic-bezier(.16,1,.3,1) both">
+            <div style="padding:50px 16px 44px;display:flex;flex-direction:column;gap:18px">
+              <div style="display:flex"><button onClick="{{ goHome }}" aria-label="Back" style="width:46px;height:46px;border-radius:23px;border:1px solid rgba(14,35,72,.1);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .14s" style-active="transform:scale(.9)">{{ icBackInk }}</button></div>
+              <div style="position:relative;overflow:hidden;display:flex;align-items:flex-end;gap:16px;padding:20px 20px 20px 22px;border-radius:26px;background:#F7C800;color:#0E2348">
+                <div style="position:absolute;inset:0;opacity:.08;background-image:url(assets/lattice-ink.svg);background-size:440px 440px;pointer-events:none"></div>
+                <span style="position:relative;font-family:'Sora',sans-serif;font-weight:300;font-size:76px;line-height:.85;letter-spacing:-.05em">{{ logCount }}</span>
+                <span style="position:relative;flex:1;display:flex;flex-direction:column;gap:4px"><span style="font-family:'Sora',sans-serif;font-weight:600;font-size:22px;line-height:1.1">Privacy Log</span><span style="font-size:14px;font-weight:600;line-height:1.4">Everything that left this phone, word for word.</span></span>
+              </div>
+              <div style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px">
+                <sc-for list="{{ logFilters }}" as="f" hint-placeholder-count="4">
+                  <button onClick="{{ f.pick }}" style="flex:none;height:38px;padding:0 15px;border-radius:19px;border:1px solid {{ f.bd }};background:{{ f.bg }};color:{{ f.fg }};font-size:14px;font-weight:600;cursor:pointer;transition:background .18s,color .18s,transform .12s" style-active="transform:scale(.94)">{{ f.label }}</button>
+                </sc-for>
+              </div>
+              <sc-for list="{{ logGroups }}" as="g" hint-placeholder-count="2">
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <span style="padding:4px 4px 0;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1F5FC4">{{ g.label }}</span>
+                  <div style="background:#fff;border:1px solid rgba(14,35,72,.08);border-radius:22px;box-shadow:0 1px 2px rgba(14,35,72,.04),0 10px 26px rgba(14,35,72,.06);overflow:hidden">
+                    <sc-for list="{{ g.items }}" as="e" hint-placeholder-count="3">
+                      <div style="display:flex;gap:12px;padding:14px;border-top:{{ e.divider }}">
+                        <span style="width:34px;height:34px;border-radius:12px;background:#F4F3EE;display:flex;align-items:center;justify-content:center;flex:none">{{ e.icon }}</span>
+                        <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+                          <span style="display:flex;justify-content:space-between;gap:8px;font-size:12.5px;font-weight:600;color:#4A5672"><span>{{ e.sub }}</span><span style="font-variant-numeric:tabular-nums">{{ e.time }}</span></span>
+                          <span style="font-size:15px;font-weight:600;line-height:1.4">{{ e.text }}</span>
+                          <span style="display:flex;flex-direction:column;gap:4px;padding:9px 11px;border-radius:12px;background:#F4F3EE;border:1px dashed rgba(14,35,72,.2)">
+                            <span style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1F5FC4">{{ e.payLabel }}</span>
+                            <span style="font-size:13px;line-height:1.45;color:#0E2348;word-break:break-word">{{ e.payload }}</span>
+                          </span>
+                        </span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ noLogs }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:30px 20px;text-align:center;font-size:15px;line-height:1.5;color:#4A5672">Nothing has left this phone.</div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="09 Settings" style="position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;background:#F4F3EE;animation:scrIn .28s cubic-bezier(.16,1,.3,1) both">
+            <div style="padding:50px 16px 44px;display:flex;flex-direction:column;gap:18px">
+              <div style="display:flex"><button onClick="{{ goHome }}" aria-label="Back" style="width:46px;height:46px;border-radius:23px;border:1px solid rgba(14,35,72,.1);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .14s" style-active="transform:scale(.9)">{{ icBackInk }}</button></div>
+              <h1 style="margin:0;padding:0 4px;font-family:'Sora',sans-serif;font-weight:600;font-size:36px;line-height:1.05;letter-spacing:-.025em;color:#1F5FC4">Settings</h1>
+              <div style="background:#fff;border:1px solid rgba(14,35,72,.08);border-radius:22px;overflow:hidden">
+                <div style="display:flex;align-items:center;gap:14px;padding:16px">
+                  <span style="width:42px;height:42px;border-radius:14px;background:#F4F3EE;display:flex;align-items:center;justify-content:center;flex:none">{{ icSyncBlue }}</span>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Promise Cards and blocklist</span><span style="font-size:13px;color:#4A5672">Last sync {{ syncLabel }}</span></span>
+                  <button onClick="{{ syncNow }}" style="height:40px;padding:0 14px;border-radius:20px;border:1px solid rgba(31,95,196,.25);background:rgba(31,95,196,.07);color:#1F5FC4;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;flex:none">
+                    <sc-if value="{{ syncing }}" hint-placeholder-val="{{ false }}"><span style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(31,95,196,.25);border-top-color:#1F5FC4;animation:spin .8s linear infinite"></span>Syncing</sc-if>
+                    <sc-if value="{{ notSyncing }}" hint-placeholder-val="{{ true }}">Sync now</sc-if>
+                  </button>
+                </div>
+                <div style="display:flex;align-items:center;gap:14px;padding:16px;border-top:1px solid rgba(14,35,72,.07)">
+                  <span style="width:42px;height:42px;border-radius:14px;background:#F4F3EE;display:flex;align-items:center;justify-content:center;flex:none">{{ icSpeakerBlue }}</span>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Read receipts aloud in Hindi</span><span style="font-size:13px;color:#4A5672">When you switch a receipt to हिंदी</span></span>
+                  <button onClick="{{ toggleHindiVoice }}" aria-label="Hindi voice" style="position:relative;width:52px;height:32px;border-radius:16px;border:0;background:{{ hvTrack }};padding:0;cursor:pointer;transition:background .2s;flex:none"><span style="position:absolute;top:4px;left:{{ hvKnob }};width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(14,35,72,.3);transition:left .22s cubic-bezier(.3,1.5,.5,1)"></span></button>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <span style="padding:4px 4px 0;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1F5FC4">Promise Cards on this phone</span>
+                <div style="background:#fff;border:1px solid rgba(14,35,72,.08);border-radius:22px;overflow:hidden">
+                  <sc-for list="{{ bankRows }}" as="b" hint-placeholder-count="5">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;border-top:{{ b.divider }}"><span style="font-size:15px;font-weight:600">{{ b.name }}</span><span style="font-size:13px;color:#4A5672;white-space:nowrap">{{ b.sub }}</span></div>
+                  </sc-for>
+                  <button onClick="{{ toggleShowAll }}" style="width:100%;height:48px;border:0;border-top:1px solid rgba(14,35,72,.07);background:#fff;color:#1F5FC4;font-size:14px;font-weight:600;cursor:pointer">{{ showAllLabel }}</button>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <span style="padding:4px 4px 0;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1F5FC4">How SATYA works</span>
+                <div style="background:#fff;border:1px solid rgba(14,35,72,.08);border-radius:22px;overflow:hidden">
+                  <sc-for list="{{ protocols }}" as="p" hint-placeholder-count="5">
+                    <div style="display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-top:{{ p.divider }}">
+                      <span style="display:flex;align-items:baseline;gap:8px"><span style="font-family:'Sora',sans-serif;font-weight:600;font-size:14px;letter-spacing:.12em;color:#1F5FC4">{{ p.name }}</span><span style="font-size:13px;font-weight:600;color:#4A5672">{{ p.role }}</span></span>
+                      <span style="font-size:14px;line-height:1.5">{{ p.line }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="background:#fff;border:1px solid rgba(14,35,72,.08);border-radius:22px;overflow:hidden">
+                <button onClick="{{ askClear }}" style="width:100%;display:flex;align-items:center;gap:14px;padding:16px;border:0;background:#fff;color:#0E2348;text-align:left;cursor:pointer">
+                  <span style="width:42px;height:42px;border-radius:14px;background:#F4F3EE;display:flex;align-items:center;justify-content:center;flex:none">{{ icTrashBlue }}</span>
+                  <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Clear everything on this phone</span><span style="font-size:13px;color:#4A5672">Checks, reports and the Privacy Log</span></span>
+                </button>
+                <sc-if value="{{ confirmClear }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:12px;padding:0 16px 16px;animation:fadeIn .2s both">
+                    <span style="font-size:14px;line-height:1.5;color:#2A3B5E">This can’t be undone. Reports already sealed still reach the bank.</span>
+                    <div style="display:flex;gap:10px">
+                      <button onClick="{{ cancelClear }}" style="flex:1;height:48px;border-radius:24px;border:1px solid rgba(14,35,72,.14);background:#fff;color:#0E2348;font-size:15px;font-weight:600;cursor:pointer">Cancel</button>
+                      <button onClick="{{ doClear }}" style="flex:1;height:48px;border-radius:24px;border:0;background:#0E2348;color:#F4F3EE;font-size:15px;font-weight:600;cursor:pointer">Clear all</button>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:4px 6px;font-size:13px;line-height:1.45;color:#4A5672">{{ icCloudBlue }}<span>No account, nothing to log in to. SATYA v0.2 · Promise Cards v2026.10</span></div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ inOther }}" hint-placeholder-val="{{ false }}">
+          <div data-screen-label="10 Other app" style="position:absolute;inset:0;z-index:20;background:#050B1C;animation:fadeIn .2s both">
+            <div style="position:absolute;inset:0;background:#ECE8E1;display:flex;flex-direction:column;transform:{{ chatTransform }};border-radius:{{ chatRadius }};overflow:hidden;transition:transform .4s cubic-bezier(.16,1,.3,1),border-radius .4s;color:#1B1B1F;font-family:'Roboto','Hanken Grotesk',sans-serif">
+              <div style="display:flex;align-items:center;gap:6px;padding:44px 6px 10px;background:#fff;border-bottom:1px solid rgba(0,0,0,.06)">
+                <button onClick="{{ exitOther }}" aria-label="Back to SATYA" style="width:44px;height:44px;border:0;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ icBackChat }}</button>
+                <span style="width:40px;height:40px;border-radius:50%;background:#D9D4CB;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#55524C;flex:none">+91</span>
+                <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;padding-left:6px"><span style="font-size:16px;font-weight:500">+91 70448 21319</span><span style="font-size:12px;color:#6B6862">Not in your contacts</span></span>
+                <button onClick="{{ openShare }}" aria-label="Share screenshot" style="width:44px;height:44px;border:0;background:none;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ icShareChat }}</button>
+                <span style="width:44px;height:44px;display:flex;align-items:center;justify-content:center">{{ icCallChat }}</span>
+              </div>
+              <div style="flex:1;padding:16px 12px;display:flex;flex-direction:column;gap:8px;overflow:hidden">
+                <span style="align-self:center;padding:4px 12px;border-radius:10px;background:rgba(255,255,255,.75);font-size:12px;font-weight:500;color:#6B6862">Today</span>
+                <div style="align-self:flex-start;max-width:82%;padding:10px 12px 6px;border-radius:4px 18px 18px 18px;background:#fff;box-shadow:0 1px 1px rgba(0,0,0,.06);font-size:15px;line-height:1.42">Dear Ramesh, your YONO account will be blocked today because your KYC is pending.<span style="display:block;text-align:right;font-size:11px;color:#8A867F;margin-top:2px">09:24</span></div>
+                <div style="align-self:flex-start;max-width:82%;padding:10px 12px 6px;border-radius:4px 18px 18px 18px;background:#fff;box-shadow:0 1px 1px rgba(0,0,0,.06);font-size:15px;line-height:1.42">Pay ₹10 KYC fee to <span style="color:#1F5FC4;font-weight:500">sbi.kyc@ybl</span> to keep your account active. — SBI KYC Team<span style="display:block;text-align:right;font-size:11px;color:#8A867F;margin-top:2px">09:24</span></div>
+                <div style="align-self:flex-end;max-width:78%;padding:10px 12px 6px;border-radius:18px 4px 18px 18px;background:#D7E5FF;font-size:15px;line-height:1.42">Is this really SBI?<span style="display:block;text-align:right;font-size:11px;color:#6C7896;margin-top:2px">09:27</span></div>
+                <div style="align-self:flex-start;max-width:82%;padding:10px 12px 6px;border-radius:4px 18px 18px 18px;background:#fff;box-shadow:0 1px 1px rgba(0,0,0,.06);font-size:15px;line-height:1.42">Yes sir. Pay fast, only 30 minutes left.<span style="display:block;text-align:right;font-size:11px;color:#8A867F;margin-top:2px">09:28</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;padding:8px 10px 30px;background:#F6F3EE">
+                <span style="width:40px;height:40px;display:flex;align-items:center;justify-content:center">{{ icPlusChat }}</span>
+                <span style="flex:1;height:44px;border-radius:22px;background:#fff;display:flex;align-items:center;padding:0 16px;font-size:15px;color:#8A867F">Message</span>
+                <span style="width:40px;height:40px;display:flex;align-items:center;justify-content:center">{{ icMicChat }}</span>
+              </div>
+            </div>
+            <button onClick="{{ openShade }}" aria-label="Pull down Quick Settings" style="position:absolute;left:0;right:0;top:0;height:36px;border:0;background:transparent;cursor:pointer"></button>
+            <sc-if value="{{ otherHint }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ openShade }}" style="position:absolute;left:50%;top:110px;overflow:hidden;display:flex;align-items:center;gap:10px;height:52px;padding:0 18px 0 9px;border-radius:26px;border:1px solid rgba(255,255,255,.25);background:linear-gradient(160deg,rgba(31,95,196,.94),rgba(14,35,72,.94));backdrop-filter:blur(16px);box-shadow:0 14px 30px rgba(14,35,72,.35),inset 0 1px 0 rgba(255,255,255,.3);color:#F4F3EE;font-size:14px;font-weight:600;white-space:nowrap;cursor:pointer;animation:bob 2.2s ease-in-out infinite;font-family:'Hanken Grotesk',sans-serif">
+                <span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5"></span>
+                <span style="position:relative;width:34px;height:34px">{{ sealSolid }}</span>
+                <span style="position:relative">Pull down, tap Check screen</span>
+                <span style="position:relative;display:flex">{{ icChevDownPaper }}</span>
+              </button>
+            </sc-if>
+
+            <sc-if value="{{ shadeOpen }}" hint-placeholder-val="{{ false }}">
+              <div data-screen-label="11 Quick Settings" style="position:absolute;inset:0;z-index:5">
+                <div onClick="{{ closeShade }}" style="position:absolute;inset:0;background:rgba(5,9,18,.55);backdrop-filter:blur(6px);animation:fadeIn .25s both"></div>
+                <div style="position:absolute;left:0;right:0;top:0;display:flex;flex-direction:column;gap:10px;animation:shadeDown .38s cubic-bezier(.16,1,.3,1) both;font-family:'Roboto','Hanken Grotesk',sans-serif;color:#E9ECF2">
+                  <div style="background:#141922;border-radius:0 0 30px 30px;padding:44px 14px 18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 50px rgba(0,0,0,.45)">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 6px">
+                      <span style="display:flex;align-items:baseline;gap:10px"><span style="font-size:30px;font-weight:300">09:30</span><span style="font-size:13px;color:#AEB6C6">Fri, 23 Oct</span></span>
+                      <span style="display:flex;gap:18px">{{ icPencilShade }}{{ icGearShade }}</span>
+                    </div>
+                    <div style="position:relative;height:46px;border-radius:23px;background:#262C38;overflow:hidden"><span style="position:absolute;left:0;top:0;bottom:0;width:62%;background:#D6E2FF;border-radius:23px;display:flex;align-items:center;justify-content:flex-end;padding-right:14px;box-sizing:border-box">{{ icSunInk }}</span></div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                      <button onClick="{{ tapTile }}" style="position:relative;display:flex;align-items:center;gap:10px;height:64px;padding:0 12px;border-radius:22px;border:0;background:#F7C800;color:#0E2348;text-align:left;cursor:pointer;animation:tileRing 1.5s ease-out infinite;font-family:'Hanken Grotesk',sans-serif;transition:transform .14s" style-active="transform:scale(.95)">
+                        <span style="width:34px;height:34px;flex:none">{{ sealSolid }}</span>
+                        <span style="display:flex;flex-direction:column;gap:1px"><span style="font-size:14px;font-weight:700">Check screen</span><span style="font-size:12px;font-weight:600">SATYA</span></span>
+                      </button>
+                      <sc-for list="{{ qsTiles }}" as="t" hint-placeholder-count="4">
+                        <div style="display:flex;align-items:center;gap:10px;height:64px;padding:0 14px;border-radius:22px;background:#262C38">
+                          {{ t.icon }}<span style="display:flex;flex-direction:column;gap:1px"><span style="font-size:14px;font-weight:500">{{ t.label }}</span><span style="font-size:12px;color:#AEB6C6">{{ t.sub }}</span></span>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="align-self:center;width:36px;height:4px;border-radius:2px;background:#4A5263"></div>
+                  </div>
+                  <sc-for list="{{ qsNotifs }}" as="n" hint-placeholder-count="2">
+                    <div style="margin:0 10px;display:flex;gap:12px;padding:14px;border-radius:24px;background:#1E2430">
+                      <span style="width:32px;height:32px;flex:none">{{ sealSolid }}</span>
+                      <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="display:flex;justify-content:space-between;font-size:12px;color:#AEB6C6"><span>SATYA</span><span>{{ n.time }}</span></span><span style="font-size:14px;font-weight:500">{{ n.title }}</span><span style="font-size:13px;line-height:1.4;color:#C6CDDA">{{ n.body }}</span></span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ consentOpen }}" hint-placeholder-val="{{ false }}">
+              <div data-screen-label="12 Capture consent" style="position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;padding:0 24px;background:rgba(5,9,18,.6);animation:fadeIn .22s both">
+                <div style="width:100%;display:flex;flex-direction:column;gap:16px;padding:24px;border-radius:28px;background:#EEF1F8;color:#1B1B1F;font-family:'Roboto','Hanken Grotesk',sans-serif;animation:cardIn .3s cubic-bezier(.16,1,.3,1) both">
+                  <span style="align-self:center">{{ icScreenBlue }}</span>
+                  <span style="text-align:center;font-size:22px;line-height:1.3">Start capturing with SATYA?</span>
+                  <span style="font-size:14px;line-height:1.5;color:#44474F">SATYA will see one frame of your screen, then stop. Your name, number and photo are masked on this phone before anything is sent.</span>
+                  <div style="display:flex;justify-content:flex-end;gap:8px;padding-top:6px">
+                    <button onClick="{{ consentCancel }}" style="height:44px;padding:0 18px;border-radius:22px;border:0;background:none;color:#3B5BA9;font-size:14px;font-weight:500;cursor:pointer">Cancel</button>
+                    <button onClick="{{ consentStart }}" style="height:44px;padding:0 22px;border-radius:22px;border:0;background:#3B5BA9;color:#fff;font-size:14px;font-weight:500;cursor:pointer">Start</button>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ shareOpen }}" hint-placeholder-val="{{ false }}">
+              <div data-screen-label="13 Share sheet" style="position:absolute;inset:0;z-index:6">
+                <div onClick="{{ closeShare }}" style="position:absolute;inset:0;background:rgba(5,9,18,.5);animation:fadeIn .22s both"></div>
+                <div style="position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:18px;padding:10px 18px 34px;border-radius:28px 28px 0 0;background:#F4F6FB;color:#1B1B1F;font-family:'Roboto','Hanken Grotesk',sans-serif;animation:sheetUp .36s cubic-bezier(.16,1,.3,1) both">
+                  <span style="align-self:center;width:36px;height:4px;border-radius:2px;background:rgba(0,0,0,.2)"></span>
+                  <div style="display:flex;align-items:center;gap:12px">
+                    <span style="width:54px;height:72px;border-radius:8px;background:#ECE8E1;border:1px solid rgba(0,0,0,.08);display:flex;flex-direction:column;gap:4px;padding:8px 6px;box-sizing:border-box;flex:none"><span style="height:6px;width:80%;border-radius:2px;background:#fff"></span><span style="height:6px;width:90%;border-radius:2px;background:#fff"></span><span style="height:6px;width:60%;border-radius:2px;background:#D7E5FF;align-self:flex-end"></span></span>
+                    <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:500">Screenshot_20261023-0930.png</span><span style="font-size:13px;color:#5B5F6B">From WhatsApp · 1 image</span></span>
+                  </div>
+                  <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
+                    <button onClick="{{ shareToSatya }}" style="display:flex;flex-direction:column;align-items:center;gap:8px;border:0;background:none;cursor:pointer;color:#1B1B1F;font-family:inherit">
+                      <span style="width:60px;height:60px;border-radius:30px;background:#1F5FC4;display:flex;align-items:center;justify-content:center;animation:tileRing 1.5s ease-out infinite"><span style="width:42px;height:42px">{{ sealSolid }}</span></span>
+                      <span style="font-size:12.5px;font-weight:500;text-align:center;line-height:1.25">SATYA Check</span>
+                    </button>
+                    <sc-for list="{{ shareTargets }}" as="t" hint-placeholder-count="3">
+                      <span style="display:flex;flex-direction:column;align-items:center;gap:8px">
+                        <span style="width:60px;height:60px;border-radius:30px;background:#E2E7F3;display:flex;align-items:center;justify-content:center">{{ t.icon }}</span>
+                        <span style="font-size:12.5px;color:#44474F">{{ t.label }}</span>
+                      </span>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ flowChecking }}" hint-placeholder-val="{{ false }}">
+              <div data-screen-label="14 Checking" style="position:absolute;inset:0;z-index:7;background:rgba(4,9,24,.58);animation:fadeIn .25s both;font-family:'Hanken Grotesk',sans-serif">
+                <canvas ref="{{ cvRef }}" width="396" height="880" style="position:absolute;left:0;top:0;width:396px;height:880px;pointer-events:none"></canvas>
+                <sc-if value="{{ flashOn }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;background:#fff;animation:flash .34s ease-out both;pointer-events:none"></div>
+                </sc-if>
+                <div style="position:absolute;left:50%;top:56px;transform:translateX(-50%);overflow:hidden;display:flex;align-items:center;gap:8px;height:38px;padding:0 15px 0 10px;border-radius:19px;border:1px solid rgba(255,255,255,.3);background:linear-gradient(160deg,rgba(255,255,255,.22),rgba(255,255,255,.06));backdrop-filter:blur(16px);color:#F4F3EE;font-size:13px;font-weight:600;white-space:nowrap;animation:fadeIn .3s .1s both">{{ icCheckPaper }}{{ capChip }}</div>
+                <div style="position:absolute;left:50%;top:50%;width:236px;height:66px;transform:translate(-50%,-50%);animation:pillIn .5s cubic-bezier(.2,1.3,.3,1) both">
+                  <div style="position:absolute;inset:0;border-radius:33px;overflow:hidden;background:radial-gradient(120% 170% at 50% 28%,#FFFFFF 0%,#EDF0F8 42%,#C3CCE3 100%);box-shadow:0 0 0 1px rgba(255,255,255,.7),0 0 26px 6px rgba(255,255,255,.38),0 0 80px 22px rgba(130,170,255,.3),inset 0 -9px 16px rgba(40,70,150,.24),inset 0 3px 3px #fff;display:flex;align-items:center;justify-content:center;gap:10px">
+                    <span style="position:absolute;top:0;bottom:0;left:0;width:36%;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.95),rgba(255,255,255,0));animation:shimmer 1.3s cubic-bezier(.4,0,.2,1) infinite"></span>
+                    <span style="position:relative;width:34px;height:34px">{{ sealAnim }}</span>
+                    <span style="position:relative;font-style:italic;font-weight:500;font-size:22px;color:#18223D">Checking…</span>
+                  </div>
+                </div>
+                <div style="position:absolute;left:24px;right:24px;top:calc(50% + 54px);text-align:center;font-size:15px;font-weight:600;color:#F4F3EE;text-shadow:0 1px 14px rgba(4,9,24,.9)">{{ stepText }}</div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+              <div data-screen-label="15 Verdict sheet" style="position:absolute;inset:0;z-index:8;font-family:'Hanken Grotesk','Noto Sans Devanagari',sans-serif">
+                <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(5,9,18,.45);animation:fadeIn .22s both"></div>
+                <div style="position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:16px;padding:10px 18px 30px;border-radius:30px 30px 0 0;background:#F4F3EE;color:#0E2348;box-shadow:0 -20px 60px rgba(4,9,24,.4);animation:sheetUp .44s cubic-bezier(.16,1,.3,1) both">
+                  <span style="align-self:center;width:38px;height:5px;border-radius:3px;background:rgba(14,35,72,.18)"></span>
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <span style="width:32px;height:32px">{{ sealSolid }}</span>
+                    <span style="flex:1;font-family:'Sora',sans-serif;font-weight:600;font-size:14px;letter-spacing:.1em;color:#1F5FC4">SATYA</span>
+                    <button onClick="{{ closeSheet }}" aria-label="Close" style="width:40px;height:40px;border-radius:20px;border:0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ icCloseInk }}</button>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+                    <span style="display:flex;flex-direction:column;gap:4px"><span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">Verdict</span><span style="font-size:15px;font-weight:600;color:#2A3B5E">{{ sh.bank }}</span></span>
+                    <span style="display:inline-flex;align-items:center;height:46px;padding:0 14px;border:5px double #0E2348;border-radius:10px;font-family:'Sora',sans-serif;font-size:17px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;box-sizing:border-box;animation:stampIn .5s .15s cubic-bezier(.2,1.3,.3,1) both">{{ sh.word }}</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">What was asked</span><span style="font-size:19px;font-weight:600;line-height:1.35">{{ sh.ask }}</span></div>
+                  <div style="display:flex;gap:8px;padding:14px;border-radius:18px;background:#fff;border:1px solid rgba(14,35,72,.08)">
+                    <span style="font-family:'Sora',sans-serif;font-weight:700;font-size:34px;line-height:.85;color:#1F5FC4;flex:none">“</span>
+                    <span style="display:flex;flex-direction:column;gap:6px"><span style="font-size:15px;font-style:italic;font-weight:500;line-height:1.5">{{ sh.promise }}</span><span style="font-size:12.5px;font-weight:600;color:#4A5672">{{ sh.promiseRef }}</span></span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;padding:0 2px">
+                    <span style="font-family:'Sora',sans-serif;font-weight:300;font-size:30px;letter-spacing:-.03em;flex:none">{{ sh.stageShort }}</span>
+                    <span style="display:flex;flex-direction:column;gap:1px"><span style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#4A5672">Kill chain</span><span style="font-size:15px;font-weight:600">{{ sh.stageCap }}</span></span>
+                  </div>
+                  <div style="display:flex;gap:10px">
+                    <button onClick="{{ sheetOpenReceipt }}" style="flex:1;height:56px;border-radius:28px;border:1px solid rgba(14,35,72,.14);background:#fff;color:#0E2348;font-size:16px;font-weight:600;cursor:pointer;transition:transform .14s" style-active="transform:scale(.96)">Open receipt</button>
+                    <button onClick="{{ sheetReport }}" style="position:relative;overflow:hidden;flex:1.2;height:56px;border-radius:28px;border:0;background:#0E2348;color:#F4F3EE;font-size:16px;font-weight:600;cursor:pointer;transition:transform .14s" style-active="transform:scale(.96)"><span style="position:absolute;inset:0;background-image:url(assets/grain.png);background-size:128px 128px;mix-blend-mode:overlay;opacity:.5"></span><span style="position:relative">Report to {{ sh.bankShort }}</span></button>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasNotif }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ notifTap }}" style="position:absolute;left:10px;right:10px;top:40px;z-index:40;display:flex;gap:12px;padding:14px;border-radius:24px;border:0;background:#EEF1F8;color:#1B1B1F;text-align:left;cursor:pointer;box-shadow:0 14px 36px rgba(4,9,24,.32);font-family:'Roboto','Hanken Grotesk',sans-serif;animation:notifIn .4s cubic-bezier(.16,1,.3,1) both">
+            <span style="width:34px;height:34px;flex:none">{{ sealSolid }}</span>
+            <span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#5B5F6B">SATYA · now</span><span style="font-size:15px;font-weight:500">{{ notif.title }}</span><span style="font-size:13.5px;line-height:1.4;color:#44474F">{{ notif.body }}</span></span>
+          </button>
+        </sc-if>
+
+        <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;left:50%;bottom:40px;z-index:41;width:max-content;max-width:350px;display:flex;align-items:center;gap:10px;padding:12px 16px 12px 12px;border-radius:22px;background:rgba(14,35,72,.9);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.18);color:#F4F3EE;font-size:14px;font-weight:600;line-height:1.35;box-shadow:0 14px 30px rgba(4,9,24,.3);animation:toastIn .32s cubic-bezier(.16,1,.3,1) both">
+            <span style="width:28px;height:28px;border-radius:14px;background:#F7C800;display:flex;align-items:center;justify-content:center;flex:none">{{ icCheckInk }}</span>
+            <span>{{ toast }}</span>
+          </div>
+        </sc-if>
+
+      </div>
+    </x-import>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Home&quot;,&quot;Onboarding&quot;],&quot;default&quot;:&quot;Home&quot;,&quot;tsType&quot;:&quot;'Home'|'Onboarding'&quot;,&quot;section&quot;:&quot;Prototype&quot;},&quot;motionSpeed&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0.5,&quot;max&quot;:2,&quot;step&quot;:0.05,&quot;default&quot;:1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Prototype&quot;},&quot;ribbonPalette&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Brand&quot;,&quot;Spectrum&quot;],&quot;default&quot;:&quot;Brand&quot;,&quot;tsType&quot;:&quot;'Brand'|'Spectrum'&quot;,&quot;section&quot;:&quot;Check animation&quot;}}">
+const BLUE = '#1F5FC4', YEL = '#F7C800', PAPER = '#F4F3EE', INK = '#0E2348', MUTED = '#4A5672';
+const h = React.createElement;
+const W = 396, H = 880;
+
+/* ---------- brand seal ---------- */
+function notchedDisc(cx, cy, R, nr) {
+  const d = Math.asin(nr / R);
+  const pt = (a) => (cx + R * Math.cos(a)).toFixed(2) + ' ' + (cy + R * Math.sin(a)).toFixed(2);
+  let p = '';
+  for (let k = 0; k < 4; k++) {
+    const a = -Math.PI / 2 + (k * Math.PI) / 2;
+    if (k === 0) p += 'M' + pt(a + d);
+    p += `A${R} ${R} 0 0 1 ${pt(a + Math.PI / 2 - d)}A${nr} ${nr} 0 0 0 ${pt(a + Math.PI / 2 + d)}`;
+  }
+  return p + 'Z';
+}
+const DISC = notchedDisc(120, 120, 116, 10);
+const EYE = 'M52 120Q120 58 188 120Q120 182 52 120Z';
+const KEYHOLE = 'M114.6 121A8 8 0 1 1 125.4 121L128 133H112Z';
+const TICKS = Array.from({ length: 24 }, (_, k) => {
+  const a = ((7.5 + k * 15) * Math.PI) / 180, sn = Math.sin(a), cs = Math.cos(a);
+  return `M${(120 + 100 * sn).toFixed(2)} ${(120 - 100 * cs).toFixed(2)}L${(120 + 107 * sn).toFixed(2)} ${(120 - 107 * cs).toFixed(2)}`;
+}).join('');
+function seal(animated) {
+  const uid = animated ? 'satyaEyeAnim' : 'satyaEyeSolid';
+  const iris = [h('circle', { key: 'i', cx: 120, cy: 120, r: 30, fill: 'none', stroke: BLUE, strokeWidth: 8 }), h('path', { key: 'k', d: KEYHOLE, fill: BLUE })];
+  return h('svg', { viewBox: '0 0 240 240', width: '100%', height: '100%', style: { display: 'block', overflow: 'visible' } },
+    h('defs', null, h('clipPath', { id: uid }, h('path', { d: EYE }))),
+    h('path', { d: DISC, fill: YEL }),
+    h('path', { d: TICKS, stroke: BLUE, strokeWidth: 3, strokeLinecap: 'round' }),
+    h('circle', { cx: 120, cy: 120, r: 91, fill: 'none', stroke: BLUE, strokeWidth: 4 }),
+    h('g', { clipPath: `url(#${uid})` }, animated ? h('g', { style: { animation: 'pupilL 2.4s cubic-bezier(.6,0,.3,1) infinite' } }, ...iris) : iris),
+    h('path', { d: EYE, fill: 'none', stroke: BLUE, strokeWidth: 8, strokeLinejoin: 'round' }),
+    h('circle', { cx: 120, cy: 52, r: 4.5, fill: BLUE }), h('circle', { cx: 120, cy: 188, r: 4.5, fill: BLUE }));
+}
+
+/* ---------- icons ---------- */
+const SH = 'M12 3 19 6v5.5c0 4.6-3 7.9-7 9.5-4-1.6-7-4.9-7-9.5V6z';
+const IP = {
+  eye: ['M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z', 'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'],
+  search: ['M18 11a7 7 0 1 1-14 0 7 7 0 0 1 14 0z', 'M16.2 16.2 20.5 20.5'],
+  sms: ['M5 4.5h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-8.5L6 21v-3.5H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z', 'M7.5 9.5h9', 'M7.5 13h6'],
+  call: ['M6.5 3.5h3l1.8 4.6-2.3 1.4a11 11 0 0 0 5.5 5.5l1.4-2.3 4.6 1.8v3a2 2 0 0 1-2 2A16 16 0 0 1 4.5 5.5a2 2 0 0 1 2-2z'],
+  upi: ['M7 5h10', 'M7 9h10', 'M9.5 5c3.5 0 5.5 1.6 5.5 4s-2 4-5.5 4H8l7 6.5'],
+  link: ['M10 14a4 4 0 0 0 5.7 0l3-3A4 4 0 0 0 13 5.3l-1 1', 'M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1'],
+  image: ['M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z', 'M3.5 16l5-5 4 4 2.5-2.5L20.5 18', 'M15.5 9.2v.1'],
+  app: ['M5 4h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z', 'M14 4h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z', 'M5 13h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1z', 'M16.5 13v7', 'M13 16.5h7'],
+  back: ['M14.5 5 7.5 12l7 7'],
+  close: ['M6.5 6.5l11 11', 'M17.5 6.5l-11 11'],
+  chev: ['M9.5 5.5 16 12l-6.5 6.5'],
+  chevDown: ['M6 9.5l6 6 6-6'],
+  check: ['M5 12.5 9.5 17 19 7.5'],
+  share: ['M12 14.5V3.5', 'M7.5 8 12 3.5 16.5 8', 'M5 13v6a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19v-6'],
+  arrow: ['M5 12h14', 'M13 6l6 6-6 6'],
+  arrowUR: ['M7 17 17 7', 'M8.5 7H17v8.5'],
+  lock: ['M8 10.5V8a4 4 0 0 1 8 0v2.5', 'M6.5 10.5h11a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-7.5a1 1 0 0 1 1-1z'],
+  mic: ['M12 3.5a3 3 0 0 1 3 3V12a3 3 0 0 1-6 0V6.5a3 3 0 0 1 3-3z', 'M6 11.5a6 6 0 0 0 12 0', 'M12 17.5V20.5'],
+  plus: ['M12 5v14', 'M5 12h14'],
+  gear: ['M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z', 'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z'],
+  trash: ['M4 7h16', 'M10 11v6', 'M14 11v6', 'M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12', 'M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7'],
+  sync: ['M20 11a8 8 0 0 0-14.3-4.9L4 8', 'M4 4v4h4', 'M4 13a8 8 0 0 0 14.3 4.9L20 16', 'M20 20v-4h-4'],
+  receipt: ['M6 3.5h12v17l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4-2 1.4z', 'M9 8h6', 'M9 11.5h6', 'M9 15h3.5'],
+  speaker: ['M4 9.5h3.5L12 5.5v13l-4.5-4H4z', 'M15.5 9a4 4 0 0 1 0 6', 'M18 6.5a7.5 7.5 0 0 1 0 11'],
+  screen: ['M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z', 'M8.5 20.5h7', 'M12 17v3.5'],
+  wifi: ['M2.5 9a14 14 0 0 1 19 0', 'M5.5 12.5a9.5 9.5 0 0 1 13 0', 'M8.6 15.8a5 5 0 0 1 6.8 0', 'M12 19.2v.1'],
+  bt: ['M7 7l10 10-5 4V3l5 4L7 17'],
+  torch: ['M8 3h8v4l-2 3v11h-4V10L8 7z', 'M12 13v2'],
+  moon: ['M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z'],
+  rotate: ['M4 12a8 8 0 0 1 13.7-5.6L20 8.5', 'M20 4v4.5h-4.5', 'M20 12a8 8 0 0 1-13.7 5.6L4 15.5', 'M4 20v-4.5h4.5'],
+  pencil: ['M15.5 4.5l4 4L8 20H4v-4z', 'M13 7l4 4'],
+  sun: ['M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8z', 'M12 2.5v2', 'M12 19.5v2', 'M2.5 12h2', 'M19.5 12h2', 'M5.3 5.3l1.4 1.4', 'M17.3 17.3l1.4 1.4', 'M5.3 18.7l1.4-1.4', 'M17.3 6.7l1.4-1.4'],
+  bell: ['M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z', 'M10 20.5a2 2 0 0 0 4 0'],
+  cloud: ['M7 18.5h10.5a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.5 9.6 4.5 4.5 0 0 0 7 18.5z'],
+  download: ['M12 4v11', 'M7.5 10.5 12 15l4.5-4.5', 'M5 19.5h14'],
+  copy: ['M9 9h10a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V10a1 1 0 0 1 1-1z', 'M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5'],
+  folder: ['M3.5 6.5a1 1 0 0 1 1-1h5l2 2.5h8a1 1 0 0 1 1 1v9.5a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1z'],
+  nearby: ['M12 12.5v.1', 'M8.5 9a5 5 0 0 1 7 0', 'M6 6.5a8.5 8.5 0 0 1 12 0', 'M8.5 16a5 5 0 0 0 7 0'],
+};
+function ic(name, color, size, sw) {
+  return h('svg', { width: size || 20, height: size || 20, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: sw || 2, strokeLinecap: 'round', strokeLinejoin: 'round', style: { display: 'block', flex: 'none' } },
+    ...(IP[name] || []).map((d, i) => h('path', { key: i, d })));
+}
+const SRC_IC = { WhatsApp: 'sms', Messages: 'sms', 'UPI app': 'upi', Instagram: 'image', Chrome: 'link', 'Phone call': 'call' };
+
+/* ---------- onboarding tile gif ---------- */
+function qsGif() {
+  const tile = (x, y, label, on) => h('div', { key: label, style: { position: 'absolute', left: x, top: y, width: 112, height: 44, borderRadius: 16, background: on ? '#D6E2FF' : '#262C38', display: 'flex', alignItems: 'center', gap: 8, padding: '0 12px', boxSizing: 'border-box', color: on ? INK : '#E9ECF2', fontSize: 12, fontWeight: 600 } },
+    h('span', { style: { width: 14, height: 14, borderRadius: 7, background: on ? BLUE : '#4A5263', flex: 'none' } }), label);
+  return h('div', { style: { position: 'relative', width: 256, height: 246, borderRadius: 26, background: '#141922', overflow: 'hidden', boxShadow: '0 20px 44px rgba(6,22,60,.35)', fontFamily: "'Hanken Grotesk',sans-serif" } },
+    h('div', { style: { position: 'absolute', left: 14, top: 12, fontSize: 11, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: '#AEB6C6' } }, 'Edit tiles'),
+    tile(12, 34, 'Internet', true), tile(132, 34, 'Bluetooth', false), tile(12, 86, 'Torch', false),
+    h('div', { style: { position: 'absolute', left: 132, top: 86, width: 112, height: 44, borderRadius: 16, border: '1.5px dashed #59627A', boxSizing: 'border-box' } }),
+    h('div', { style: { position: 'absolute', left: 12, right: 12, top: 148, height: 1, background: '#2A303C' } }),
+    h('div', { style: { position: 'absolute', left: 14, top: 158, fontSize: 11, fontWeight: 600, color: '#AEB6C6' } }, 'Hold and drag to add tiles'),
+    h('div', { style: { position: 'absolute', left: 12, top: 186, width: 112, height: 44, borderRadius: 16, background: YEL, display: 'flex', alignItems: 'center', gap: 6, padding: '0 8px', boxSizing: 'border-box', color: INK, fontSize: 12, fontWeight: 700, animation: 'qsMove 3.6s cubic-bezier(.6,0,.25,1) infinite', boxShadow: '0 8px 18px rgba(0,0,0,.35)' } },
+      h('span', { style: { width: 26, height: 26, flex: 'none' } }, seal(false)), 'Check screen'),
+    h('div', { style: { position: 'absolute', left: 54, top: 194, width: 28, height: 28, borderRadius: 14, background: 'rgba(255,255,255,.85)', boxShadow: '0 0 0 6px rgba(255,255,255,.22)', animation: 'qsFinger 3.6s cubic-bezier(.6,0,.25,1) infinite' } }));
+}
+
+/* ---------- words, not colors ---------- */
+const VW = { breaks: ['Breaks promise', 'वादा तोड़ता है'], genuine: ['Genuine', 'असली'], unknown: ['Unknown', 'अज्ञात'] };
+const PL = { breaks: ['Promise it breaks', 'कौन-सा वादा टूटता है'], genuine: ['Promise it keeps', 'कौन-सा वादा निभता है'], unknown: ['Promise Card', 'वादा कार्ड'] };
+const LB = { verdict: ['Verdict', 'फ़ैसला'], asked: ['What was asked', 'क्या माँगा गया'], chain: ['Kill chain', 'धोखे की कड़ी'], evidence: ['Evidence', 'सबूत'], src: ['Source app', 'ऐप'], checked: ['Checked', 'जाँचा गया'], cap: ['Captured', 'कैप्चर'], by: ['Answered by', 'जवाब'] };
+const CHAIN = [['Contact', 'संपर्क'], ['Ask', 'माँग'], ['OTP', 'OTP'], ['Drain', 'पैसा गया']];
+const MASK_NOTE = ['Your name, number and photo were masked on this phone before anything was sent.', 'आपका नाम, नंबर और फ़ोटो भेजने से पहले इसी फ़ोन पर छिपा दिए गए।'];
+
+const LIVE = {
+  src: 'WhatsApp', via: 'tile', verdict: 'breaks', bank: 'State Bank of India', bankShort: 'SBI', bankHi: 'भारतीय स्टेट बैंक',
+  ask: 'Pay ₹10 KYC fee to sbi.kyc@ybl', askHi: 'sbi.kyc@ybl को ₹10 KYC फ़ीस भरें',
+  promise: 'SBI will never ask you to pay a fee over UPI to update your KYC.', promiseHi: 'SBI आपसे KYC अपडेट के लिए UPI पर कभी कोई फ़ीस नहीं माँगेगा।',
+  promiseRef: 'SBI Promise Card · No. 3 · v2026.10', stage: 2, stageText: 'next they ask for OTP', stageHi: 'अगली बार वे OTP माँगेंगे',
+  from: '+91 70448 21319', ctxPre: 'Dear ', ctxPost: ', your YONO account will be blocked today because your KYC is pending.',
+  payee: 'sbi.kyc@ybl', payeeType: 'UPI ID', amount: '₹10', payload: 'Dear •••••, pay ₹10 KYC fee to sbi.kyc@ybl',
+};
+const SEED_RECORDS = [
+  { id: 'c1', no: 'PR-2310-0418', src: 'Messages', via: 'share', day: 'Today', date: '23 Oct', time: '09:18', verdict: 'breaks', bank: 'HDFC Bank', bankShort: 'HDFC', bankHi: 'HDFC बैंक',
+    ask: 'Share the OTP to stop a ₹24,999 debit', askHi: '₹24,999 की कटौती रोकने के लिए OTP बताएँ',
+    promise: 'HDFC Bank will never ask for your OTP, PIN or password by call, SMS or link.', promiseHi: 'HDFC बैंक कॉल, SMS या लिंक से आपका OTP, PIN या पासवर्ड कभी नहीं माँगेगा।',
+    promiseRef: 'HDFC Bank Promise Card · No. 1 · v2026.10', stage: 3, stageText: 'next they empty the account', stageHi: 'अगली बार वे खाता खाली करेंगे',
+    from: 'VM-HDFCBK', ctxPre: 'Dear ', ctxPost: ', a debit of ₹24,999 is being processed from your account.', payee: 'VM-HDFCBK', payeeType: 'SMS sender ID', amount: '₹24,999 (claimed debit)', reportId: 'rp1' },
+  { id: 'c2', no: 'PR-2310-0411', src: 'UPI app', via: 'tile', day: 'Today', date: '23 Oct', time: '08:05', verdict: 'genuine', bank: 'SBI Card', bankShort: 'SBI Card', bankHi: 'SBI कार्ड',
+    ask: 'Pay ₹1,250 card bill to sbicard.bill@sbi', askHi: 'कार्ड बिल के लिए sbicard.bill@sbi को ₹1,250 भरें',
+    promise: 'SBI Card takes bill payments only at the UPI handles listed on its Promise Card.', promiseHi: 'SBI कार्ड बिल का भुगतान सिर्फ़ अपने Promise Card में दिए गए UPI हैंडल पर लेता है।',
+    promiseRef: 'SBI Card Promise Card · No. 5 · v2026.10', stage: 0, from: 'SBI Card bill', ctxPre: 'Card ending ', ctxPost: ' · statement due 28 Oct.' },
+  { id: 'c3', no: 'PR-2210-0397', src: 'Instagram', via: 'share', day: 'Yesterday', date: '22 Oct', time: '19:40', verdict: 'unknown', bank: 'No bank named', bankShort: 'No bank', bankHi: 'कोई बैंक नहीं',
+    ask: 'Invest ₹5,000 and get ₹500 every day', askHi: '₹5,000 लगाएँ और रोज़ ₹500 पाएँ',
+    promise: 'No bank’s Promise Card covers this request, so SATYA can’t call it genuine or fake.', promiseHi: 'इस माँग पर किसी बैंक का Promise Card लागू नहीं होता, इसलिए SATYA इसे असली या नकली नहीं कह सकता।',
+    promiseRef: 'Checked against 14 Promise Cards', stage: 0, from: '@daily.profit.club', ctxPre: 'Hi ', ctxPost: ', limited seats left in our daily returns plan!' },
+  { id: 'c4', no: 'PR-2210-0389', src: 'WhatsApp', via: 'tile', day: 'Yesterday', date: '22 Oct', time: '13:02', verdict: 'breaks', bank: 'ICICI Bank', bankShort: 'ICICI', bankHi: 'ICICI बैंक',
+    ask: 'Install ICICI-Support.apk to unblock your card', askHi: 'कार्ड चालू करने के लिए ICICI-Support.apk इंस्टॉल करें',
+    promise: 'ICICI Bank will never ask you to install an app sent in a chat or link.', promiseHi: 'ICICI बैंक चैट या लिंक से भेजा गया ऐप इंस्टॉल करने को कभी नहीं कहेगा।',
+    promiseRef: 'ICICI Bank Promise Card · No. 4 · v2026.10', stage: 1, stageText: 'next they take control of your phone', stageHi: 'अगली बार वे आपका फ़ोन अपने कब्ज़े में लेंगे',
+    from: '+91 63521 09874', ctxPre: 'Dear ', ctxPost: ', your ICICI credit card is temporarily blocked.', payee: 'ICICI-Support.apk', payeeType: 'App file sent in chat', amount: 'None asked yet', reportId: 'rp2' },
+  { id: 'c5', no: 'PR-2110-0350', src: 'Messages', via: 'tile', day: '21 Oct', date: '21 Oct', time: '18:22', verdict: 'genuine', bank: 'State Bank of India', bankShort: 'SBI', bankHi: 'भारतीय स्टेट बैंक',
+    ask: 'Debit of ₹540. Not you? Call 1800 1234', askHi: '₹540 कटे। आपने नहीं किए? 1800 1234 पर कॉल करें',
+    promise: 'SBI alerts only list its official helplines, such as 1800 1234.', promiseHi: 'SBI के अलर्ट में सिर्फ़ उसके आधिकारिक हेल्पलाइन नंबर होते हैं, जैसे 1800 1234।',
+    promiseRef: 'SBI Promise Card · No. 9 · v2026.10', stage: 0, from: 'VM-SBIINB', ctxPre: 'A/c ', ctxPost: ' debited ₹540 at a merchant on 21 Oct.' },
+  { id: 'c6', no: 'PR-2010-0291', src: 'Phone call', via: 'tile', day: '20 Oct', date: '20 Oct', time: '16:10', verdict: 'breaks', bank: 'Kotak Mahindra Bank', bankShort: 'Kotak', bankHi: 'कोटक महिंद्रा बैंक',
+    ask: 'Tell us your UPI PIN to get the ₹2,000 refund', askHi: '₹2,000 रिफ़ंड पाने के लिए अपना UPI PIN बताएँ',
+    promise: 'Kotak will never ask for your UPI PIN. You never need a PIN to receive money.', promiseHi: 'कोटक आपका UPI PIN कभी नहीं माँगेगा। पैसे पाने के लिए PIN की ज़रूरत नहीं होती।',
+    promiseRef: 'Kotak Promise Card · No. 2 · v2026.10', stage: 3, stageText: 'next they empty the account', stageHi: 'अगली बार वे खाता खाली करेंगे',
+    from: 'Call · +91 80955 11420', ctxPre: 'Caller to ', ctxPost: ': we are from Kotak refunds team.', payee: '+91 80955 11420', payeeType: 'Caller number', amount: '₹2,000 “refund”', reportId: 'rp3' },
+  { id: 'c7', no: 'PR-1810-0244', src: 'Chrome', via: 'tile', day: '18 Oct', date: '18 Oct', time: '11:05', verdict: 'breaks', bank: 'Axis Bank', bankShort: 'Axis', bankHi: 'Axis बैंक',
+    ask: 'Log in at axisbank-rewards.top to redeem points', askHi: 'पॉइंट्स के लिए axisbank-rewards.top पर लॉग इन करें',
+    promise: 'Axis Bank only asks you to log in at axisbank.com or in its own app.', promiseHi: 'Axis बैंक सिर्फ़ axisbank.com या अपने ऐप में लॉग इन करने को कहता है।',
+    promiseRef: 'Axis Bank Promise Card · No. 6 · v2026.10', stage: 1, stageText: 'next they ask for OTP', stageHi: 'अगली बार वे OTP माँगेंगे',
+    from: 'axisbank-rewards.top', ctxPre: 'Welcome ', ctxPost: ', your 4,200 points expire tonight.' },
+];
+const SEED_REPORTS = [
+  { id: 'rp1', checkId: 'c1', no: 'SR-2310-0419', bank: 'HDFC Bank', bankShort: 'HDFC', times: [['23 Oct', '09:20'], ['23 Oct', '09:21'], ['23 Oct', '09:24'], ['23 Oct', '09:28']], stage: 3, callback: false, size: '18.2 KB' },
+  { id: 'rp2', checkId: 'c4', no: 'SR-2210-0390', bank: 'ICICI Bank', bankShort: 'ICICI', times: [['22 Oct', '13:05'], ['22 Oct', '13:06'], ['22 Oct', '15:40']], stage: 2, callback: true, size: '21.7 KB' },
+  { id: 'rp3', checkId: 'c6', no: 'SR-2010-0292', bank: 'Kotak Mahindra Bank', bankShort: 'Kotak', times: [['20 Oct', '16:14'], ['20 Oct', '16:14'], ['20 Oct', '16:52'], ['20 Oct', '18:30'], ['21 Oct', '06:00']], stage: 4, callback: false, size: '17.9 KB' },
+];
+const STAGES = ['Sealed', 'Delivered', 'Bank opened', 'Confirmed fake', 'Blocked for everyone'];
+const stageBody = (i, b, p) => [
+  `Encrypted on your phone with ${b}’s public key. SATYA’s relay only passed it on.`,
+  `${b}’s fraud desk confirmed it received the sealed box.`,
+  `${b} opened the report. Only ${b} could.`,
+  `${b} confirmed ${p} is not theirs.`,
+  `${p} is on the blocklist. Every SATYA phone gets it at the next sync.`,
+][i];
+const L_ = (id, cat, day, time, text, payLabel, payload, sub) => ({ id, cat, day, time, text, payLabel, payload, sub });
+const MASKED = 'Sent masked text to SATYA cloud. Deleted after answer.';
+const PROMPT_SYNC = 'Asked for new Promise Cards and the blocklist. Sent nothing about you.';
+const SEED_LOGS = [
+  L_('l1', 'check', 'Today', '09:18', MASKED, 'Sent', 'Dear •••••, share the OTP to stop a ₹24,999 debit from a/c ••••', 'Check · shared from Messages'),
+  L_('l2', 'report', 'Today', '09:20', 'Sent a sealed report to HDFC Bank. SATYA can’t read it.', 'Sealed', 'Encrypted · 18.2 KB · only HDFC Bank can open it', 'Report SR-2310-0419'),
+  L_('l3', 'check', 'Today', '08:05', MASKED, 'Sent', 'Pay ₹1,250 card bill to sbicard.bill@sbi · card ••••', 'Check · Check screen tile'),
+  L_('l4', 'sync', 'Today', '06:00', PROMPT_SYNC, 'Sent', 'App version only', 'Background sync'),
+  L_('l5', 'check', 'Yesterday', '19:40', MASKED, 'Sent', 'Hi •••••, invest ₹5,000 and get ₹500 every day', 'Check · shared from Instagram'),
+  L_('l6', 'app', 'Yesterday', '14:12', 'Sent 5 characters of an app fingerprint.', 'Sent', '7e01b', 'App check · SBI KYC Update'),
+  L_('l7', 'report', 'Yesterday', '13:05', 'Sent a sealed report to ICICI Bank. SATYA can’t read it.', 'Sealed', 'Encrypted · 21.7 KB · only ICICI Bank can open it', 'Report SR-2210-0390'),
+  L_('l8', 'check', 'Yesterday', '13:02', MASKED, 'Sent', 'Dear •••••, install ICICI-Support.apk to unblock your card ••••', 'Check · Check screen tile'),
+  L_('l9', 'sync', 'Yesterday', '00:00', PROMPT_SYNC, 'Sent', 'App version only', 'Background sync'),
+  L_('l10', 'check', '21 Oct', '18:22', MASKED, 'Sent', 'Debit of ₹540 from a/c ••••. Not you? Call 1800 1234', 'Check · Check screen tile'),
+  L_('l11', 'report', '20 Oct', '16:14', 'Sent a sealed report to Kotak. SATYA can’t read it.', 'Sealed', 'Encrypted · 17.9 KB · only Kotak can open it', 'Report SR-2010-0292'),
+  L_('l12', 'check', '20 Oct', '16:10', MASKED, 'Sent', 'Caller to •••••: tell us your UPI PIN to get the ₹2,000 refund', 'Check · Check screen tile'),
+];
+const LOG_IC = { check: 'eye', report: 'lock', app: 'app', sync: 'download' };
+const APPS = [
+  { id: 'a1', name: 'YONO SBI', owner: 'State Bank of India', source: 'Play Store', ok: true, mono: 'Y', bg: BLUE, fg: YEL, kyc: 'Yes. This is State Bank of India’s own app.', fp: 'a3f9c' },
+  { id: 'a2', name: 'HDFC Bank', owner: 'HDFC Bank Ltd', source: 'Play Store', ok: true, mono: 'H', bg: INK, fg: PAPER, kyc: 'Yes. This is HDFC Bank’s own app.', fp: '41be0' },
+  { id: 'a3', name: 'iMobile Pay', owner: 'ICICI Bank Ltd', source: 'Play Store', ok: true, mono: 'i', bg: '#DCE7FA', fg: BLUE, kyc: 'Yes. This is ICICI Bank’s own app.', fp: '9d27a' },
+  { id: 'a4', name: 'Google Pay', owner: 'Google LLC', source: 'Pre-installed', ok: true, mono: 'G', bg: '#FFFFFF', fg: INK, kyc: 'Yes, inside the app. It never asks for KYC by chat or call.', fp: 'f08c3' },
+  { id: 'a5', name: 'PhonePe', owner: 'PhonePe Pvt Ltd', source: 'Play Store', ok: true, mono: 'P', bg: YEL, fg: INK, kyc: 'Yes, inside the app. It never asks for KYC by chat or call.', fp: '6b1e4' },
+  { id: 'a6', name: 'Paytm', owner: 'One97 Communications Ltd', source: 'Play Store', ok: true, mono: 'P', bg: '#E8EDF5', fg: INK, kyc: 'Yes, inside the app. It never asks for KYC by chat or call.', fp: 'c7a52' },
+  { id: 'a7', name: 'SBI KYC Update', owner: 'No company on record', source: 'Sideloaded · sent on WhatsApp', ok: false, mono: 'S', kyc: 'No. Don’t enter KYC details, PIN or OTP in this app.', fp: '7e01b' },
+  { id: 'a8', name: 'Quick Loan Pro', owner: 'No company on record', source: 'Sideloaded · downloaded in Chrome', ok: false, mono: 'Q', kyc: 'No. It isn’t a registered bank or lender app.', fp: 'd5c38' },
+];
+const BANKS = ['State Bank of India', 'HDFC Bank', 'ICICI Bank', 'Axis Bank', 'Kotak Mahindra Bank', 'Punjab National Bank', 'Bank of Baroda', 'Canara Bank', 'Union Bank of India', 'IndusInd Bank', 'IDFC FIRST Bank', 'Yes Bank', 'Federal Bank', 'SBI Card'];
+const PROMISES = [12, 11, 12, 10, 11, 9, 10, 9, 9, 10, 8, 9, 8, 7];
+const PROTOCOLS = [
+  ['DRISHTI', 'Sees', 'Captures one frame of your screen when you ask, then stops. Also reads screenshots you share.'],
+  ['VIVEK', 'Judges', 'Masks your details, compares the request with the bank’s promises, and writes the Proof Receipt.'],
+  ['VACHAN', 'Promises', 'Each bank’s signed list of things it will never ask you to do.'],
+  ['SAKSHI', 'Witnesses', 'Seals your report so only the bank can open it, then tracks what the bank does.'],
+  ['PRAHARI', 'Guards', 'Downloads new Promise Cards and the blocklist every few hours, with the app closed.'],
+];
+const CALLBACK_NO = '+91 98765 43210';
+const dayLabel = (d) => (d === '23 Oct' ? 'Today' : d === '22 Oct' ? 'Yesterday' : d);
+
+/* ---------- ribbons ---------- */
+const RIB = [
+  [[-0.3, 0.95], [0.06, 0.84], [0.26, 0.7], [0.1, 0.52], [0.2, 0.34], [0.42, 0.37], [0.4, 0.47], [0.5, 0.5]],
+  [[1.3, 0.04], [0.92, 0.12], [0.68, 0.24], [0.88, 0.38], [0.76, 0.5], [0.62, 0.505], [0.5, 0.5]],
+  [[1.3, 1.02], [0.94, 0.92], [0.62, 0.88], [0.84, 0.72], [0.72, 0.58], [0.6, 0.52], [0.5, 0.5]],
+  [[0.18, 1.3], [0.32, 1.02], [0.58, 0.84], [0.34, 0.68], [0.36, 0.57], [0.5, 0.5]],
+  [[-0.3, 0.14], [0.06, 0.2], [0.3, 0.12], [0.5, 0.2], [0.34, 0.34], [0.42, 0.46], [0.5, 0.5]],
+];
+const hex = (s) => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16)];
+const PAL = {
+  Brand: [['#1F5FC4', '#5B95FF', '#C4DAFF', '#5B95FF'], ['#F7C800', '#FFE36A', '#FFF6C9', '#FFD43B'], ['#2F6FE4', '#8FBAFF', '#F4F3EE', '#8FBAFF'], ['#FFE36A', '#F4F3EE', '#7FB0FF', '#F7C800'], ['#9CC3FF', '#3A78E0', '#F7C800', '#5B95FF']].map((r) => r.map(hex)),
+  Spectrum: [['#2B6BFF', '#7B3CFF', '#C23CFF', '#7B3CFF'], ['#FFB200', '#FF6A2B', '#FF3D6E', '#FF6A2B'], ['#22D3EE', '#3BE07A', '#B6F03C', '#3BE07A'], ['#F2E83A', '#9BE15D', '#2BC5FF', '#9BE15D'], ['#8B5CF6', '#3B82F6', '#22D3EE', '#3B82F6']].map((r) => r.map(hex)),
+};
+const cl = (u) => (u < 0 ? 0 : u > 1 ? 1 : u);
+const expoOut = (u) => { u = cl(u); return u >= 1 ? 1 : 1 - Math.pow(2, -10 * u); };
+const inCubic = (u) => { u = cl(u); return u * u * u; };
+function cr(P, s) {
+  const n = P.length - 1, f = Math.min(Math.max(s, 0), 0.99999) * n, i = Math.floor(f), u = f - i;
+  const p0 = P[Math.max(i - 1, 0)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(i + 2, n)], u2 = u * u, u3 = u2 * u;
+  const k = (a, b, c, d) => 0.5 * (2 * b + (-a + c) * u + (2 * a - 5 * b + 4 * c - d) * u2 + (-a + 3 * b - 3 * c + d) * u3);
+  return { x: k(p0.x, p1.x, p2.x, p3.x), y: k(p0.y, p1.y, p2.y, p3.y) };
+}
+function colAt(stops, x) {
+  x = ((x % 1) + 1) % 1;
+  const n = stops.length, f = x * n, i = Math.floor(f), u = f - i, a = stops[i], b = stops[(i + 1) % n];
+  return `rgb(${(a[0] + (b[0] - a[0]) * u) | 0},${(a[1] + (b[1] - a[1]) * u) | 0},${(a[2] + (b[2] - a[2]) * u) | 0})`;
+}
+
+class Component extends DCLogic {
+  state = {
+    screen: null, onb: 0, perms: { notif: false, apps: false },
+    checkFilter: 'all', receipt: null, receiptZ: 10, hindi: false,
+    compose: null, callback: false, sealing: false,
+    report: null, openStep: null, bankView: false,
+    app: null, appChecking: false, appChecked: {},
+    logFilter: 'all', hindiVoice: true, showAllBanks: false, syncLabel: '2h ago', syncing: false, confirmClear: false,
+    records: SEED_RECORDS, reports: SEED_REPORTS, logs: SEED_LOGS,
+    other: false, otherHint: true, shade: false, consent: false, share: false, flow: null, flowMode: 'tile', step: 0, flash: false, sheetId: null,
+    notif: null, toast: null,
+  };
+  timers = []; anim = null; uid = 0; clock = 30; frame = 0; off = 0;
+  cvRef = (el) => { this.cv = el; this.cx = el ? el.getContext('2d') : null; };
+
+  componentDidMount() {
+    this.raw = document.createElement('canvas'); this.raw.width = W; this.raw.height = H; this.rx = this.raw.getContext('2d');
+    this.blr = document.createElement('canvas'); this.blr.width = W; this.blr.height = H; this.bx = this.blr.getContext('2d', { willReadFrequently: true });
+    this.noise = new Uint8Array(W * H + 8192);
+    for (let i = 0; i < this.noise.length; i++) this.noise[i] = (Math.random() * 256) | 0;
+    this.raf = requestAnimationFrame(this.tick);
+  }
+  componentWillUnmount() { cancelAnimationFrame(this.raf); this.clearTimers(); clearTimeout(this.toastT); clearTimeout(this.notifT); (this.live || []).forEach(clearTimeout); }
+
+  sp() { const s = Number(this.props.motionSpeed); return s > 0 ? s : 1; }
+  later(ms, fn) { this.timers.push(setTimeout(fn, ms / this.sp())); }
+  clearTimers() { this.timers.forEach(clearTimeout); this.timers = []; }
+  setAnim(mode) { this.anim = mode ? { mode, t0: performance.now() } : null; }
+  now() { const m = this.clock; this.clock = Math.min(59, this.clock + 1); return '09:' + String(m).padStart(2, '0'); }
+
+  tick = (now) => {
+    this.raf = requestAnimationFrame(this.tick);
+    const cx = this.cx; if (!cx || !this.rx) return;
+    const A = this.anim;
+    if (!A) { if (this.dirty) { cx.clearRect(0, 0, W, H); this.dirty = false; } return; }
+    this.dirty = true;
+    const t = ((now - A.t0) / 1000) * this.sp(), T = now / 1000, r = this.rx;
+    r.clearRect(0, 0, W, H); r.lineCap = 'round'; r.lineJoin = 'round';
+    const pal = PAL[this.props.ribbonPalette === 'Spectrum' ? 'Spectrum' : 'Brand'];
+    RIB.forEach((R, i) => {
+      let head, tail = 0;
+      if (A.mode === 'check') head = 0.27 + 0.73 * expoOut((t - i * 0.07) / 0.9);
+      else { head = 1; tail = inCubic(t / 0.48); }
+      if (head - tail < 0.004) return;
+      const last = R.length - 1;
+      const P = R.map(([u, v], k) => {
+        const e = k === 0 || k === last ? 0.15 : 1;
+        return { x: (u + 0.03 * e * Math.sin(T * 0.9 + k * 1.9 + i * 2.3)) * W, y: (v + 0.022 * e * Math.cos(T * 0.75 + k * 1.4 + i * 1.7)) * H };
+      });
+      r.lineWidth = 42 * (0.9 + 0.1 * Math.sin(T * 2 + i));
+      const steps = Math.max(2, Math.ceil(80 * (head - tail)));
+      let prev = cr(P, tail);
+      for (let k = 1; k <= steps; k++) {
+        const s = tail + ((head - tail) * k) / steps, p = cr(P, s);
+        r.strokeStyle = colAt(pal[i], s * 0.85 - T * 0.2 + i * 0.13);
+        r.beginPath(); r.moveTo(prev.x, prev.y); r.lineTo(p.x, p.y); r.stroke();
+        prev = p;
+      }
+    });
+    if (A.mode === 'absorb' && t > 0.6) this.anim = null;
+    const b = this.bx;
+    b.clearRect(0, 0, W, H); b.filter = 'blur(6px)'; b.drawImage(this.raw, 0, 0); b.filter = 'none';
+    const img = b.getImageData(0, 0, W, H), d = img.data, nz = this.noise, g = 0.85, n = W * H;
+    if ((this.frame++ & 1) === 0) this.off = (Math.random() * 8192) | 0;
+    const off = this.off;
+    for (let p = 0, i = 0; p < n; p++, i += 4) {
+      const al = d[i + 3]; if (!al) continue;
+      const z = nz[p + off];
+      d[i + 3] = (1 - g) * al + g * (al > z ? 255 : 0);
+      const k = 1 + (z - 128) * 0.0016 * g;
+      d[i] *= k; d[i + 1] *= k; d[i + 2] *= k;
+    }
+    b.putImageData(img, 0, 0);
+    cx.clearRect(0, 0, W, H);
+    cx.filter = 'blur(16px)'; cx.globalAlpha = 0.45; cx.drawImage(this.raw, 0, 0); cx.filter = 'none'; cx.globalAlpha = 1;
+    cx.drawImage(this.blr, 0, 0);
+  };
+
+  toastMsg(msg) { clearTimeout(this.toastT); this.setState({ toast: msg }); this.toastT = setTimeout(() => this.setState({ toast: null }), 2800); }
+  pushNotif(n) { clearTimeout(this.notifT); this.setState({ notif: n }); this.notifT = setTimeout(() => this.setState({ notif: null }), 4600); }
+  addLog(e) { this.setState((s) => ({ logs: [{ id: 'g' + ++this.uid, day: 'Today', ...e }, ...s.logs] })); }
+
+  /* navigation */
+  go = (screen, extra) => {
+    this.setState({ screen, receipt: null, compose: null, report: null, bankView: false, app: null, confirmClear: false, hindi: false, sealing: false, checkFilter: 'all', ...(extra || {}) });
+  };
+  openReceipt = (id, z) => this.setState({ receipt: id, receiptZ: z || 10, hindi: false });
+  closeReceipt = () => this.setState({ receipt: null, hindi: false });
+  openReport = (id) => this.setState({ report: id, openStep: null, bankView: false });
+  closeReport = () => this.setState({ report: null, bankView: false });
+
+  /* reports */
+  sealNow = () => {
+    if (this.state.sealing) return;
+    this.setState({ sealing: true });
+    this.later(1900, () => {
+      const id = this.createReport(this.state.compose);
+      this.setState({ screen: 'reports', compose: null, receipt: null, sealing: false, report: id, openStep: null });
+    });
+  };
+  createReport(recId) {
+    const rec = this.state.records.find((r) => r.id === recId); if (!rec) return null;
+    const id = 'p' + ++this.uid, no = 'SR-2310-0' + (520 + this.uid);
+    const rep = { id, checkId: rec.id, no, bank: rec.bank, bankShort: rec.bankShort, times: [['23 Oct', this.now()]], stage: 0, callback: this.state.callback, size: '18.4 KB', live: true };
+    this.setState((s) => ({ reports: [rep, ...s.reports], records: s.records.map((r) => (r.id === recId ? { ...r, reportId: id } : r)) }));
+    this.addLog({ cat: 'report', time: rep.times[0][1], text: `Sent a sealed report to ${rec.bank}. SATYA can’t read it.`, payLabel: 'Sealed', payload: `Encrypted · 18.4 KB · only ${rec.bank} can open it`, sub: 'Report ' + no });
+    const b = rec.bankShort, p = rec.payee || 'the sender';
+    const N = { 1: [`Report delivered`, `${b}’s fraud desk received your sealed report.`], 3: [`${b} confirmed fake`, `${p} is not a ${b} account.`], 4: [`This UPI is now blocked`, `${p} is blocked for every SATYA user.`] };
+    this.live = this.live || [];
+    [2400, 5200, 8200, 11200].forEach((ms, k) => {
+      this.live.push(setTimeout(() => {
+        const st = k + 1, tm = this.now();
+        this.setState((s) => ({ reports: s.reports.map((r) => (r.id === id ? { ...r, stage: st, times: [...r.times, ['23 Oct', tm]], live: st < 4 } : r)), openStep: s.report === id ? null : s.openStep }));
+        if (N[st]) this.pushNotif({ title: N[st][0], body: N[st][1], reportId: id });
+      }, ms / this.sp()));
+    });
+    return id;
+  }
+
+  /* apps */
+  checkApp = () => {
+    const a = APPS.find((x) => x.id === this.state.app); if (!a || this.state.appChecking) return;
+    this.setState({ appChecking: true });
+    this.later(1600, () => {
+      this.setState((s) => ({ appChecking: false, appChecked: { ...s.appChecked, [a.id]: this.now() } }));
+      this.addLog({ cat: 'app', time: this.now(), text: 'Sent 5 characters of an app fingerprint.', payLabel: 'Sent', payload: a.fp, sub: 'App check · ' + a.name });
+      this.toastMsg(a.ok ? `${a.name} is on the official list.` : `${a.name} is not on any official list.`);
+    });
+  };
+
+  /* settings */
+  syncNow = () => {
+    if (this.state.syncing) return;
+    this.setState({ syncing: true });
+    this.later(1500, () => {
+      this.setState({ syncing: false, syncLabel: 'Just now' });
+      this.addLog({ cat: 'sync', time: this.now(), text: PROMPT_SYNC, payLabel: 'Sent', payload: 'App version only', sub: 'Sync now' });
+      this.toastMsg('Promise Cards up to date. 14 banks.');
+    });
+  };
+  doClear = () => { this.setState({ records: [], reports: [], logs: [], confirmClear: false }); this.toastMsg('Everything on this phone is cleared.'); };
+
+  /* layer 1 */
+  resetFlow() { this.clearTimers(); this.setAnim(null); }
+  exitOther = () => { this.resetFlow(); this.setState({ other: false, shade: false, consent: false, share: false, flow: null, flash: false }); };
+  startTile = () => { this.resetFlow(); this.setState({ other: true, otherHint: true, shade: false, consent: false, share: false, flow: null, receipt: null, compose: null }); this.later(650, () => this.setState({ shade: true })); };
+  startShare = () => { this.resetFlow(); this.setState({ other: true, otherHint: false, shade: false, consent: false, share: false, flow: null, receipt: null, compose: null }); this.later(550, () => this.setState({ share: true })); };
+  checkNow = () => { this.resetFlow(); this.setState({ other: true, otherHint: false, shade: false, share: false, flow: null, flowMode: 'now' }); this.later(420, () => this.setState({ consent: true })); };
+  tapTile = () => { this.setState({ shade: false, otherHint: false, flowMode: 'tile' }); this.later(300, () => this.setState({ consent: true })); };
+  consentStart = () => { this.setState({ consent: false, flash: true }); this.later(340, () => this.setState({ flash: false })); this.runCheck('capture'); };
+  shareToSatya = () => { this.setState({ share: false, otherHint: false }); this.runCheck('share'); };
+  runCheck(mode) {
+    this.clearTimers();
+    this.setState({ flow: 'check', step: 0, flowMode: mode === 'share' ? 'share' : this.state.flowMode });
+    this.setAnim('check');
+    this.later(1000, () => this.setState({ step: 1 }));
+    this.later(2000, () => this.setState({ step: 2 }));
+    this.later(3000, () => this.setAnim('absorb'));
+    this.later(3420, () => {
+      const id = 'n' + ++this.uid, tm = this.now();
+      const rec = { ...LIVE, id, no: 'PR-2310-0' + (600 + this.uid), via: mode === 'share' ? 'share' : 'tile', day: 'Today', date: '23 Oct', time: tm };
+      this.setState((s) => ({ records: [rec, ...s.records], flow: 'sheet', sheetId: id }));
+      this.addLog({ cat: 'check', time: tm, text: MASKED, payLabel: 'Sent', payload: LIVE.payload, sub: mode === 'share' ? 'Check · shared from WhatsApp' : 'Check · Check screen tile' });
+    });
+  }
+  closeSheet = () => this.setState({ flow: null, otherHint: true });
+  sheetOpenReceipt = () => { const id = this.state.sheetId; this.exitOther(); this.go('checks'); this.openReceipt(id); };
+  sheetReport = () => { const id = this.state.sheetId; this.exitOther(); this.go('checks', { receipt: id, compose: id, callback: false }); };
+  notifTap = () => {
+    const n = this.state.notif; if (!n) return;
+    clearTimeout(this.notifT);
+    this.exitOther();
+    this.setState({ notif: null });
+    if (n.reportId) { this.go('reports'); this.openReport(n.reportId); }
+  };
+  demoNotif = () => {
+    const r = this.state.reports.find((x) => x.stage >= 3) || this.state.reports[0];
+    if (!r) return this.toastMsg('No reports yet.');
+    const rec = this.state.records.find((x) => x.id === r.checkId) || {};
+    this.pushNotif({ title: `${r.bankShort} confirmed fake`, body: `${rec.payee || 'The sender'} is not a ${r.bankShort} account.`, reportId: r.id });
+  };
+
+  /* view models */
+  recVm(r, i) {
+    return { ...r, word: VW[r.verdict][0], srcIcon: ic(SRC_IC[r.src] || 'sms', BLUE, 20), srcIconSm: ic(SRC_IC[r.src] || 'sms', MUTED, 13, 2.2),
+      when: r.day === 'Today' ? r.time : r.date, divider: i ? '1px solid rgba(14,35,72,.07)' : '0', open: () => this.openReceipt(r.id) };
+  }
+  receiptVm(r) {
+    const hi = this.state.hindi, L = (k) => LB[k][hi ? 1 : 0], breaks = r.verdict === 'breaks';
+    const rep = r.reportId && this.state.reports.find((x) => x.id === r.reportId);
+    return {
+      ...r, word: VW[r.verdict][hi ? 1 : 0], bankT: hi ? r.bankHi : r.bank, askT: hi ? r.askHi : r.ask, promiseT: hi ? r.promiseHi : r.promise,
+      lVerdict: L('verdict'), lAsked: L('asked'), lPromise: PL[r.verdict][hi ? 1 : 0], lChain: L('chain'), lEvidence: L('evidence'),
+      hasStage: breaks && r.stage > 0,
+      stageLine: hi ? `चरण ${r.stage}/4: ${r.stageHi}` : `Stage ${r.stage} of 4: ${r.stageText}`,
+      chain: CHAIN.map((c, i) => ({ label: c[hi ? 1 : 0], bg: i < r.stage ? INK : 'transparent', fg: i < r.stage ? INK : i === r.stage ? BLUE : '#7A849A' })),
+      maskNote: MASK_NOTE[hi ? 1 : 0], srcUpper: r.src,
+      meta: [[L('src'), r.src], [L('checked'), `${dayLabel(r.date)}, ${r.time}`], [L('cap'), r.via === 'share' ? (hi ? 'शेयर किया स्क्रीनशॉट' : 'Shared screenshot') : (hi ? '1 फ़्रेम, फिर बंद' : '1 frame, then stopped')], [L('by'), 'VIVEK']].map(([k, v]) => ({ k, v })),
+      hindiLabel: hi ? 'English' : 'हिंदी',
+      primaryLabel: rep ? 'View report' : breaks ? 'Report to ' + r.bankShort : 'Done',
+      onPrimary: () => { if (rep) { this.setState({ receipt: null, report: rep.id, openStep: null, screen: 'reports' }); } else if (breaks) { this.setState({ compose: r.id, callback: false, sealing: false }); } else this.closeReceipt(); },
+      del: () => { this.setState((s) => ({ records: s.records.filter((x) => x.id !== r.id), receipt: null })); this.toastMsg('Receipt deleted from this phone.'); },
+    };
+  }
+  reportVm(p, recs) {
+    const rec = recs.find((r) => r.id === p.checkId) || {}, last = p.times[p.stage] || p.times[p.times.length - 1];
+    return { ...p, rec, status: STAGES[p.stage], payee: rec.payee || 'the sender', dateLabel: dayLabel(p.times[0][0]), updated: last[0] === '23 Oct' ? last[1] : last[0], stepLabel: `Step ${p.stage + 1} of 5`,
+      segs: STAGES.map((_, i) => ({ bg: i <= p.stage ? BLUE : 'rgba(14,35,72,.1)' })), open: () => this.openReport(p.id) };
+  }
+
+  renderVals() {
+    const s = this.state;
+    if (!this.cache) {
+      this.cache = {
+        sealSolid: seal(false), sealAnim: seal(true), qsGif: qsGif(),
+        icGear: ic('gear', INK, 20), icBackInk: ic('back', INK, 22, 2.2), icBackPaper: ic('back', PAPER, 22, 2.2), icArrowInk: ic('arrow', INK, 22, 2.4), icArrowPaper: ic('arrow', PAPER, 18, 2.2),
+        icChevInk: ic('chev', 'rgba(14,35,72,.4)', 18, 2.2), icChevDownPaper: ic('chevDown', PAPER, 18, 2.2), icTrash: ic('trash', INK, 21), icSpeaker: ic('speaker', INK, 19),
+        icLockBlue: ic('lock', BLUE, 20), icLockPaper: ic('lock', PAPER, 19), icLockInk: ic('lock', INK, 18, 2.2), icCallBlue: ic('call', BLUE, 19), icReceiptBlue: ic('receipt', BLUE, 24),
+        icClosePaper: ic('close', PAPER, 20, 2.2), icCloseInk: ic('close', INK, 18, 2.2), icCheckInk: ic('check', INK, 16, 2.8), icCheckBlue: ic('check', BLUE, 15, 2.8), icCheckPaper: ic('check', PAPER, 15, 2.8),
+        icScreenBlue: ic('screen', '#3B5BA9', 26), icPencilShade: ic('pencil', '#C6CDDA', 20), icGearShade: ic('gear', '#C6CDDA', 20), icSunInk: ic('sun', INK, 18),
+        icShareChat: ic('share', '#1B1B1F', 21), icBackChat: ic('back', '#1B1B1F', 24, 2.2), icCallChat: ic('call', '#1B1B1F', 21), icPlusChat: ic('plus', '#55524C', 24), icMicChat: ic('mic', '#55524C', 22),
+        icSyncBlue: ic('sync', BLUE, 18, 2.2), icAppBlue: ic('app', BLUE, 22), icSpeakerBlue: ic('speaker', BLUE, 20), icTrashBlue: ic('trash', BLUE, 20), icCloudBlue: ic('cloud', BLUE, 20), icBellPaper: ic('bell', PAPER, 22), icAppPaper: ic('app', PAPER, 22),
+      };
+    }
+    const c = this.cache;
+    const screen = s.screen || (this.props.startScreen === 'Onboarding' ? 'onb' : 'home');
+    const recs = s.records, vms = recs.map((r, i) => this.recVm(r, i));
+    const breaksN = recs.filter((r) => r.verdict === 'breaks').length;
+
+    const cf = s.checkFilter, filtered = vms.filter((r) => cf === 'all' || r.verdict === cf);
+    const checkGroups = [];
+    filtered.forEach((r) => {
+      const label = r.day === 'Today' || r.day === 'Yesterday' ? r.day : 'Earlier';
+      let g = checkGroups.find((x) => x.label === label);
+      if (!g) { g = { label, items: [] }; checkGroups.push(g); }
+      g.items.push({ ...r, divider: g.items.length ? '1px solid rgba(14,35,72,.07)' : '0' });
+    });
+    const chip = (on) => ({ bg: on ? BLUE : '#fff', fg: on ? PAPER : INK, bd: on ? BLUE : 'rgba(14,35,72,.12)' });
+
+    const rec = s.receipt && recs.find((r) => r.id === s.receipt);
+    const crec = s.compose && recs.find((r) => r.id === s.compose);
+    const repRows = s.reports.map((p, i) => ({ ...this.reportVm(p, recs), delay: i * 50 + 'ms' }));
+    const rp = s.report && repRows.find((p) => p.id === s.report);
+    let rd = {}, bv = {};
+    if (rp) {
+      const b = rp.bankShort, pct = (rp.stage / 4) * 100 + '%', R = rp.rec;
+      rd = { ...rp, fillW: pct,
+        steps: STAGES.map((label, i) => {
+          const done = i <= rp.stage, t = rp.times[i], open = s.openStep == null ? i === rp.stage : s.openStep === i;
+          return { label, date: done && t ? dayLabel(t[0]) : '—', time: done && t ? t[1] : 'Waiting', body: stageBody(i, b, rp.payee), open, rot: open ? 'rotate(180deg)' : 'none',
+            bg: i === rp.stage ? 'rgba(255,255,255,.3)' : done ? 'rgba(255,255,255,.15)' : 'rgba(255,255,255,.04)', bd: done ? '1px solid rgba(255,255,255,.22)' : '1px dashed rgba(255,255,255,.38)',
+            now: i === rp.stage && rp.stage < 4, toggle: () => this.setState({ openStep: open ? -1 : i }) };
+        }),
+        callbackText: rp.callback ? `On. ${CALLBACK_NO} is inside the sealed box.` : 'Off. The bank can’t see who you are.',
+        openReceipt: () => this.openReceipt(rp.checkId, 18),
+      };
+      bv = { ...rp, ask: R.ask, promise: R.promise, promiseRef: R.promiseRef, stageLine: `Stage ${R.stage} of 4: ${R.stageText}`, src: R.src, from: R.from, ctxPre: R.ctxPre, ctxPost: R.ctxPost, payeeType: R.payeeType, amount: R.amount,
+        when: `${R.date} 2026, ${R.time} IST`, sealed: `${rp.times[0][0]}, ${rp.times[0][1]}`, opened: rp.stage >= 2 ? `${rp.times[2][0]}, ${rp.times[2][1]}` : 'Not yet',
+        title: rp.stage >= 2 ? `Opened by ${b}’s fraud desk` : `What ${b} sees once it opens this`,
+        callback: rp.callback ? `${CALLBACK_NO} · customer asked for a callback` : 'Not shared. The customer chose to stay anonymous.',
+        confirmed: rp.stage >= 3, stampDate: rp.times[3] ? rp.times[3][0] + ' 2026' : '', hash: 'sha256 ' + (rp.no.replace(/\D/g, '') + 'c4e91f07a2').slice(0, 10) + '…' + '9b3d' };
+    }
+    const app = s.app && APPS.find((a) => a.id === s.app);
+    const tileOf = (a) => a.ok ? { tileBg: a.bg, tileFg: a.fg, tileBd: a.bg === '#FFFFFF' ? '1px solid rgba(14,35,72,.14)' : '1px solid transparent' } : { tileBg: '#fff', tileFg: INK, tileBd: '1.5px dashed rgba(14,35,72,.45)' };
+    const lf = s.logFilter, logs = s.logs.filter((e) => lf === 'all' || e.cat === lf);
+    const logGroups = [];
+    logs.forEach((e) => {
+      let g = logGroups.find((x) => x.label === e.day);
+      if (!g) { g = { label: e.day, items: [] }; logGroups.push(g); }
+      g.items.push({ ...e, icon: ic(LOG_IC[e.cat], BLUE, 17, 2.2), divider: g.items.length ? '1px solid rgba(14,35,72,.07)' : '0' });
+    });
+    const sheetRec = s.sheetId && recs.find((r) => r.id === s.sheetId);
+    const sw = (on) => ({ track: on ? BLUE : 'rgba(14,35,72,.18)', knob: on ? '24px' : '4px' });
+    const swP = (on) => ({ track: on ? YEL : 'rgba(255,255,255,.2)', knob: on ? '24px' : '4px' });
+
+    let dark = false;
+    if (screen === 'onb') dark = true;
+    else if (screen === 'reports' && !s.report && !s.compose && !s.receipt) dark = true;
+    if (s.bankView) dark = true;
+    if (s.other) dark = false;
+    if (s.shade || s.consent || s.flow === 'check') dark = true;
+
+    const steps = s.flowMode === 'share' ? ['Reading the shared screenshot', 'Masking your name and number', 'Matching SBI’s Promise Card'] : ['Masking your name and number', 'Matching SBI’s Promise Card', 'Writing your Proof Receipt'];
+    const jump = (label, hint, go) => ({ label, hint, go, icon: c.icArrowPaper });
+
+    return {
+      ...c,
+      statusDark: dark,
+      jumpGroups: [
+        { label: 'Layer 1 · works with the app closed', items: [
+          jump('Check screen tile', 'Pull down, tap the tile, allow one frame', this.startTile),
+          jump('Share to SATYA', 'Backup trigger from WhatsApp or the gallery', this.startShare),
+          jump('Notifications', 'What the bank did, as it happens', this.demoNotif),
+        ] },
+        { label: 'Layer 2 · the pages', items: [
+          jump('Onboarding', 'First open only, 3 slides', () => { this.exitOther(); this.go('onb', { onb: 0 }); }),
+          jump('Home', 'Shield status and overview', () => { this.exitOther(); this.go('home'); }),
+          jump('Checks', 'History and Proof Receipt', () => { this.exitOther(); this.go('checks'); }),
+          jump('Reports', 'Sealed reports and bank status', () => { this.exitOther(); this.go('reports'); }),
+          jump('What the bank receives', 'The sealed report, opened', () => { this.exitOther(); const r = s.reports[0]; this.go('reports', r ? { report: r.id, bankView: true, openStep: null } : {}); }),
+          jump('Apps', 'Know Your App', () => { this.exitOther(); this.go('apps'); }),
+          jump('Privacy Log', 'Everything that left the phone', () => { this.exitOther(); this.go('privacy'); }),
+          jump('Settings', 'Voice, Promise Cards, protocols', () => { this.exitOther(); this.go('settings'); }),
+        ] },
+      ].map((g) => ({ ...g, items: g.items.map((j, i) => ({ ...j, divider: i ? '1px solid rgba(255,255,255,.2)' : '0' })) })),
+      isOnb: screen === 'onb', isHome: screen === 'home', isChecks: screen === 'checks', isReports: screen === 'reports', isApps: screen === 'apps', isPrivacy: screen === 'privacy', isSettings: screen === 'settings',
+      goHome: () => this.go('home'), goSettings: () => this.go('settings'), goChecks: () => this.go('checks'), goApps: () => this.go('apps'), goPrivacy: () => this.go('privacy'), goReports: () => this.go('reports'),
+
+      onb0: s.onb === 0, onb1: s.onb === 1, onb2: s.onb === 2, onbLast: s.onb === 2, onbNotLast: s.onb < 2,
+      onbDots: [0, 1, 2].map((i) => ({ w: i === s.onb ? '26px' : '8px', bg: i === s.onb ? YEL : 'rgba(244,243,238,.45)' })),
+      onbNext: () => this.setState((st) => ({ onb: Math.min(2, st.onb + 1) })),
+      onbFinish: () => this.go('home'),
+      permRows: [['notif', 'Notifications', 'So SATYA can tell you when a bank confirms a fake or a UPI ID gets blocked.', c.icBellPaper], ['apps', 'App list', 'So the Apps page can check which finance apps are real. The list stays on this phone.', c.icAppPaper]].map(([k, title, body, icon]) => {
+        const on = s.perms[k], t = swP(on);
+        return { title, body, icon, track: t.track, knob: t.knob, state: on ? 'Allowed' : 'Not yet', toggle: () => this.setState((st) => ({ perms: { ...st.perms, [k]: !st.perms[k] } })) };
+      }),
+
+      syncLabel: s.syncLabel, bankCount: BANKS.length,
+      counters: [
+        { n: recs.length, label: 'Checks done', go: () => this.go('checks') },
+        { n: breaksN, label: 'Scams caught', go: () => this.go('checks', { checkFilter: 'breaks' }) },
+        { n: s.reports.length, label: 'Reports sent', go: () => this.go('reports') },
+      ].map((k) => ({ ...k, icon: ic('arrowUR', INK, 14, 2.2) })),
+      checkNow: this.checkNow,
+      lastReceipts: vms.slice(0, 3), noChecks: !recs.length,
+      appsSummary: `${APPS.length} finance apps · ${APPS.filter((a) => !a.ok).length} unknown`,
+      logCount: s.logs.length,
+
+      checksCount: recs.length,
+      checkFilters: [['all', 'All'], ['breaks', 'Breaks promise'], ['genuine', 'Genuine'], ['unknown', 'Unknown']].map(([id, label]) => ({ label, count: id === 'all' ? recs.length : recs.filter((r) => r.verdict === id).length, ...chip(cf === id), pick: () => this.setState({ checkFilter: id }) })),
+      checkGroups, noCheckResults: !filtered.length,
+
+      hasReceipt: !!rec, receiptZ: s.receiptZ, rc: rec ? this.receiptVm(rec) : { chain: [], meta: [] }, closeReceipt: this.closeReceipt,
+      toggleHindi: () => { const on = !s.hindi; this.setState({ hindi: on }); if (on && s.hindiVoice) this.toastMsg('Reading the receipt aloud in Hindi'); },
+
+      hasCompose: !!crec, sealing: s.sealing, notSealing: !s.sealing,
+      cp: crec ? { ...crec, items: [['The request', crec.ask], ['Promise broken', crec.promiseRef], ['Kill chain', `Stage ${crec.stage} of 4: ${crec.stageText}`], ['Screenshot', 'Masked on your phone'], ['Where and when', `${crec.src} · ${dayLabel(crec.date)}, ${crec.time}`]].concat(s.callback ? [['Your number', CALLBACK_NO]] : []).map(([k, v], i) => ({ k, v, divider: i ? '1px solid rgba(14,35,72,.07)' : '0' })) } : { items: [] },
+      closeCompose: () => this.setState({ compose: null, sealing: false }), toggleCallback: () => this.setState((st) => ({ callback: !st.callback })), cbTrack: sw(s.callback).track, cbKnob: sw(s.callback).knob, sealNow: this.sealNow,
+
+      reportsCount: s.reports.length, reportRows: repRows, noReports: !s.reports.length,
+      hasReport: !!rp, rd, closeReport: this.closeReport, openBankView: () => this.setState({ bankView: true }),
+      hasBankView: !!rp && s.bankView, bv, closeBankView: () => this.setState({ bankView: false }),
+
+      appsCount: APPS.length, verifiedCount: APPS.filter((a) => a.ok).length, unknownCount: APPS.filter((a) => !a.ok).length,
+      appRows: APPS.map((a, i) => ({ ...a, ...tileOf(a), word: a.ok ? 'Verified' : 'Unknown', divider: i ? '1px solid rgba(14,35,72,.07)' : '0', open: () => this.setState({ app: a.id }) })),
+      hasApp: !!app, closeApp: () => this.setState({ app: null }), checkApp: this.checkApp, appChecking: s.appChecking, appIdle: !s.appChecking,
+      ad: app ? { ...app, ...tileOf(app), word: app.ok ? 'Verified' : 'Unknown', listLine: app.ok ? 'On the official list' : 'Not on any official list',
+        rows: [['Install source', app.source], ['Owner company', app.owner], ['Is KYC safe here?', app.kyc]].map(([k, v], i) => ({ k, v, divider: i ? '1px solid rgba(14,35,72,.07)' : '0' })),
+        fpChars: app.fp.split('').map((ch) => ({ ch })), checked: !!s.appChecked[app.id],
+        checkedText: s.appChecked[app.id] ? `Checked today at ${s.appChecked[app.id]}. ${app.ok ? 'Still on the official list.' : 'Still not on any official list.'}` : '' } : { rows: [], fpChars: [] },
+
+      logFilters: [['all', 'All'], ['check', 'Checks'], ['report', 'Reports'], ['app', 'App checks']].map(([id, label]) => ({ label, ...chip(lf === id), pick: () => this.setState({ logFilter: id }) })),
+      logGroups, noLogs: !logs.length,
+
+      hvTrack: sw(s.hindiVoice).track, hvKnob: sw(s.hindiVoice).knob, toggleHindiVoice: () => this.setState((st) => ({ hindiVoice: !st.hindiVoice })),
+      bankRows: (s.showAllBanks ? BANKS : BANKS.slice(0, 5)).map((name, i) => ({ name, sub: `${PROMISES[BANKS.indexOf(name)]} promises · v2026.10`, divider: i ? '1px solid rgba(14,35,72,.07)' : '0' })),
+      showAllLabel: s.showAllBanks ? 'Show fewer' : `Show all ${BANKS.length}`, toggleShowAll: () => this.setState((st) => ({ showAllBanks: !st.showAllBanks })),
+      syncNow: this.syncNow, syncing: s.syncing, notSyncing: !s.syncing,
+      askClear: () => this.setState({ confirmClear: true }), confirmClear: s.confirmClear, cancelClear: () => this.setState({ confirmClear: false }), doClear: this.doClear,
+      protocols: PROTOCOLS.map(([name, role, line], i) => ({ name, role, line, divider: i ? '1px solid rgba(14,35,72,.07)' : '0' })),
+
+      inOther: s.other, otherHint: s.otherHint && !s.shade && !s.consent && !s.share && !s.flow,
+      chatTransform: s.flow === 'check' ? 'scale(.965)' : 'none', chatRadius: s.flow === 'check' ? '30px' : '0px',
+      exitOther: this.exitOther, openShade: () => this.setState({ shade: true }), closeShade: () => this.setState({ shade: false }), tapTile: this.tapTile,
+      shadeOpen: s.shade,
+      qsTiles: [['Bluetooth', 'Off', 'bt'], ['Flashlight', 'Off', 'torch'], ['Do Not Disturb', 'Off', 'moon'], ['Auto-rotate', 'On', 'rotate']].map(([label, sub, icon]) => ({ label, sub, icon: ic(icon, '#E9ECF2', 20) })),
+      qsNotifs: [
+        { title: s.reports[0] ? `${s.reports[0].bankShort} · ${STAGES[s.reports[0].stage]}` : 'Report delivered', body: 'Your sealed report was updated by the bank.', time: '09:28' },
+        { title: 'Promise Cards synced', body: '14 banks · blocklist updated. Nothing about you was sent.', time: '06:00' },
+      ],
+      consentOpen: s.consent, consentCancel: () => this.setState({ consent: false, otherHint: true }), consentStart: this.consentStart,
+      shareOpen: s.share, openShare: () => this.setState({ share: true }), closeShare: () => this.setState({ share: false, otherHint: true }), shareToSatya: this.shareToSatya,
+      shareTargets: [['Messages', 'sms'], ['Drive', 'folder'], ['Nearby', 'nearby']].map(([label, icon]) => ({ label, icon: ic(icon, '#3B5BA9', 24) })),
+      flowChecking: s.flow === 'check', cvRef: this.cvRef, flashOn: s.flash,
+      capChip: s.flowMode === 'share' ? 'Screenshot received from WhatsApp' : '1 frame captured · capture stopped',
+      stepText: steps[s.step] || '',
+      sheetOpen: s.flow === 'sheet' && !!sheetRec,
+      sh: sheetRec ? { ...sheetRec, word: VW[sheetRec.verdict][0], stageShort: `${sheetRec.stage} / 4`, stageCap: sheetRec.stageText ? sheetRec.stageText[0].toUpperCase() + sheetRec.stageText.slice(1) : '' } : {},
+      closeSheet: this.closeSheet, sheetOpenReceipt: this.sheetOpenReceipt, sheetReport: this.sheetReport,
+
+      hasNotif: !!s.notif, notif: s.notif || {}, notifTap: this.notifTap,
+      hasToast: !!s.toast, toast: s.toast || '',
+    };
+  }
+}
+</script>
+</body>
+</html>

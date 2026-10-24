@@ -1,0 +1,49 @@
+# --- secrets: never committed (the repo is public) ---
+keys/
+**/.env
+**/.env.*
+!**/.env.example
+android/secrets.properties
+android/keystore.properties
+*.jks
+*.keystore
+*.p12
+**/.dev.vars
+**/demo_keys.json
+tools/.secrets/
+
+# --- build output ---
+**/node_modules/
+**/build/
+**/.next/
+**/out/
+**/dist/
+**/.vercel/
+**/.wrangler/
+**/.gradle/
+**/.kotlin/
+**/local.properties
+**/.cxx/
+**/captures/
+*.apk
+*.aab
+*.idea/
+**/.idea/
+*.iml
+
+# --- python ---
+**/__pycache__/
+**/.pytest_cache/
+**/.venv/
+*.pyc
+
+# --- eval media (licences vary; the manifest is committed, the files are not) ---
+vivek/eval/samples/real/*
+vivek/eval/samples/fake/*
+!vivek/eval/samples/**/.gitkeep
+
+# --- local noise ---
+.DS_Store
+Thumbs.db
+*.log
+tools/autopush.state

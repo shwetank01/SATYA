@@ -1,0 +1,19 @@
+{
+  "ed25519": {
+    "seed_hex": "0101010101010101010101010101010101010101010101010101010101010101",
+    "pk_hex": "8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+    "sk64_hex": "01010101010101010101010101010101010101010101010101010101010101018a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c",
+    "message_utf8": "satya-test-v1",
+    "signature_hex": "2c1fd041b01eeffa6b2c808d6715b2ab8915bddb6b3e6fba395bc9b0c43e90e150057f8410437915dd7f2111efdb3bea96935c9f9d16e5248311e0f8d99cbd02",
+    "cert_message_utf8": "satya-cert-v1|SBI|8a88e3dd7409f195fd52db2d3cba5d72ca6709bf1d94121bf3748801b40f6f5c|",
+    "cert_signature_hex": "70bdbcd9358eaa667683fabe604a13cf27e66bff5fa811393675e251397f959287d84cb899e741f7b25757373200a984f05b605383a835e2c5226efb629efd04"
+  },
+  "x25519_seed_keypair": {
+    "seed_hex": "0202020202020202020202020202020202020202020202020202020202020202",
+    "pk_hex": "60346e7c911a5f6ba154129174cafe75b294ac3bbd5549632f48cec6266f8410",
+    "sk_hex": "aa3c626bc9c38c8c201878ebb1d5b0b50ac40e8986c78793db1d4ef369fca1ce"
+  },
+  "sealed_box": {
+    "note": "Sealed boxes are randomized. Test = seal 'satya-doctor' to pk_hex above, open with sk_hex. Ciphertext length must be plaintext length + 48 (60 bytes for 'satya-doctor')."
+  }
+}

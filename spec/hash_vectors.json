@@ -1,0 +1,15 @@
+{
+  "normalize_and_hash": [
+    {"type":"upi","raw":"SBI.KYC@YBL ","canonical":"upi:sbi.kyc@ybl","sha256":"30207f98b7687faff18eca253dffbc6887e09c5922edfff80f120f6c03574740","prefix":"30207"},
+    {"type":"tel","raw":"+91 70123 45645","canonical":"tel:7012345645","sha256":"1e163c27cfb761681f3e749648a9d253f0a6148690f6a230374217ae46fa3360","prefix":"1e163"},
+    {"type":"tel","raw":"07012345645","canonical":"tel:7012345645","sha256":"1e163c27cfb761681f3e749648a9d253f0a6148690f6a230374217ae46fa3360","prefix":"1e163"},
+    {"type":"tel","raw":"1800-1800","canonical":"tel:18001800","sha256":"4b5c14d85e8b3da73ca1028fd13235c3d3752f2ade305f3039240cd11ee9fabe","prefix":"4b5c1"},
+    {"type":"tel","raw":"1600108333","canonical":"tel:1600108333","sha256":"9525d9a2aa64db29f7413a544066b420af3b06f3135350fc50fca7e348f675dc","prefix":"9525d"},
+    {"type":"host","raw":"https://WWW.SBI-KYC-update.in/verify?id=9","canonical":"host:sbi-kyc-update.in","sha256":"6ba4fb66af2f6c8be4104e58fadfb7d8900b3406b9f5c762b8edf7bf2bb1558e","prefix":"6ba4f"},
+    {"type":"host","raw":"axis-secure-login.com","canonical":"host:axis-secure-login.com","sha256":"ea08ead26c7bd0f3331c59a6f9f552e4efeb6669b358126f42d4d69792fbdf08","prefix":"ea08e"},
+    {"type":"acct","raw":"50100123456780 / hdfc0001234","canonical":"acct:50100123456780:HDFC0001234","sha256":"83975d9a5b8ce7a8e626d5126fb02da68ec649f7e70cb94415ea1e160fdc9f28","prefix":"83975"},
+    {"type":"acct","raw":"50100987654321 / HDFC0001234","canonical":"acct:50100987654321:HDFC0001234","sha256":"aaf5b6200bdeb934730290914795eb5d85e91522f14a650e0596183e07b5b5c0","prefix":"aaf5b"}
+  ],
+  "day_token": {"install_secret_hex":"0000000000000000000000000000000000000000000000000000000000000000","day":"2026-10-24","hash":"30207f98b7687faff18eca253dffbc6887e09c5922edfff80f120f6c03574740","token":"815a71e48091e5506c8fb36862ecddc39a64cc882ad25d316eee9a18d1cf6511"},
+  "ticket": {"ticket":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","ticket_hash":"ffe054fe7ae0cb6dc65c3af9b61d5209f439851db43d0ba5997337df154668eb"}
+}

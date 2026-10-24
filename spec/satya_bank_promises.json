@@ -1,0 +1,276 @@
+{
+  "v": 1,
+  "registry_version": "2026.10",
+  "updated_at": "2026-10-24",
+  "about": "The SATYA Promise Registry. Each promise is something a bank or regulator has said a genuine bank will never ask you to do. SATYA checks what a message asks for against these promises. 'verified: true' means the statement was confirmed on the cited official page on 2026-10-24; 'verified: false' means it is inferred from a regulator advisory or a secondary source and must be confirmed by the bank before production. Source documents are kept in data/bank-rules/.",
+  "global_promises": [
+    {
+      "id": "G01_NO_SECRETS",
+      "promise": "No genuine bank will ever ask you for your OTP, PIN, UPI PIN, CVV or password, by call, SMS, WhatsApp or email.",
+      "promise_hi": "कोई भी असली बैंक कॉल, SMS, WhatsApp या ईमेल पर आपका OTP, PIN, UPI PIN, CVV या पासवर्ड कभी नहीं माँगेगा।",
+      "check": {
+        "type": "ask_contains_any",
+        "values": ["otp", "one time password", "pin", "upi pin", "mpin", "atm pin", "cvv", "cvv2", "password", "passcode", "net banking password", "card number", "expiry date", "grid value", "grid values"],
+        "values_hi": ["ओटीपी", "पासवर्ड", "otp batao", "otp bata", "otp bhejo", "pin batao", "ओटीपी बताओ", "ओटीपी बताइए", "पिन बताओ"]
+      },
+      "if_broken": "critical",
+      "kill_chain_stage": 3,
+      "source": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=52216",
+      "source_doc": "data/bank-rules/RBI/RBI_PR_851_Cautions_against_KYC_updation_frauds_13Sep2021.pdf",
+      "source_note": "RBI cautions the public not to share account login, card information, PIN, password or OTP with unidentified persons. Echoed by every bank's fraud page (ICICI, Axis, SBI).",
+      "verified": true
+    },
+    {
+      "id": "G02_LINK_BANK_IN",
+      "promise": "Indian banks run their websites on the .bank.in domain. A bank will not send you to log in or verify on any other address.",
+      "promise_hi": "भारतीय बैंकों की वेबसाइटें .bank.in डोमेन पर हैं। बैंक आपको किसी और पते पर लॉग इन या वेरिफ़ाई करने नहीं भेजेगा।",
+      "check": { "type": "link_host_suffix", "allowed_suffixes": [".bank.in"] },
+      "if_broken": "high",
+      "kill_chain_stage": 1,
+      "source": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12837",
+      "source_doc": "data/bank-rules/RBI/RBI_2025-26_28_Migration_to_bank.in_domain_22Apr2025.pdf",
+      "source_note": "RBI/2025-26/28 (22 Apr 2025): banks to migrate to the .bank.in domain, registrar IDRBT, deadline 31 Oct 2025.",
+      "verified": true
+    },
+    {
+      "id": "G03_SERVICE_CALLS_1600",
+      "promise": "Banks make service and transaction calls only from numbers starting 1600, and promotional calls only from 140 numbers. A bank does not call or message you from a personal mobile number, and does not sell you loans from a 1600 number.",
+      "promise_hi": "बैंक सर्विस और लेन-देन वाली कॉल सिर्फ़ 1600 से शुरू होने वाले नंबरों से करते हैं, और प्रचार वाली कॉल सिर्फ़ 140 नंबरों से। बैंक किसी निजी मोबाइल नंबर से कॉल या मैसेज नहीं करता।",
+      "check": { "type": "caller_prefix", "if_plain_10_digit_mobile": "high", "if_1600_used_for_selling": "medium" },
+      "if_broken": "high",
+      "kill_chain_stage": 1,
+      "source": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12770",
+      "source_doc": "data/bank-rules/RBI/RBI_2024-25_105_Frauds_via_voice_calls_SMS_1600_140_series_17Jan2025.pdf",
+      "source_note": "RBI/2024-25/105 (17 Jan 2025): regulated entities use only 1600xx numbers for transactional/service calls and 140xx for promotional calls. TRAI PR 135/2025 set the bank onboarding deadline to 1 Jan 2026.",
+      "verified": true
+    },
+    {
+      "id": "G04_1600_IS_OUTBOUND_ONLY",
+      "promise": "1600 numbers are for calls a bank makes to you. A real bank asks you to call its published helpline, not to call back a 1600 number from a message.",
+      "promise_hi": "1600 नंबर बैंक की ओर से आपको की जाने वाली कॉल के लिए हैं। असली बैंक आपसे अपनी आधिकारिक हेल्पलाइन पर कॉल करने को कहता है, मैसेज में दिए 1600 नंबर पर नहीं।",
+      "check": { "type": "message_asks_callback_to_prefix", "prefixes": ["1600"] },
+      "if_broken": "medium",
+      "kill_chain_stage": 1,
+      "source": "https://trai.gov.in/sites/default/files/2025-11/PR_No.135of2025.pdf",
+      "source_doc": "data/bank-rules/TRAI-DoT/TRAI_PR_135_2025_BFSI_1600_series_deadlines.pdf",
+      "source_note": "The 1600 series is allotted for service and transactional calls initiated by BFSI entities. Inbound use is not part of the allocation; severity kept at medium.",
+      "verified": false
+    },
+    {
+      "id": "G05_SMS_FROM_HEADER_NOT_NUMBER",
+      "promise": "Banks send SMS only from registered sender IDs such as AD-SBIINB, never from a 10-digit mobile number.",
+      "promise_hi": "बैंक SMS सिर्फ़ रजिस्टर्ड सेंडर ID (जैसे AD-SBIINB) से भेजते हैं, कभी 10 अंकों वाले मोबाइल नंबर से नहीं।",
+      "check": { "type": "sms_sender_is_header" },
+      "if_broken": "high",
+      "kill_chain_stage": 1,
+      "source": "https://trai.gov.in/",
+      "source_doc": "data/bank-rules/TRAI-DoT/TRAI_TCCCPR_2018_headers_note.md",
+      "source_note": "TRAI TCCCPR 2018, regulation 3: commercial communication only through registered headers assigned to the sender (DLT).",
+      "verified": true
+    },
+    {
+      "id": "G06_NO_REMOTE_ACCESS",
+      "promise": "Your bank will never ask you to install a screen-sharing or remote-access app, or any app file sent over a call, chat or link.",
+      "promise_hi": "आपका बैंक कभी भी स्क्रीन-शेयरिंग या रिमोट-एक्सेस ऐप, या कॉल, चैट या लिंक से भेजी गई कोई ऐप फ़ाइल इंस्टॉल करने को नहीं कहेगा।",
+      "check": {
+        "type": "asks_install_any",
+        "values": ["anydesk", "any desk", "teamviewer", "team viewer", "quicksupport", "quick support", "rustdesk", "airdroid", "ammyy", "ultraviewer", "alpemix", "splashtop", "supremo", "screen share", "screen sharing", "remote desktop", "apk", "एनीडेस्क"]
+      },
+      "if_broken": "critical",
+      "kill_chain_stage": 2,
+      "source": "https://npci.org.in/what-we-do/upi/upi-safety-shield",
+      "source_doc": "data/bank-rules/NPCI-I4C/NPCI_UPI_Safety_Shield.pdf",
+      "source_note": "NPCI UPI Safety Shield: never install screen-sharing or SMS-forwarding apps at the request of unknown people. SBI: never sends links to download any APK for KYC. RBI (2021): fraudsters ask customers to install apps through links.",
+      "verified": true
+    },
+    {
+      "id": "G07_NO_SAFE_ACCOUNT",
+      "promise": "No bank, RBI or police officer will ever ask you to move your money to a 'safe', 'secure' or 'verification' account.",
+      "promise_hi": "कोई भी बैंक, RBI या पुलिस अधिकारी आपसे कभी अपना पैसा किसी 'सेफ़', 'सिक्योर' या 'वेरिफ़िकेशन' खाते में डालने को नहीं कहेगा।",
+      "check": {
+        "type": "asks_transfer_with_phrase",
+        "values": ["safe account", "secure account", "safety account", "secured account", "holding account", "verification account", "rbi account", "suraksha khata", "safe khata", "सुरक्षित खाता", "सेफ अकाउंट"]
+      },
+      "if_broken": "critical",
+      "kill_chain_stage": 4,
+      "source": "https://www.axis.bank.in/fraud-awareness/prevent-frauds/phishing-alert",
+      "source_doc": "data/bank-rules/Banks/AXIS_Phishing_alert_never_asks.pdf",
+      "source_note": "Axis Bank: will never request money transfers via email or any other medium, whatever the reason. RBI BE(A)WARE booklet describes impersonation of bank and law-enforcement officials.",
+      "verified": true
+    },
+    {
+      "id": "G08_NO_KYC_FEE",
+      "promise": "Your bank will never ask you to pay a fee over UPI, a link or a call to update your KYC or unblock your account.",
+      "promise_hi": "आपका बैंक KYC अपडेट करने या खाता चालू रखने के लिए UPI, लिंक या कॉल पर कभी कोई फ़ीस नहीं माँगेगा।",
+      "check": {
+        "type": "asks_fee_with_phrase",
+        "values": ["kyc fee", "kyc fees", "kyc charge", "kyc charges", "kyc penalty", "verification fee", "verification charge", "activation fee", "reactivation fee", "reactivation charge", "unblock fee", "unblocking fee", "unblocking charge", "केवाईसी फ़ीस", "केवाईसी शुल्क"]
+      },
+      "if_broken": "high",
+      "kill_chain_stage": 2,
+      "source": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=57244",
+      "source_doc": "data/bank-rules/RBI/RBI_PR_1794_Cautions_against_KYC_updation_frauds_02Feb2024.pdf",
+      "source_note": "RBI (Feb 2024) cautions against frauds in the name of KYC updation and asks customers to contact their bank directly. Banks do not collect KYC updation fees over UPI or chat; promise added in SATYA_ARCHITECTURE v1.1.",
+      "verified": false
+    }
+  ],
+  "banks": [
+    {
+      "id": "SBI",
+      "name": "State Bank of India",
+      "name_hi": "भारतीय स्टेट बैंक",
+      "web_domains": { "values": ["sbi.bank.in", "onlinesbi.sbi.bank.in"], "source": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=12837", "verified": false },
+      "extra_allowed_link_hosts": { "values": ["sbi.co.in", "onlinesbi.sbi"], "source": "Legacy SBI domains still used in older alerts", "verified": false },
+      "email_domains": { "values": ["sbi.co.in", "sbi.bank.in"], "verified": false },
+      "email_senders": { "values": [], "verified": false },
+      "sms_headers": { "values": ["SBIINB", "SBIPSG", "SBICRD", "SBIUPI", "SBIOTP"], "source": "Placeholder until checked on smsheader.trai.gov.in", "verified": false },
+      "service_1600": { "values": ["1600108333"], "verified": false },
+      "promo_140": { "values": ["1409768333"], "verified": false },
+      "inbound_helplines": { "values": ["18001234", "18002100", "1800112211", "18004253800", "155260"], "source": "https://sbi.co.in/web/personal-banking/cyber-security", "verified": false },
+      "official_apps": [
+        { "name": "YONO SBI", "package": "com.sbi.lotusintouch", "cert_sha256": null },
+        { "name": "BHIM SBI Pay", "package": "com.sbi.upi", "cert_sha256": null },
+        { "name": "YONO Lite SBI", "package": "com.sbi.SBIFreedomPlus", "cert_sha256": null }
+      ],
+      "extra_promises": [
+        {
+          "id": "SBI01_NO_KYC_LINKS",
+          "promise": "SBI never sends a link to update your KYC, by SMS, WhatsApp or email.",
+          "promise_hi": "SBI KYC अपडेट करने के लिए SMS, WhatsApp या ईमेल पर कभी कोई लिंक नहीं भेजता।",
+          "check": { "type": "kyc_request_with_link" },
+          "if_broken": "critical",
+          "kill_chain_stage": 2,
+          "source": "https://sbi.co.in/web/personal-banking/cyber-security",
+          "source_doc": "data/bank-rules/Banks/SBI_Cyber_security_KYC_link_advisory.pdf",
+          "source_note": "SBI: never sends any link to update KYC, and never sends links to download an APK for KYC or reward points.",
+          "verified": true
+        }
+      ],
+      "report_to": null
+    },
+    {
+      "id": "HDFC",
+      "name": "HDFC Bank",
+      "name_hi": "HDFC बैंक",
+      "web_domains": { "values": ["hdfc.bank.in"], "verified": false },
+      "extra_allowed_link_hosts": { "values": ["hdfcbk.io", "hdfcbank.com"], "source": "HDFC Bank SMS alert: links in its messages are always under hdfcbk.io (reported by Fact Crescendo, Mar 2023)", "verified": false },
+      "email_domains": { "values": ["hdfcbank.com", "hdfcbank.net", "hdfc.bank.in"], "verified": false },
+      "email_senders": { "values": [], "verified": false },
+      "sms_headers": { "values": ["HDFCBK", "HDFCBN"], "source": "HDFC Bank SMS alert: messages only from HDFCBK / HDFCBN", "verified": false },
+      "service_1600": { "values": [], "verified": false },
+      "promo_140": { "values": [], "verified": false },
+      "inbound_helplines": { "values": ["18002026161", "18001600"], "verified": false },
+      "official_apps": [
+        { "name": "HDFC Bank MobileBanking", "package": "com.snapwork.hdfc", "cert_sha256": null },
+        { "name": "PayZapp", "package": "com.enstage.wibmo.hdfc", "cert_sha256": null }
+      ],
+      "extra_promises": [],
+      "report_to": null
+    },
+    {
+      "id": "ICICI",
+      "name": "ICICI Bank",
+      "name_hi": "ICICI बैंक",
+      "web_domains": { "values": ["icici.bank.in"], "source": "https://www.icici.bank.in/personal-banking/debt-service/fraud-prevention", "verified": true },
+      "extra_allowed_link_hosts": { "values": ["icicibank.com"], "verified": false },
+      "email_domains": { "values": ["icicibank.com", "icici.bank.in"], "verified": false },
+      "email_senders": { "values": [], "verified": false },
+      "sms_headers": { "values": ["ICICIB", "ICICIT"], "source": "Placeholder until checked on smsheader.trai.gov.in", "verified": false },
+      "service_1600": { "values": [], "verified": false },
+      "promo_140": { "values": [], "verified": false },
+      "inbound_helplines": { "values": ["18001080", "18002662"], "verified": false },
+      "official_apps": [
+        { "name": "iMobile Pay", "package": "com.csam.icici.bank.imobile", "cert_sha256": null }
+      ],
+      "extra_promises": [],
+      "report_to": null
+    },
+    {
+      "id": "AXIS",
+      "name": "Axis Bank",
+      "name_hi": "Axis बैंक",
+      "web_domains": { "values": ["axis.bank.in"], "source": "https://application.axis.bank.in/WebForms/axis-support/Blogs/identify_genuine.aspx", "verified": true },
+      "extra_allowed_link_hosts": { "values": ["axisbank.com"], "verified": false },
+      "email_domains": { "values": ["axis.bank.in", "axisbankmail.bank.in", "axisbankmail.in", "axisbankmail.com", "axisbank.com"], "source": "https://application.axis.bank.in/WebForms/axis-support/Blogs/identify_genuine.aspx", "verified": true },
+      "email_senders": { "values": ["alerts@axis.bank.in", "cc.statements@axis.bank.in", "info@digital.axisbankmail.bank.in"], "verified": true },
+      "sms_headers": { "values": ["AXISBK", "AXISMR"], "source": "Placeholder until checked on smsheader.trai.gov.in", "verified": false },
+      "service_1600": { "values": [], "verified": false },
+      "promo_140": { "values": [], "verified": false },
+      "inbound_helplines": { "values": ["18604195555", "18605005555", "18001035577"], "verified": false },
+      "official_apps": [
+        { "name": "Axis Mobile", "package": "com.axis.mobile", "cert_sha256": null }
+      ],
+      "extra_promises": [
+        {
+          "id": "AXIS_EMAIL_SENDER_MISMATCH",
+          "promise": "Axis Bank emails you only from its own domains, such as alerts@axis.bank.in.",
+          "promise_hi": "Axis बैंक आपको सिर्फ़ अपने डोमेन (जैसे alerts@axis.bank.in) से ईमेल करता है।",
+          "check": { "type": "email_sender_domain_in", "values": ["axis.bank.in", "axisbankmail.bank.in", "axisbankmail.in", "axisbankmail.com", "axisbank.com"] },
+          "if_broken": "high",
+          "kill_chain_stage": 1,
+          "source": "https://application.axis.bank.in/WebForms/axis-support/Blogs/identify_genuine.aspx",
+          "source_doc": "data/bank-rules/Banks/AXIS_Identify_genuine_communication_official_email_domains.pdf",
+          "source_note": "Axis Bank lists alerts@axis.bank.in, cc.statements@axis.bank.in and info@digital.axisbankmail.bank.in as its genuine senders.",
+          "verified": true
+        }
+      ],
+      "report_to": null
+    },
+    {
+      "id": "PNB",
+      "name": "Punjab National Bank",
+      "name_hi": "पंजाब नैशनल बैंक",
+      "web_domains": { "values": ["pnb.bank.in"], "source": "https://pnb.bank.in/contact-us.html", "verified": true },
+      "extra_allowed_link_hosts": { "values": ["pnbindia.in"], "verified": false },
+      "email_domains": { "values": ["pnb.co.in", "pnb.bank.in"], "verified": false },
+      "email_senders": { "values": [], "verified": false },
+      "sms_headers": { "values": ["PNBSMS", "PNBBNK"], "source": "Placeholder until checked on smsheader.trai.gov.in", "verified": false },
+      "service_1600": { "values": [], "verified": false },
+      "promo_140": { "values": [], "verified": false },
+      "inbound_helplines": { "values": ["18001800", "18002021", "18001802345"], "source": "https://pnb.bank.in/contact-us.html", "verified": true },
+      "official_apps": [
+        { "name": "PNB ONE", "package": "com.Version1", "cert_sha256": null }
+      ],
+      "extra_promises": [
+        {
+          "id": "PNB01_TOLLFREE_NEVER_CALLS_OUT",
+          "promise": "PNB's toll-free numbers only receive calls. PNB never calls you from 1800 1800 or 1800 2021.",
+          "promise_hi": "PNB के टोल-फ़्री नंबर सिर्फ़ कॉल रिसीव करते हैं। PNB आपको 1800 1800 या 1800 2021 से कभी कॉल नहीं करता।",
+          "check": { "type": "incoming_caller_in", "values": ["18001800", "18002021", "18001802345"] },
+          "if_broken": "critical",
+          "kill_chain_stage": 1,
+          "source": "https://pnb.bank.in/contact-us.html",
+          "source_doc": "data/bank-rules/Banks/PNB_Contact_Us_tollfree_numbers_receive_calls_only.pdf",
+          "source_note": "PNB Contact Us page: the toll-free numbers only receive calls and are not used for making outward calls.",
+          "verified": true
+        },
+        {
+          "id": "PNB02_NO_LOGIN_DETAILS",
+          "promise": "PNB never asks for your internet banking user ID, login password or transaction password.",
+          "promise_hi": "PNB कभी आपका इंटरनेट बैंकिंग यूज़र ID, लॉगिन पासवर्ड या ट्रांज़ैक्शन पासवर्ड नहीं माँगता।",
+          "check": { "type": "ask_contains_any", "values": ["user id", "login id", "login password", "transaction password", "customer id"], "values_hi": [] },
+          "if_broken": "critical",
+          "kill_chain_stage": 3,
+          "source": "https://pnb.bank.in/contact-us.html",
+          "source_doc": "data/bank-rules/RBI/RBI_BEAWARE_Booklet_Modus_Operandi_Financial_Frauds_2022.pdf",
+          "source_note": "Standard bank advisory, also in RBI BE(A)WARE; PNB-specific page still to be attached.",
+          "verified": false
+        }
+      ],
+      "report_to": null
+    }
+  ],
+  "upi_apps": [
+    { "name": "Google Pay", "package": "com.google.android.apps.nbu.paisa.user", "owner": "Google LLC", "cert_sha256": null },
+    { "name": "PhonePe", "package": "com.phonepe.app", "owner": "PhonePe Pvt Ltd", "cert_sha256": null },
+    { "name": "Paytm", "package": "net.one97.paytm", "owner": "One97 Communications Ltd", "cert_sha256": null },
+    { "name": "BHIM", "package": "in.org.npci.upiapp", "owner": "NPCI", "cert_sha256": null },
+    { "name": "Samsung Wallet", "package": "com.samsung.android.spay", "owner": "Samsung Electronics", "cert_sha256": null }
+  ],
+  "report_channels_india": [
+    { "id": "NCRP_1930", "name": "National Cyber Crime Helpline", "phone": "1930", "url": "https://cybercrime.gov.in", "when": "Money lost or about to be lost: call within the first hour." },
+    { "id": "CHAKSHU", "name": "Sanchar Saathi Chakshu", "url": "https://sancharsaathi.gov.in/sfc/", "when": "Report a suspected fraud call, SMS or WhatsApp number." },
+    { "id": "RBI_CMS", "name": "RBI Complaint Management System", "url": "https://cms.rbi.org.in", "when": "Your bank did not resolve your complaint in 30 days." },
+    { "id": "BANK", "name": "Your bank's official helpline", "url": null, "when": "Block the card or account first, using the number printed on your card or passbook." }
+  ]
+}

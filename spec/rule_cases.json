@@ -1,0 +1,21 @@
+{
+  "cases": [
+    {"id":"T01","channel":"sms","sender":"+91 98xxxxxx21","text":"Dear SBI customer your YONO will be blocked today. Update PAN KYC: sbi-kyc-update.in/verify","claims":"SBI","expected":["G02_LINK_BANK_IN","G05_SMS_FROM_HEADER_NOT_NUMBER","SBI01_NO_KYC_LINKS"],"severity":{"G02_LINK_BANK_IN":"high","G05_SMS_FROM_HEADER_NOT_NUMBER":"high","SBI01_NO_KYC_LINKS":"critical"}},
+    {"id":"T02","channel":"call","sender":"+91 70xxxxxx45","text":"Main HDFC Bank se bol raha hoon, aapke card pe fraud hua hai, jo OTP aaya hai woh bata dijiye","claims":"HDFC","expected":["G01_NO_SECRETS","G03_SERVICE_CALLS_1600"],"severity":{"G01_NO_SECRETS":"critical","G03_SERVICE_CALLS_1600":"high"}},
+    {"id":"T03","channel":"call","sender":"18001800","text":"This is PNB head office. Your account is under RBI audit. Install AnyDesk so our officer can secure it.","claims":"PNB","expected":["G06_NO_REMOTE_ACCESS","PNB01_TOLLFREE_NEVER_CALLS_OUT"],"severity":{"G06_NO_REMOTE_ACCESS":"critical","PNB01_TOLLFREE_NEVER_CALLS_OUT":"critical"}},
+    {"id":"T04","channel":"whatsapp","sender":"+91 63xxxxxx09","text":"ICICI fraud team: suspicious activity found. Move your balance to this safe account for 24 hours. A/c 50xxxxxxxx","claims":"ICICI","expected":["G03_SERVICE_CALLS_1600","G07_NO_SAFE_ACCOUNT"],"severity":{"G03_SERVICE_CALLS_1600":"high","G07_NO_SAFE_ACCOUNT":"critical"}},
+    {"id":"T05","channel":"email","sender":"alerts@axisbank-support.com","text":"Your Axis net banking is suspended. Login at axis-secure-login.com to restore.","claims":"AXIS","expected":["AXIS_EMAIL_SENDER_MISMATCH","G02_LINK_BANK_IN"],"severity":{"AXIS_EMAIL_SENDER_MISMATCH":"high","G02_LINK_BANK_IN":"high"}},
+    {"id":"T06","channel":"sms","sender":"VM-HDFCBK-S","text":"Rs 2,450 debited from a/c **1234 on 24-10-26. Not you? Call 18002026161","claims":"HDFC","expected":[],"severity":{}},
+    {"id":"T07","channel":"call","sender":"1600108333","text":"SBI calling to confirm a transaction of Rs 10,000 at an online store. Press 1 if this was you.","claims":"SBI","expected":[],"severity":{}},
+    {"id":"T08","channel":"call","sender":"1600313900","text":"ICICI here. Special pre-approved personal loan offer at 9 percent, interested?","claims":"ICICI","expected":["G03_SERVICE_CALLS_1600"],"severity":{"G03_SERVICE_CALLS_1600":"medium"}},
+    {"id":"N01","channel":"sms","sender":"AD-SBIINB-S","text":"482913 is OTP for your SBI txn of Rs 500. Do not share it with anyone. -SBI","claims":"SBI","expected":[],"severity":{}},
+    {"id":"N02","channel":"whatsapp","sender":"+91 98xxxxxx77","text":"Please share your pin code for delivery","claims":null,"expected":[],"severity":{}},
+    {"id":"N03","channel":"email","sender":"alerts@axis.bank.in","text":"Your Axis credit card statement is ready. Login at https://axis.bank.in to view.","claims":"AXIS","expected":[],"severity":{}},
+    {"id":"N04","channel":"sms","sender":"+91 99xxxxxx12","text":"SBI se bol raha hu, OTP batao warna account band","claims":"SBI","expected":["G01_NO_SECRETS","G05_SMS_FROM_HEADER_NOT_NUMBER"],"severity":{"G01_NO_SECRETS":"critical","G05_SMS_FROM_HEADER_NOT_NUMBER":"high"}},
+    {"id":"N05","channel":"sms","sender":"JD-HDFCBK","text":"Never share OTP, PIN or CVV with anyone. HDFC Bank never asks for it. Visit hdfc.bank.in","claims":"HDFC","expected":[],"severity":{}},
+    {"id":"N06","channel":"sms","sender":"VM-HDFCBK","text":"Track your request at hdfcbk.io/a1B2c3","claims":"HDFC","expected":[],"severity":{}},
+    {"id":"N07","channel":"whatsapp","sender":"+91 70xxxxxx45","text":"SBI: call us back on 1600108333 to unblock your account","claims":"SBI","expected":["G03_SERVICE_CALLS_1600","G04_1600_IS_OUTBOUND_ONLY"],"severity":{"G03_SERVICE_CALLS_1600":"high","G04_1600_IS_OUTBOUND_ONLY":"medium"}},
+    {"id":"T09","channel":"whatsapp","sender":"+91 70448 21319","text":"Dear Ramesh, your YONO account will be blocked today because your KYC is pending. Pay ₹10 KYC fee to sbi.kyc@ybl to keep your account active. — SBI KYC Team","claims":"SBI","expected":["G03_SERVICE_CALLS_1600","G08_NO_KYC_FEE"],"severity":{"G03_SERVICE_CALLS_1600":"high","G08_NO_KYC_FEE":"high"}},
+    {"id":"N08","channel":"sms","sender":"VM-SBIINB","text":"SBI never charges a KYC fee. Do not pay anyone who asks for one.","claims":"SBI","expected":[],"severity":{}}
+  ]
+}

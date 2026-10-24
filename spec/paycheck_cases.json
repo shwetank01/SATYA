@@ -1,0 +1,17 @@
+{
+  "voice_threshold": 0.7,
+  "rules": {
+    "threshold_inr": 100000,
+    "allowed_channels": ["email", "in_person"],
+    "vendors": [{"vendor_name":"Sharma Traders","account":"50100987654321","ifsc":"HDFC0001234"}],
+    "approvers": [
+      {"name":"R. Mehta","role":"CFO","callback_phone":"+91 98xxxxxx10","max_amount_inr":500000},
+      {"name":"A. Verma","role":"Accounts Manager","callback_phone":"+91 97xxxxxx22","max_amount_inr":100000}
+    ]
+  },
+  "cases": [
+    {"id":"P01","requester":"R. Mehta","channel":"voice_note","voice_score":0.87,"text":"This is Mehta. Transfer 4.8 lakh to account 50100123456780 IFSC HDFC0001234 urgently today. Keep it confidential, don't tell anyone.","expect_amount":480000,"expect_flags":["NEW_ACCOUNT","OVER_LIMIT","SYNTHETIC_VOICE","URGENT_SECRET","WRONG_CHANNEL"],"expect_decision":"hold"},
+    {"id":"P02","requester":"A. Verma","channel":"email","voice_score":null,"text":"Please release Rs 45,000 to Sharma Traders a/c 50100987654321 IFSC HDFC0001234 for invoice 7781.","expect_amount":45000,"expect_flags":[],"expect_decision":"clear"},
+    {"id":"P03","requester":"A. Verma","channel":"email","voice_score":null,"text":"Pay Rs 2,40,000 to Sharma Traders a/c 50100987654321 IFSC HDFC0001234.","expect_amount":240000,"expect_flags":["APPROVER_LIMIT","OVER_LIMIT"],"expect_decision":"hold"}
+  ]
+}
