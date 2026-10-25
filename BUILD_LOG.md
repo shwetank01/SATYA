@@ -11,6 +11,28 @@
 | 6 Android | 2026-10-24 14:12 IST | one-door, Doctor D1-D19 on A and B, sequences A + B | **PASS (emulator)** | 0.2.0: Doctor 18/19 on the Android 15 emulator; Reliability x10 = 94% (180/190): every check 10/10 except D11 (gateway has no database yet). D14-D17 now pass against the self-hosted VIVEK. Samsung run pending (no phone connected). APKs in VERSIONS/Version 2. |
 | 7 Hardening | 2026-10-25 03:30 IST | live E2E, Doctor on device, emulator flows | **PASS (emulator)** | 0.3.0: gateway on Vercel Blob + Sarvam; `scripts/smoke.ts` 15/15 against production; Doctor 19/19 on the Android 15 emulator. Samsung run pending (no phone connected). APKs in VERSIONS/Version 3. |
 
+## Release 0.4.0 (2026-10-25): NYAYA for institutions
+
+What was wrong with the deployed console:
+- It had three features and no answer to "why would a bank pay?".
+- Four of five bank inboxes were empty, and SBI's held smoke-test leftovers.
+- One shared password let anyone sign in as any bank, with no record of who did what.
+- Every kill read every report in the inbox.
+- Scam Check used a different AI bar (0.7) from the phone (0.75).
+
+What 0.4.0 does is in Section 23 of the specification and in `CHANGELOG.md`. Measurements (2026-10-25):
+
+| Check | Result |
+|---|---|
+| `npx vitest run` | 103/103. Every commit of the release type-checks, passes its tests and builds on its own (`git rebase --exec`) |
+| `next build` | clean: 16 static entries, 2 dynamic pages, 31 API route handlers |
+| `scripts/smoke.ts` against a production build (`next start`, store namespace `dev/`) | **25/25**: phone report, sealing, receipts, console, kill, herd, Overview, Radar, Promise Card, Mule Watch, audit, CSV, partner API (create, call, revoke -> 401), company refused bank data (403), Pay Check P01 hold -> callback denied -> blocked with a verified receipt; cleanup removed everything it wrote |
+| Registry with a bank-published SBI card, verified in phone order (`verifyBundle`) | ok, 6/6 cards (GLOBAL + 5 banks, SBI `signed_by: bank` v2) |
+| Visual pass (headless Chrome, all 15 console pages as SBI and Acme) | no browser errors; Promise Card signs and publishes from the browser; P01 shows NETWORK_BLOCKED from AXIS's block |
+| Demo seed | 53 reports, 16 campaigns, 10 blocks (7 cross-bank mules), Acme: 3 vendors, 2 approvers, 4 signed decisions |
+
+**Not yet done:** production deploy. The session's safety policy refused `vercel deploy --prod`, so the maintainer runs it, then `npm run demo:seed` and `npx tsx --env-file=.env.local scripts/demo-data.ts clean-smoke` against production.
+
 ## Release 0.3.0 (2026-10-25)
 
 What was broken in 0.2.0, reproduced on the emulator first:
@@ -206,3 +228,5 @@ Each one is also written into the architecture file (Section 21, v1.1).
 | 24 | Capture skips System UI and button labels | Status-bar text polluted checks and reports | 22.6 |
 | 25 | Know Your App: suspects only off-store; KnownApps; watchlist pruning | Genuine bank apps were flagged and their PIN screens blocked | 22.7 |
 | 26 | Accessibility button trigger; Convergence activation; navigation fixes; report to any bank | Requested features and emulator findings | 22.8-22.11 |
+| 27 | NYAYA rebuilt for institutions on the Blob store: Overview, Radar, Mule Watch, Promise Card publishing, Scam Check API, Pay Check (I6-I9), audit trail | 0.3.0's three features had no reason for an institution to pay; Section 12's database still does not exist | 23 |
+| 28 | Pay Check network flags NETWORK_BLOCKED and NETWORK_REPORTED, outside `payCheck()` | Connects the bank network to companies without changing Appendix E | 23.7 |

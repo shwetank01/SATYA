@@ -2,7 +2,7 @@
 
 > Build specification for Claude Code.
 > Project: SATYA, RAKSHAM AI Cybersecurity Hackathon (IIT Delhi), Problem Statement 03: Deepfake Detection for Financial Communications.
-> Version 1.1, 2026-10-24 (v1.1 changes are listed in Section 21). This file is the single source of truth. If code and this file disagree, the file wins until it is updated on purpose.
+> Version 1.3, 2026-10-25 (v1.1 changes are listed in Section 21, v1.2 in Section 22, v1.3 in Section 23). This file is the single source of truth. If code and this file disagree, the file wins until it is updated on purpose.
 
 ---
 
@@ -1699,3 +1699,65 @@ Each change was made after reproducing the failure on the Android 15 emulator. T
     - Deep links arrive only through the `MainActivity` intent (singleTask), so the in-process flow was removed.
     - The back stack is saved in `onSaveInstanceState`.
 11. **Report to any bank.** When no bank is claimed, the Report screen offers the banks that have a Box key. The sealed payload carries the AI reading for the bank.
+
+---
+
+## 23. v1.3 CHANGES (2026-10-25, release 0.4.0): NYAYA for institutions
+
+0.3.0 reduced NYAYA to three features because Section 12's database was never provisioned. 0.4.0 rebuilds the institution vertical on the private Blob store (22.4), so that each feature is one an institution would pay for, and each can be shown end to end. Six features come from Section 1.2: I1, I2, I3, I5, I6 with I7, and I8 with I9. Four are new: 23.3, 23.5, 23.8 and the audit trail in 23.1. I4 (Deepfake Re-check) stays out of the console until VIVEK is hosted. The business case is in `docs/INSTITUTIONS.md`.
+
+1. **Organisations, named analysts, audit trail.**
+   - `web/lib/orgs.ts` lists the institutions: the five banks of the bundle, and companies (`ACME`, Acme Industries).
+   - Sign-in takes the org, the analyst's name and the console password. The optional `NYAYA_ORG_PASSWORDS` (JSON) gives an org its own password; `NYAYA_PASSWORD` is the fallback.
+   - The session cookie carries `{org, user, exp}`.
+   - Routes use `requireBank` or `requireCompany`, so each kind of org reaches only its own data.
+   - Every console action is appended to `audit/<org>.json` (newest first, last 2000 kept): sign-in, open, dismiss, AI brief, block, card publish or reset, mule action, export, API key, pay check, callback.
+2. **Store.**
+   - Inbox rows carry `ih`, the indicator fingerprints. Kill finds the reports it closes from the index, and rows from 0.3.0 are filled in once.
+   - `SATYA_STORE_PREFIX` puts local runs in their own namespace.
+   - New paths: `cards.json`, `mules/<bank>.json`, `pay/<org>/rules.json`, `pay/<org>/checks.json`, `apikeys/<org>.json`, `usage/<org>/<yyyy-mm>.json` and `audit/<org>.json`.
+3. **Fraud Overview** (`/overview`, `GET /api/v1/console/metrics`).
+   - Shows volumes over 30 days and the 30 before, open and unread cases, the median minutes from receipt to block or dismiss, values blocked, and **customers warned**: herd sightings, from the day of the block, of values this bank blocked.
+   - Loss avoided = customers warned / N × Rs 62,810. The constant is the 2024 average loss per reported incident (Rs 22,845.73 crore over 36,37,288 incidents, MHA reply in the Lok Sabha). N is the analyst's stated assumption, shown as one.
+   - `GET /api/v1/console/export` gives the case register as CSV (tags only, formula-injection safe), and each download is logged.
+   - For companies, the Overview measures money stopped by callbacks from their own signed decisions.
+4. **Impersonation Radar (I2)** groups reports by any shared fingerprint (union-find on `ih`).
+   - A campaign is named for what it asks; channel rules (G03, G05, AXIS email) come after.
+   - `POST /api/v1/console/herd` answers by 5-hex prefix only.
+5. **Mule Watch.**
+   - A block records `home`, the bank holding the value: from the UPI handle (`lib/satya/psp.ts`; listed handles only, otherwise null) or, for `acct`, from the IFSC's first four letters, sent by the console.
+   - `/mules` lists values confirmed fake by any bank whose `home` is this bank. The actions Frozen, Investigating and Not our account go to `mules/<bank>.json` and the audit trail.
+   - Private match: the bank's own UPI IDs and account+IFSC lines are hashed in the browser and matched locally against the blocklist; herd counts come by prefix.
+   - Kill now accepts `acct`.
+6. **Promise Card Builder (I1).**
+   - `GET /api/v1/cards` returns the live card, the certificate, and every card (for the in-browser preview).
+   - `POST /api/v1/cards` takes `{card_json, sig}`, signed in the browser with the bank's Sign key. The gateway checks:
+     - the signature against the bank's root-signed `cert.sign_pk`;
+     - the bank id;
+     - that only `web_domains`, `extra_allowed_link_hosts`, `email_domains`, `sms_headers`, `service_1600`, `promo_140` and `inbound_helplines` changed;
+     - each entry's format;
+     - a newer `issued_at`.
+   - Promises change only through registry review. `DELETE` goes back to the root-signed card.
+   - `/registry` serves published cards with `signed_by: "bank"` (phones already verify these, Section 8.7), and Scam Check uses the same cards.
+7. **Pay Check for companies (I6-I9).**
+   - Rules, checks and callbacks are stored per company. Vendor accounts are only `acct` hashes plus the last 4 digits.
+   - The request never leaves the browser except a voice note, which goes for speech-to-text.
+   - Two network flags are added after `payCheck()`, so Appendix E is unchanged:
+
+     | Flag | Severity | Fires when |
+     |---|---|---|
+     | `NETWORK_BLOCKED` | Critical | an account+IFSC or UPI ID in the request is on the blocklist |
+     | `NETWORK_REPORTED` | High | herd `reports` > 0 for one of them |
+
+   - The gateway re-derives HOLD or CLEAR from the flags and signs each decision with `satya-paycheck-v1`, again after a callback. The Evidence PDF is built in the browser.
+8. **Scam Check API.**
+   - `POST /api/v1/partner/check` with `Authorization: Bearer nyaya_live_<bank>_<40 hex>`.
+   - Keys are stored as SHA-256 plus a prefix, shown once, and revocable. Banks only.
+   - Calls are counted per bank per day; over `NYAYA_API_DAILY_CAP` (default 500) the answer is 429.
+   - The response has `verdict`, `broken_promises` (English and Hindi, with sources) and `ai` (risk, summary, advice). `"ai": false` runs the rules only.
+9. **Scam Check** is framed as the contact-centre copilot and shows the words to say back in English and Hindi. "Looks like a scam" uses the phone's 0.75 bar (it was 0.7 in the console).
+10. **Demo data** (`web/scripts/demo-data.ts`).
+    - `seed` writes 53 reports over 16 campaigns, sealed to each bank's Box key, with rule hits from the real rules.
+    - It also writes 10 blocks (7 cross-bank mules), herd sightings, and Acme's rules and 4 signed decisions.
+    - Every record carries `demo: true`, and `clean` removes exactly those. `clean-smoke` removes earlier smoke-test leftovers.
+    - `scripts/smoke.ts` covers the new features in 25 steps and removes what it wrote.
