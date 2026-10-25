@@ -19,12 +19,5 @@ export function SessionGate({ children }: { children: React.ReactNode }) {
   return <Ctx.Provider value={s}>{children}</Ctx.Provider>;
 }
 
-/** Shown when a bank opens a company page or the other way round. */
-export function ForKind({ kind, children }: { kind: OrgKind; children: React.ReactNode }) {
-  const s = useSession();
-  if (s.kind === kind) return <>{children}</>;
-  return <div className="card m-6 p-8 text-[15px]">This page is for {kind === 'bank' ? 'bank fraud desks' : 'company finance teams'}. {s.orgName} is signed in as a {s.kind}.</div>;
-}
-
 /** Where each kind of institution lands after sign-in. */
-export const homeOf = (kind: OrgKind) => (kind === 'bank' ? '/inbox' : '/audit');
+export const homeOf = (kind: OrgKind) => (kind === 'bank' ? '/overview' : '/audit');

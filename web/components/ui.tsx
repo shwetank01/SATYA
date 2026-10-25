@@ -29,7 +29,10 @@ interface NavGroup { group: string; items: NavItem[] }
  */
 const NAV: Record<OrgKind, NavGroup[]> = {
   bank: [
-    { group: 'Detect', items: [['/inbox', 'Report Inbox', 'Sealed reports from customers']] },
+    { group: 'Detect', items: [
+      ['/overview', 'Overview', 'Value delivered, 30 days'],
+      ['/inbox', 'Report Inbox', 'Sealed reports from customers'],
+    ] },
     { group: 'Respond', items: [['/blocklist', 'Blocklist', 'Block a scammer for every phone']] },
     { group: 'Prevent', items: [['/check', 'Scam Check', 'Contact-centre copilot']] },
     { group: 'Govern', items: [['/audit', 'Audit trail', 'Every action, who and when']] },
