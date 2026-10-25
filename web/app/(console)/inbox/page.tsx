@@ -4,8 +4,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { Empty, Shell, ago } from '@/components/ui';
 import { api, forgetKeys, getKeys, importKeys } from '@/lib/console/client';
 import { useSession } from '@/lib/console/session';
+import { usePoll } from '@/lib/console/usePoll';
 
-interface Row { id: string; channel: string; rules: string[]; severity: string; received_at: string; status: string; indicator_count: number }
+interface Row { id: string; channel: string; rules: string[]; severity: string; received_at: string; status: string; indicator_count: number; demo?: boolean }
 
 const STATUS: Record<string, string> = { delivered: 'New', opened: 'Opened', blocked: 'Blocked', dismissed: 'Closed' };
 const FILTERS = [['open', 'Open'], ['all', 'All'], ['blocked', 'Blocked'], ['dismissed', 'Closed']] as const;
@@ -22,7 +23,7 @@ export default function Inbox() {
   const load = useCallback(() => {
     api<{ items: Row[] }>('/reports').then((r) => { setRows(r.items); setErr(''); }).catch((e) => setErr(e.message));
   }, []);
-  useEffect(() => { load(); const t = setInterval(load, 15_000); return () => clearInterval(t); }, [load]);
+  usePoll(load, 20_000);
   useEffect(() => { getKeys(s.org).then((k) => setKeyPk(k?.box?.pk ?? null)); }, [s.org, msg]);
 
   const shown = (rows ?? []).filter((r) => filter === 'all' || (filter === 'open' ? r.status === 'delivered' || r.status === 'opened' : r.status === filter));
@@ -78,7 +79,7 @@ export default function Inbox() {
               {r.status === 'delivered' ? <span className="live-dot" aria-label="new" /> : <span className="h-2 w-2" />}
               <div className="min-w-0 flex-1">
                 <div className="font-semibold">{r.rules.length ? r.rules.join(' · ') : 'No rule id (AI-flagged)'}</div>
-                <div className="text-sm text-muted">{r.channel} · {r.indicator_count} scammer value{r.indicator_count === 1 ? '' : 's'} · report {r.id.slice(0, 8)}</div>
+                <div className="text-sm text-muted">{r.channel} · {r.indicator_count} scammer value{r.indicator_count === 1 ? '' : 's'} · report {r.id.slice(0, 8)}{r.demo ? ' · Demo' : ''}</div>
               </div>
               <span className="stamp">{r.severity}</span>
               <span className="w-20 text-right text-sm font-semibold">{STATUS[r.status] ?? r.status}</span>

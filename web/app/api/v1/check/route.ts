@@ -34,6 +34,7 @@ export async function POST(req: Request) {
     .map(([id, severity]) => ({ id, severity, promise: PROMISES[id]?.promise ?? id, promise_hi: PROMISES[id]?.promise_hi ?? null, issuer: PROMISES[id]?.issuer ?? 'GLOBAL', source: PROMISES[id]?.source ?? null }))
     .sort((a, b) => RANK[b.severity] - RANK[a.severity]);
   const ai = sarvamConfigured() ? await analyze(text, { bank: r.bank, channel, sender }, CHAT_MODEL) : null;
-  const verdict = hits.length ? 'breaks' : ai?.source === 'ai' && ai.risk === 'scam' && ai.confidence >= 0.7 ? 'suspicious' : 'no_broken_promise';
+  // Section 22.3: the same 0.75 bar the phone uses, so the console never disagrees with a receipt.
+  const verdict = hits.length ? 'breaks' : ai?.source === 'ai' && ai.risk === 'scam' && ai.confidence >= 0.75 ? 'suspicious' : 'no_broken_promise';
   return json({ bank: r.bank, hits, verdict, ai });
 }

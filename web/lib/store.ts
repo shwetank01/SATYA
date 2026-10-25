@@ -2,12 +2,16 @@
 // Every read-modify-write is a compare-and-swap on the blob's ETag, so concurrent phones can't
 // lose each other's sightings or reports. Supabase (lib/gateway.ts db()) remains the Section 12
 // target; this store is what runs until that account exists.
-import { BlobError, BlobPreconditionFailedError, get, put } from '@vercel/blob';
+import { BlobError, BlobPreconditionFailedError, del, get, put } from '@vercel/blob';
 
 export const storeConfigured = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
 
+// SATYA_STORE_PREFIX (e.g. "dev/") gives local runs their own namespace in the same store, so
+// `next dev` never writes into the reports, blocklist or herd counts that phones read in production.
+const at = (pathname: string) => (process.env.SATYA_STORE_PREFIX ?? '') + pathname;
+
 async function read<T>(pathname: string): Promise<{ data: T; etag: string } | null> {
-  const r = await get(pathname, { access: 'private', useCache: false }).catch((e) => {
+  const r = await get(at(pathname), { access: 'private', useCache: false }).catch((e) => {
     if (e instanceof BlobError && /not.?found|does not exist/i.test(e.message)) return null;
     throw e;
   });
@@ -22,7 +26,7 @@ export async function readJson<T>(pathname: string): Promise<T | null> {
 }
 
 async function write(pathname: string, data: unknown, etag?: string) {
-  await put(pathname, JSON.stringify(data), {
+  await put(at(pathname), JSON.stringify(data), {
     access: 'private',
     contentType: 'application/json',
     addRandomSuffix: false,
@@ -53,6 +57,14 @@ export async function create(pathname: string, data: unknown) {
   await write(pathname, data);
 }
 
+/** Deletes one blob; a missing blob is not an error. */
+export async function remove(pathname: string) {
+  await del(at(pathname)).catch((e) => {
+    if (e instanceof BlobError && /not.?found|does not exist/i.test(e.message)) return;
+    throw e;
+  });
+}
+
 // ---------------------------------------------------------------- reports (DOOT)
 
 export type ReportStatus = 'delivered' | 'opened' | 'blocked' | 'dismissed';
@@ -73,10 +85,15 @@ export interface StoredReport {
   status: ReportStatus;
   updated_at: string;
   closed_at?: string;
+  /** Written by scripts/demo-data.ts, never by a phone; the console labels these rows "Demo". */
+  demo?: boolean;
 }
 
-/** What the inbox lists without opening every report. */
-export type ReportIndexRow = Omit<StoredReport, 'sealed' | 'receipt_sig' | 'ticket_hash' | 'indicators'> & { indicator_count: number };
+/**
+ * What the inbox lists without opening every report. `ih` (the scammer values' fingerprints) lets
+ * Radar group campaigns and Kill find the reports it closes without reading each report blob.
+ */
+export type ReportIndexRow = Omit<StoredReport, 'sealed' | 'receipt_sig' | 'ticket_hash' | 'indicators'> & { indicator_count: number; ih: string[] };
 
 const reportPath = (id: string) => `reports/${id}.json`;
 const indexPath = (bank: string) => `index/${bank}.json`;
@@ -90,7 +107,7 @@ export async function saveReport(r: StoredReport) {
 
 function toRow(r: StoredReport): ReportIndexRow {
   const { sealed: _s, receipt_sig: _r, ticket_hash: _t, indicators, ...rest } = r;
-  return { ...rest, indicator_count: indicators.length };
+  return { ...rest, indicator_count: indicators.length, ih: [...new Set(indicators.map((i) => i.h))] };
 }
 
 /** Status only moves forward: delivered -> opened -> blocked | dismissed. */
@@ -108,15 +125,34 @@ export async function setStatus(id: string, status: ReportStatus): Promise<Store
   return next;
 }
 
-export const listReports = async (bank: string) => (await readJson<ReportIndexRow[]>(indexPath(bank))) ?? [];
+/** This bank's inbox, newest first. Rows written before 0.4.0 lack `ih`; they are filled once. */
+export async function listReports(bank: string): Promise<ReportIndexRow[]> {
+  const rows = (await readJson<ReportIndexRow[]>(indexPath(bank))) ?? [];
+  const stale = rows.filter((r) => !Array.isArray(r.ih));
+  if (!stale.length) return rows;
+  const filled = new Map<string, string[]>();
+  for (const r of stale) {
+    const full = await getReport(r.id).catch(() => null);
+    filled.set(r.id, full ? [...new Set(full.indicators.map((i) => i.h))] : []);
+  }
+  const fix = (x: ReportIndexRow) => (Array.isArray(x.ih) ? x : { ...x, ih: filled.get(x.id) ?? [] });
+  await update<ReportIndexRow[]>(indexPath(bank), () => [], (cur) => cur.map(fix)).catch(() => {});
+  return rows.map(fix);
+}
+
+/** Removes a report and its inbox row (demo-data cleanup only; phones never delete). */
+export async function deleteReport(bank: string, id: string) {
+  await remove(reportPath(id));
+  await update<ReportIndexRow[]>(indexPath(bank), () => [], (rows) => rows.filter((x) => x.id !== id));
+}
 
 // ---------------------------------------------------------------- herd counts (SANGH)
 
 export interface HerdEntry { t: string; days: Record<string, string[]>; reports: number; confirmed_by: string | null; label: string | null }
-type HerdFile = Record<string, HerdEntry>;
+export type HerdFile = Record<string, HerdEntry>;
 
-const herdPath = (prefix: string) => `herd/${prefix}.json`;
-const dayOf = (d = new Date()) => d.toISOString().slice(0, 10);
+export const herdPath = (prefix: string) => `herd/${prefix}.json`;
+export const dayOf = (d = new Date()) => d.toISOString().slice(0, 10);
 const blank = (t: string): HerdEntry => ({ t, days: {}, reports: 0, confirmed_by: null, label: null });
 
 export function seen7d(e: HerdEntry, today = new Date()): number {
@@ -127,6 +163,26 @@ export function seen7d(e: HerdEntry, today = new Date()): number {
 export async function herdLookup(prefix: string) {
   const f = (await readJson<HerdFile>(herdPath(prefix))) ?? {};
   return Object.entries(f).map(([h, e]) => ({ h, t: e.t, seen_7d: seen7d(e), reports: e.reports, confirmed_by: e.confirmed_by, label: e.label }));
+}
+
+export type HerdMatch = Awaited<ReturnType<typeof herdLookup>>[number];
+
+/** Several prefixes at once (the console's k-anonymous lookups); a missing file is simply empty. */
+export async function herdLookupMany(prefixes: string[]): Promise<HerdMatch[]> {
+  const out = await Promise.all([...new Set(prefixes)].map((p) => herdLookup(p).catch(() => [])));
+  return out.flat();
+}
+
+/** Raw herd entries for exact hashes (server-side metrics only; never returned to a phone). */
+export async function herdEntries(hashes: string[]): Promise<Map<string, HerdEntry>> {
+  const byPrefix = new Map<string, string[]>();
+  for (const h of hashes) byPrefix.set(h.slice(0, 5), [...(byPrefix.get(h.slice(0, 5)) ?? []), h]);
+  const out = new Map<string, HerdEntry>();
+  await Promise.all([...byPrefix].map(async ([p, hs]) => {
+    const f = (await readJson<HerdFile>(herdPath(p)).catch(() => null)) ?? {};
+    for (const h of hs) if (f[h]) out.set(h, f[h]);
+  }));
+  return out;
 }
 
 /** One sighting per (hash, day token): a phone counts once a day, and no IP or device is stored. */
@@ -156,7 +212,7 @@ export async function herdReport(indicators: { t: string; h: string }[]) {
 
 // ---------------------------------------------------------------- blocklist (One-Click Kill)
 
-export interface BlockRow { h: string; t: 'upi' | 'tel' | 'host' | 'app'; by: string; label: string; at: string }
+export interface BlockRow { h: string; t: 'upi' | 'tel' | 'host' | 'app' | 'acct'; by: string; label: string; at: string; demo?: boolean }
 
 export const getBlocklist = async () => (await readJson<BlockRow[]>('blocklist.json')) ?? [];
 
@@ -172,13 +228,13 @@ export async function addToBlocklist(bank: string, items: { t: BlockRow['t']; h:
       return { ...f, [i.h]: { ...e, confirmed_by: e.confirmed_by ?? bank, label: e.label ?? i.label } };
     });
   }
-  // Close this bank's open reports that carry any of these values.
+  // Close this bank's open reports that carry any of these values. The index row holds their
+  // fingerprints, so this no longer reads every report in the inbox.
   const hashes = new Set(items.map((i) => i.h));
   let closed = 0;
   for (const row of await listReports(bank)) {
     if (row.status === 'blocked' || row.status === 'dismissed') continue;
-    const r = await getReport(row.id);
-    if (r?.indicators.some((x) => hashes.has(x.h))) { await setStatus(r.id, 'blocked'); closed++; }
+    if (row.ih.some((h) => hashes.has(h))) { await setStatus(row.id, 'blocked'); closed++; }
   }
   return closed;
 }
