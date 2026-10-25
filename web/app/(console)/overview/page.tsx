@@ -8,6 +8,7 @@ import { count, duration, inr, shortDay } from '@/lib/console/format';
 import { lossAvoided, type BankMetrics } from '@/lib/console/metrics';
 import { useSession } from '@/lib/console/session';
 import { usePoll } from '@/lib/console/usePoll';
+import { channelName, DECISION, type PayRecord } from '@/lib/console/pay';
 
 type M = BankMetrics & { avg_loss_inr: number };
 
@@ -24,8 +25,14 @@ function Tile({ label, value, note }: { label: string; value: string; note?: str
   );
 }
 
-/** The fraud desk's value in one screen: volume, speed, protection, and what it is worth. */
+/** Banks see their fraud desk's value; companies see the money Pay Check held and stopped. */
 export default function Overview() {
+  const s = useSession();
+  return s.kind === 'bank' ? <BankOverview /> : <PayOverview />;
+}
+
+/** The fraud desk's value in one screen: volume, speed, protection, and what it is worth. */
+function BankOverview() {
   const s = useSession();
   const [m, setM] = useState<M | null>(null);
   const [err, setErr] = useState('');
@@ -91,6 +98,61 @@ export default function Overview() {
           <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-muted">
             <span>Updated {new Date(m.generated_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}{m.demo_rows ? ` · includes ${m.demo_rows} demo report${m.demo_rows === 1 ? '' : 's'}` : ''}. The CSV holds tags only; report contents stay sealed.</span>
             <Link className="font-semibold text-blue underline" href="/inbox">Open the inbox</Link>
+          </div>
+        </div>
+      )}
+    </Shell>
+  );
+}
+
+/** Pay Check's value for a company: money stopped is measured from its own decisions, not estimated. */
+function PayOverview() {
+  const s = useSession();
+  const [items, setItems] = useState<PayRecord[] | null>(null);
+  const load = useCallback(() => { api<{ items: PayRecord[] }>('/pay/checks').then((r) => setItems(r.items)).catch(() => setItems([])); }, []);
+  usePoll(load, 60_000);
+  const recent = (items ?? []).filter((r) => Date.parse(r.created_at) > Date.now() - 30 * 86_400_000);
+  const sum = (rs: PayRecord[]) => rs.reduce((n, r) => n + (r.amount_inr ?? 0), 0);
+  const blocked = recent.filter((r) => r.decision === 'blocked');
+  const released = recent.filter((r) => r.decision === 'released');
+  const waiting = recent.filter((r) => r.decision === 'hold');
+  const held = recent.filter((r) => r.initial === 'hold');
+  const reasons = new Map<string, number>();
+  for (const r of held) for (const f of r.flags) if (f.severity === 'critical' || f.severity === 'high') reasons.set(f.flag, (reasons.get(f.flag) ?? 0) + 1);
+  return (
+    <Shell kind="company" title="Payments overview" sub={`What Pay Check did for ${s.orgName} in the last 30 days.`} actions={<Link className="btn-ink" href="/pay/check">Check a payment</Link>}>
+      {!items && <div className="card p-8 text-muted">Loading…</div>}
+      {items && (
+        <div className="space-y-5">
+          <div className="grain lattice relative overflow-hidden rounded-[22px] bg-blue p-6 text-paper shadow-[0_10px_26px_rgba(14,35,72,.12)] md:p-8" style={{ backgroundBlendMode: 'soft-light' }}>
+            <div className="text-sm font-semibold text-paper/80">Money stopped by a callback</div>
+            <div className="mt-2 font-display text-5xl font-semibold tracking-tight tabular-nums md:text-6xl">{inr(sum(blocked))}</div>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-paper/85">{count(blocked.length)} payment request{blocked.length === 1 ? '' : 's'} that the named approver, called on their saved number, said they never made. Measured from your own decisions, each one signed.</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <Tile label="Requests checked" value={count(recent.length)} note={`${count(recent.length - held.length)} cleared without a callback`} />
+            <Tile label="Held for a callback" value={count(held.length)} note={inr(sum(held))} />
+            <Tile label="Released after callback" value={count(released.length)} note={inr(sum(released))} />
+            <Tile label="Waiting for a callback" value={count(waiting.length)} note={inr(sum(waiting))} />
+          </div>
+          <div className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
+            <div className="card p-5">
+              <div className="font-display text-lg font-semibold">Why payments were held</div>
+              <div className="mb-3 text-sm text-muted">Critical and high flags, 30 days</div>
+              {reasons.size ? <Bars data={[...reasons].sort((a, b) => b[1] - a[1]).map(([k, n]) => ({ key: k, n, label: k.replace(/_/g, ' ').toLowerCase() }))} /> : <p className="text-sm text-muted">Nothing held yet.</p>}
+            </div>
+            <div className="card p-5">
+              <div className="font-display text-lg font-semibold">Latest decisions</div>
+              <div className="mt-3 divide-y divide-ink/5">
+                {(items ?? []).slice(0, 6).map((r) => (
+                  <Link key={r.id} href={`/pay/check/${r.id}`} className="flex items-center justify-between gap-3 py-2.5 text-sm hover:bg-paper">
+                    <span className="min-w-0"><span className="block truncate font-semibold">{r.summary}</span><span className="text-muted">{r.requester} · {channelName(r.channel)}</span></span>
+                    <span className="stamp shrink-0">{DECISION[r.decision]}</span>
+                  </Link>
+                ))}
+                {!items.length && <p className="text-sm text-muted">No payments checked yet.</p>}
+              </div>
+            </div>
           </div>
         </div>
       )}

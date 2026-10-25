@@ -10,6 +10,9 @@ const WORDS: Record<string, string> = {
   mule_actioned: 'Acted on a Mule Watch alert',
   card_published: 'Signed and published the Promise Card',
   card_reset: 'Went back to SATYA’s root-signed card',
+  pay_rules_saved: 'Saved Pay Rules',
+  pay_checked: 'Checked a payment request',
+  pay_verified: 'Recorded a callback',
 };
 
 export const actionWord = (a: string) => WORDS[a] ?? a.replace(/_/g, ' ');

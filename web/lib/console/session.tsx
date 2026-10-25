@@ -20,4 +20,4 @@ export function SessionGate({ children }: { children: React.ReactNode }) {
 }
 
 /** Where each kind of institution lands after sign-in. */
-export const homeOf = (kind: OrgKind) => (kind === 'bank' ? '/overview' : '/audit');
+export const homeOf = (_kind: OrgKind) => '/overview';

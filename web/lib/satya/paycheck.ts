@@ -78,3 +78,26 @@ export function payCheck(rules: PayRules, c: PayRequest, voiceThreshold: number)
   const decision = flags.some((f) => FLAG_SEVERITY[f] === 'critical' || FLAG_SEVERITY[f] === 'high') ? 'hold' : 'clear';
   return { amount: amt, flags, decision, accounts: accs };
 }
+
+// ---------------------------------------------------------------- network flags (Section 23.7)
+// What the SATYA network already knows about where the money would go. Added in the console after
+// payCheck(), so the Appendix E vectors (and pay_ref.py) are unchanged.
+
+export type NetworkFlag = 'NETWORK_BLOCKED' | 'NETWORK_REPORTED';
+export type AnyPayFlag = PayFlag | NetworkFlag;
+
+export const NETWORK_SEVERITY: Record<NetworkFlag, 'critical' | 'high'> = { NETWORK_BLOCKED: 'critical', NETWORK_REPORTED: 'high' };
+
+export const NETWORK_REASON: Record<NetworkFlag, string> = {
+  NETWORK_BLOCKED: 'A bank on SATYA has confirmed this account or UPI ID as fake.',
+  NETWORK_REPORTED: 'SATYA users have reported this account or UPI ID in scam messages.',
+};
+
+export const severityOf = (f: AnyPayFlag) => (f in NETWORK_SEVERITY ? NETWORK_SEVERITY[f as NetworkFlag] : FLAG_SEVERITY[f as PayFlag]);
+export const reasonOf = (f: AnyPayFlag) => (f in NETWORK_REASON ? NETWORK_REASON[f as NetworkFlag] : FLAG_REASON[f as PayFlag]);
+export const holds = (flags: AnyPayFlag[]) => flags.some((f) => severityOf(f) === 'critical' || severityOf(f) === 'high');
+
+/** UPI IDs in a payment request; an email address (handle followed by .tld) is not one. */
+export function upiIds(text: string): string[] {
+  return [...new Set(text.match(/[A-Za-z0-9._-]{2,256}@[A-Za-z][A-Za-z0-9]{1,63}(?![\p{L}\p{N}_]|\.[A-Za-z])/gu) ?? [])];
+}

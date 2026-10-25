@@ -45,6 +45,12 @@ const NAV: Record<OrgKind, NavGroup[]> = {
     { group: 'Govern', items: [['/audit', 'Audit trail', 'Every action, who and when']] },
   ],
   company: [
+    { group: 'Protect payments', items: [
+      ['/overview', 'Overview', 'Money held and stopped'],
+      ['/pay/check', 'Pay Check', 'Check before money moves'],
+      ['/pay/history', 'Decisions', 'Every decision, with evidence'],
+      ['/pay/rules', 'Pay Rules', 'Vendors, approvers, limits'],
+    ] },
     { group: 'Govern', items: [['/audit', 'Audit trail', 'Every action, who and when']] },
   ],
 };

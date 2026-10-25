@@ -13,7 +13,9 @@ export const BANK_ORGS: Org[] = [
   { id: 'PNB', name: 'Punjab National Bank', kind: 'bank' },
 ];
 
-export const COMPANY_ORGS: Org[] = [];
+export const COMPANY_ORGS: Org[] = [
+  { id: 'ACME', name: 'Acme Industries', kind: 'company' },
+];
 
 export const ORGS: Record<string, Org> = Object.fromEntries([...BANK_ORGS, ...COMPANY_ORGS].map((o) => [o.id, o]));
 

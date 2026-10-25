@@ -256,6 +256,53 @@ export async function setMuleAction(bank: string, h: string, action: MuleAction,
   await update<Record<string, MuleRecord>>(mulePath(bank), () => ({}), (m) => ({ ...m, [h]: { action, at: new Date().toISOString(), user } }));
 }
 
+// ---------------------------------------------------------------- Pay Check (companies, I6-I9)
+
+export interface PayVendor { id: string; vendor_name: string; acct_hash: string; acct_hint: string }
+export interface PayApprover { id: string; name: string; role: string; callback_phone: string; max_amount_inr: number }
+export interface PayRulesDoc { threshold_inr: number; allowed_channels: string[]; vendors: PayVendor[]; approvers: PayApprover[]; updated_at: string | null; updated_by: string | null }
+export type PayDecision = 'hold' | 'clear' | 'released' | 'blocked';
+export interface PayFlagRow { flag: string; severity: string; reason: string }
+export interface PayReceipt { message: string; sig: string; decided_at: string }
+export interface PayCheckRecord {
+  id: string; created_at: string; created_by: string;
+  requester: string; channel: string; amount_inr: number | null; request_hash: string; summary: string;
+  flags: PayFlagRow[]; voice_score: number | null;
+  initial: 'hold' | 'clear'; decision: PayDecision;
+  verify?: { result: 'confirmed' | 'denied'; by: string; at: string; callback_phone: string | null };
+  receipt: PayReceipt;
+  demo?: boolean;
+}
+
+export const DEFAULT_PAY_RULES: PayRulesDoc = { threshold_inr: 100_000, allowed_channels: ['email', 'in_person'], vendors: [], approvers: [], updated_at: null, updated_by: null };
+
+const payRulesPath = (org: string) => `pay/${org}/rules.json`;
+const payChecksPath = (org: string) => `pay/${org}/checks.json`;
+
+export const getPayRules = async (org: string) => (await readJson<PayRulesDoc>(payRulesPath(org))) ?? DEFAULT_PAY_RULES;
+
+export async function savePayRules(org: string, rules: PayRulesDoc) {
+  await update<PayRulesDoc>(payRulesPath(org), () => DEFAULT_PAY_RULES, () => rules);
+}
+
+export const listPayChecks = async (org: string) => (await readJson<PayCheckRecord[]>(payChecksPath(org))) ?? [];
+
+export async function addPayCheck(org: string, rec: PayCheckRecord) {
+  await update<PayCheckRecord[]>(payChecksPath(org), () => [], (rows) => [rec, ...rows.filter((r) => r.id !== rec.id)].slice(0, 1000));
+}
+
+/** Changes one check in place; returns the new record, or null when `fn` refuses (returns null). */
+export async function updatePayCheck(org: string, id: string, fn: (r: PayCheckRecord) => PayCheckRecord | null): Promise<PayCheckRecord | null> {
+  let out: PayCheckRecord | null = null;
+  await update<PayCheckRecord[]>(payChecksPath(org), () => [], (rows) => rows.map((r) => {
+    if (r.id !== id) return r;
+    const next = fn(r);
+    out = next;
+    return next ?? r;
+  }));
+  return out;
+}
+
 // ---------------------------------------------------------------- audit trail (who did what, when)
 
 export interface AuditEntry { at: string; user: string; action: string; target?: string; detail?: string }
