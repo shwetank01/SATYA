@@ -13,7 +13,7 @@ An open-source shield against impersonation and deepfake fraud in Indian banking
 [![AI: Sarvam](https://img.shields.io/badge/AI-Sarvam-F7C800)](https://docs.sarvam.ai)
 [![Release 0.4.0](https://img.shields.io/badge/release-0.4.0-F7C800)](CHANGELOG.md)
 
-[Two products](#two-products) · [Why institutions pay](#why-institutions-pay) · [Architecture](#system-architecture) · [Quick start](#quick-start) · [Testing](#testing) · [Privacy](#privacy-and-the-five-laws) · [Repository map](#repository-map)
+**[How we solve it](SOLUTION.md)** · **[What we built](BUILD.md)** · [Two products](#two-products) · [Why institutions pay](#why-institutions-pay) · [Architecture](#system-architecture) · [Quick start](#quick-start) · [Testing](#testing) · [Privacy](#privacy-and-the-five-laws) · [Repository map](#repository-map)
 
 </div>
 
