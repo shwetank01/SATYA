@@ -8,6 +8,8 @@ const WORDS: Record<string, string> = {
   blocked_for_everyone: 'Blocked for every SATYA phone',
   exported_case_register: 'Downloaded the case register',
   mule_actioned: 'Acted on a Mule Watch alert',
+  card_published: 'Signed and published the Promise Card',
+  card_reset: 'Went back to SATYA’s root-signed card',
 };
 
 export const actionWord = (a: string) => WORDS[a] ?? a.replace(/_/g, ' ');

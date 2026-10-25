@@ -12,7 +12,8 @@ export async function api<T = any>(path: string, init: RequestInit = {}): Promis
   });
   if (r.status === 204) return null as T;
   const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(j?.error ?? `HTTP ${r.status}`);
+  // A route may add a sentence for people (`message`) next to its machine code (`error`).
+  if (!r.ok) throw new Error(j?.message ?? j?.error ?? `HTTP ${r.status}`);
   return j as T;
 }
 

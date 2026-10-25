@@ -38,7 +38,10 @@ const NAV: Record<OrgKind, NavGroup[]> = {
       ['/blocklist', 'Blocklist', 'Block a scammer for every phone'],
       ['/mules', 'Mule Watch', 'Scam accounts at your bank'],
     ] },
-    { group: 'Prevent', items: [['/check', 'Scam Check', 'Contact-centre copilot']] },
+    { group: 'Prevent', items: [
+      ['/card', 'Promise Card', 'Your signed official channels'],
+      ['/check', 'Scam Check', 'Contact-centre copilot'],
+    ] },
     { group: 'Govern', items: [['/audit', 'Audit trail', 'Every action, who and when']] },
   ],
   company: [
