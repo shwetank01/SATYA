@@ -6,6 +6,7 @@ import { api, getKeys } from '@/lib/console/client';
 import { useSession } from '@/lib/console/session';
 import { openSealedB64Text } from '@/lib/satya/crypto';
 import { maskedLabel, normalize, type IndicatorType } from '@/lib/satya/normalize';
+import { bankOfIfsc, bankOfUpi } from '@/lib/satya/psp';
 
 interface Payload {
   created_at: string; source_app: string; channel: string; claimed_bank: string; sender: string; masked_text: string;
@@ -19,7 +20,10 @@ interface Payload {
 interface Stored { id: string; bank_id: string; status: string; sealed: string; sealed_hash: string; received_at: string }
 interface Brief { headline: string; what_happened: string; modus_operandi: string; recommended_action: 'block' | 'investigate' | 'dismiss'; action_reason: string; source: string }
 
-const KILLABLE = ['upi', 'tel', 'host', 'app'];
+const KILLABLE = ['upi', 'tel', 'host', 'app', 'acct'];
+
+/** The bank holding a UPI ID or an account (from its IFSC), for the Mule Watch hint. */
+const homeOf = (t: string, v: string) => (t === 'upi' ? bankOfUpi(v) : t === 'acct' ? bankOfIfsc(v.toUpperCase().match(/[A-Z]{4}0[A-Z0-9]{6}/)?.[0] ?? '') : null);
 
 /** Case review: the sealed box is opened here, in the bank's browser, with its Box key. */
 export default function Case({ params }: { params: Promise<{ id: string }> }) {
@@ -62,7 +66,7 @@ export default function Case({ params }: { params: Promise<{ id: string }> }) {
     if (!p || !row) return;
     const indicators = p.raw_indicators.filter((_, i) => pick.has(i)).filter((x) => KILLABLE.includes(x.t)).map((x) => {
       const n = normalize(x.t, x.value);
-      return { t: x.t, h: n.h, label: maskedLabel(x.t, n.canonical) };
+      return { t: x.t, h: n.h, label: maskedLabel(x.t, n.canonical), ...(x.t === 'acct' ? { home: homeOf(x.t, x.value) } : {}) };
     });
     if (!indicators.length) return;
     try {
@@ -128,6 +132,7 @@ export default function Case({ params }: { params: Promise<{ id: string }> }) {
                   <label key={i} className={`flex items-center gap-3 rounded-xl border border-ink/10 px-3 py-2 ${KILLABLE.includes(x.t) ? '' : 'opacity-50'}`}>
                     <input type="checkbox" disabled={!KILLABLE.includes(x.t) || closed} checked={pick.has(i)} onChange={() => setPick((cur) => { const n = new Set(cur); n.has(i) ? n.delete(i) : n.add(i); return n; })} />
                     <span className="text-xs font-bold uppercase text-muted">{x.t}</span><span className="break-all font-semibold">{x.value}</span>
+                    {(() => { const home = homeOf(x.t, x.value); return home && home !== s.org ? <span className="ml-auto shrink-0 text-xs text-muted">account at {home}: they get a Mule Watch alert</span> : home === s.org ? <span className="ml-auto shrink-0 text-xs font-semibold">your customer’s account</span> : null; })()}
                   </label>
                 ))}
                 {!p.raw_indicators.length && <div className="text-sm text-muted">No UPI ID, number or link in this report.</div>}

@@ -3,6 +3,7 @@
 // lose each other's sightings or reports. Supabase (lib/gateway.ts db()) remains the Section 12
 // target; this store is what runs until that account exists.
 import { BlobError, BlobPreconditionFailedError, del, get, put } from '@vercel/blob';
+import { bankOfUpi } from './satya/psp';
 
 export const storeConfigured = () => Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
 
@@ -212,15 +213,18 @@ export async function herdReport(indicators: { t: string; h: string }[]) {
 
 // ---------------------------------------------------------------- blocklist (One-Click Kill)
 
-export interface BlockRow { h: string; t: 'upi' | 'tel' | 'host' | 'app' | 'acct'; by: string; label: string; at: string; demo?: boolean }
+/** `home`: the bank that holds the account behind a UPI ID or account number (Mule Watch), when known. */
+export interface BlockRow { h: string; t: 'upi' | 'tel' | 'host' | 'app' | 'acct'; by: string; label: string; at: string; home?: string | null; demo?: boolean }
 
 export const getBlocklist = async () => (await readJson<BlockRow[]>('blocklist.json')) ?? [];
 
-export async function addToBlocklist(bank: string, items: { t: BlockRow['t']; h: string; label: string }[]) {
+export async function addToBlocklist(bank: string, items: { t: BlockRow['t']; h: string; label: string; home?: string | null }[]) {
   const at = new Date().toISOString();
+  // A UPI handle names its bank; for an account the console sends the bank from the IFSC.
+  const homeOf = (i: (typeof items)[number]) => (i.t === 'upi' ? bankOfUpi(i.label) : i.t === 'acct' ? i.home ?? null : null);
   await update<BlockRow[]>('blocklist.json', () => [], (rows) => {
     const have = new Set(rows.map((r) => r.h));
-    return [...items.filter((i) => !have.has(i.h)).map((i) => ({ ...i, by: bank, at })), ...rows].slice(0, 5000);
+    return [...items.filter((i) => !have.has(i.h)).map((i) => ({ h: i.h, t: i.t, label: i.label, by: bank, at, home: homeOf(i) })), ...rows].slice(0, 5000);
   });
   for (const i of items) {
     await update<HerdFile>(herdPath(i.h.slice(0, 5)), () => ({}), (f) => {
@@ -237,6 +241,19 @@ export async function addToBlocklist(bank: string, items: { t: BlockRow['t']; h:
     if (row.ih.some((h) => hashes.has(h))) { await setStatus(row.id, 'blocked'); closed++; }
   }
   return closed;
+}
+
+// ---------------------------------------------------------------- Mule Watch (what a bank did about its mules)
+
+export type MuleAction = 'frozen' | 'investigating' | 'not_ours';
+export interface MuleRecord { action: MuleAction; at: string; user: string }
+
+const mulePath = (bank: string) => `mules/${bank}.json`;
+
+export const getMuleActions = async (bank: string) => (await readJson<Record<string, MuleRecord>>(mulePath(bank))) ?? {};
+
+export async function setMuleAction(bank: string, h: string, action: MuleAction, user: string) {
+  await update<Record<string, MuleRecord>>(mulePath(bank), () => ({}), (m) => ({ ...m, [h]: { action, at: new Date().toISOString(), user } }));
 }
 
 // ---------------------------------------------------------------- audit trail (who did what, when)

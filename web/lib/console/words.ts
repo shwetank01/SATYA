@@ -7,6 +7,7 @@ const WORDS: Record<string, string> = {
   ai_brief: 'Asked for an AI case brief',
   blocked_for_everyone: 'Blocked for every SATYA phone',
   exported_case_register: 'Downloaded the case register',
+  mule_actioned: 'Acted on a Mule Watch alert',
 };
 
 export const actionWord = (a: string) => WORDS[a] ?? a.replace(/_/g, ' ');

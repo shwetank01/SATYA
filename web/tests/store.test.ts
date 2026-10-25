@@ -68,6 +68,18 @@ describe('store', () => {
     expect((await store.herdLookup(H('d').slice(0, 5)))[0].confirmed_by).toBe('SBI');
   });
 
+  it('a blocked UPI ID or account remembers the bank that holds it (Mule Watch)', async () => {
+    await store.addToBlocklist('HDFC', [
+      { t: 'upi', h: H('f'), label: 'UPI rahul***@oksbi' },
+      { t: 'acct', h: H('9'), label: 'A/c ••••6780', home: 'HDFC' },
+      { t: 'tel', h: H('8'), label: 'Number 98xxxxxx10', home: 'SBI' },
+    ]);
+    const homes = Object.fromEntries((await store.getBlocklist()).map((b) => [b.t, b.home]));
+    expect(homes).toEqual({ upi: 'SBI', acct: 'HDFC', tel: null });
+    await store.setMuleAction('SBI', H('f'), 'frozen', 'Asha Rao');
+    expect((await store.getMuleActions('SBI'))[H('f')]).toMatchObject({ action: 'frozen', user: 'Asha Rao' });
+  });
+
   it('SATYA_STORE_PREFIX keeps a local run out of production paths', async () => {
     process.env.SATYA_STORE_PREFIX = 'dev/';
     await store.saveReport(report('p1', []));

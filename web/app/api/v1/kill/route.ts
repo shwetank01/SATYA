@@ -3,14 +3,17 @@ export const dynamic = 'force-dynamic';
 
 import { z } from 'zod';
 import { fail, isResponse, json, readJson, requireBank, requireConsole } from '@/lib/gateway';
+import { BANK_ORGS } from '@/lib/orgs';
 import { addToBlocklist, getBlocklist, logAction, storeConfigured } from '@/lib/store';
 
 const Body = z.object({
   indicators: z.array(z.object({
-    t: z.enum(['upi', 'tel', 'host', 'app']),
+    t: z.enum(['upi', 'tel', 'host', 'app', 'acct']),
     h: z.string().regex(/^[0-9a-f]{64}$/),
     // A masked label only, e.g. "UPI sbi.k***@ybl"; never the raw value.
-    label: z.string().max(80).refine((s) => s.includes('*') || s.includes('…') || /^(Number|Site|App|UPI|A\/c)\b/.test(s), 'label must be masked'),
+    label: z.string().max(80).refine((s) => s.includes('*') || s.includes('…') || s.includes('•') || /^(Number|Site|App|UPI|A\/c)\b/.test(s), 'label must be masked'),
+    // For an account number: the bank from its IFSC, worked out in the browser (Mule Watch).
+    home: z.enum(BANK_ORGS.map((o) => o.id) as [string, ...string[]]).nullish(),
   })).min(1).max(20),
 });
 

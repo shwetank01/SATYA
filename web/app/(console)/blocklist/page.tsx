@@ -5,7 +5,7 @@ import { api } from '@/lib/console/client';
 import { useSession } from '@/lib/console/session';
 import { maskedLabel, normalize } from '@/lib/satya/normalize';
 
-interface Item { h: string; t: string; by: string; label: string; at: string }
+interface Item { h: string; t: string; by: string; label: string; at: string; home?: string | null; demo?: boolean }
 type Kind = 'upi' | 'tel' | 'host';
 const KINDS: [Kind, string, string][] = [['upi', 'UPI ID', 'sbi.kyc.help@ybl'], ['tel', 'Phone number', '+91 98765 43210'], ['host', 'Website', 'sbi-kyc-update.in']];
 
@@ -52,7 +52,7 @@ export default function Blocklist() {
         <div className="card divide-y divide-ink/5">
           {items.map((i) => (
             <div key={i.h} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5">
-              <div><div className="font-semibold">{i.label || i.t}</div><div className="text-xs text-muted">fingerprint {i.h.slice(0, 12)}… · confirmed by {i.by}</div></div>
+              <div><div className="font-semibold">{i.label || i.t}</div><div className="text-xs text-muted">fingerprint {i.h.slice(0, 12)}… · confirmed by {i.by}{i.home ? ` · account at ${i.home}` : ''}{i.demo ? ' · Demo' : ''}</div></div>
               <div className="flex items-center gap-3 text-sm text-muted"><span className="stamp">{i.t}</span>{ago(i.at)}</div>
             </div>
           ))}
