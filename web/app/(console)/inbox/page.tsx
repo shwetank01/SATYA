@@ -31,6 +31,7 @@ export default function Inbox() {
 
   return (
     <Shell
+      kind="bank"
       title="Report Inbox"
       sub={`Customers report from the SATYA app. Each report is sealed on their phone with ${s.orgName}’s public key; the gateway only stores the sealed box.`}
       actions={<button className="btn-ghost" onClick={load}>Refresh</button>}

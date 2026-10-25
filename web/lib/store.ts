@@ -238,3 +238,20 @@ export async function addToBlocklist(bank: string, items: { t: BlockRow['t']; h:
   }
   return closed;
 }
+
+// ---------------------------------------------------------------- audit trail (who did what, when)
+
+export interface AuditEntry { at: string; user: string; action: string; target?: string; detail?: string }
+
+const auditPath = (org: string) => `audit/${org}.json`;
+
+/**
+ * Appends one entry to the org's audit trail (newest first, last 2000 kept). Never throws: an
+ * action that already happened is not undone because its log line could not be written.
+ */
+export async function logAction(org: string, user: string, action: string, target?: string, detail?: string) {
+  const e: AuditEntry = { at: new Date().toISOString(), user, action, ...(target ? { target } : {}), ...(detail ? { detail: detail.slice(0, 200) } : {}) };
+  await update<AuditEntry[]>(auditPath(org), () => [], (rows) => [e, ...rows].slice(0, 2000)).catch(() => {});
+}
+
+export const listAudit = async (org: string) => (await readJson<AuditEntry[]>(auditPath(org))) ?? [];

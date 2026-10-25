@@ -31,6 +31,20 @@ export function requireConsole(req: Request): ConsoleUser | Response {
   return s ? { ...s, orgs: [s.org] } : fail(401, 'unauthorized');
 }
 
+/** Bank-only console routes (reports, kill, cards, mule watch, API keys). */
+export function requireBank(req: Request): ConsoleUser | Response {
+  const u = requireConsole(req);
+  if (isResponse(u)) return u;
+  return u.kind === 'bank' ? u : fail(403, 'banks_only');
+}
+
+/** Company-only console routes (Pay Check). */
+export function requireCompany(req: Request): ConsoleUser | Response {
+  const u = requireConsole(req);
+  if (isResponse(u)) return u;
+  return u.kind === 'company' ? u : fail(403, 'companies_only');
+}
+
 /** Routes both the phone and the console use (AI analysis, speech-to-text). */
 export function requireAppOrConsole(req: Request): Response | null {
   if (!requireApp(req)) return null;

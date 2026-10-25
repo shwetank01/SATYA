@@ -74,7 +74,7 @@ export default function Case({ params }: { params: Promise<{ id: string }> }) {
 
   const closed = row?.status === 'blocked' || row?.status === 'dismissed';
   return (
-    <Shell title="Case review" sub="Opened in this browser with your bank’s private key. SATYA’s gateway only ever held the sealed box." actions={<Link className="btn-ghost" href="/inbox">Back to inbox</Link>}>
+    <Shell kind="bank" title="Case review" sub="Opened in this browser with your bank’s private key. SATYA’s gateway only ever held the sealed box." actions={<Link className="btn-ghost" href="/inbox">Back to inbox</Link>}>
       {state === 'loading' && <div className="card p-8 text-muted">Opening the sealed report…</div>}
       {state === 'nokeys' && <div className="card p-8">This browser doesn’t hold {s.orgName}’s Box key yet. <Link className="font-semibold text-blue underline" href="/inbox">Import it on the inbox</Link>, then come back.</div>}
       {state === 'error' && <div className="card p-8">This report can’t be opened here (not found, or sealed to a different key).</div>}

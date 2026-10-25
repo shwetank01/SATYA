@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 
 import { z } from 'zod';
 import { boxKeyOf } from '@/lib/bundle';
-import { fail, isResponse, json, readJson, requireApp, requireConsole } from '@/lib/gateway';
+import { fail, isResponse, json, readJson, requireApp, requireBank } from '@/lib/gateway';
 import { b64decode, receiptMessage, sealedHashOf, signHex } from '@/lib/satya/crypto';
 import { herdReport, listReports, saveReport, storeConfigured } from '@/lib/store';
 
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
 
 /** NYAYA inbox: this bank's reports, newest first (tags only; the sealed box is fetched per case). */
 export async function GET(req: Request) {
-  const u = requireConsole(req);
+  const u = requireBank(req);
   if (isResponse(u)) return u;
   if (!storeConfigured()) return fail(503, 'store_not_configured');
   return json({ items: await listReports(u.org) });

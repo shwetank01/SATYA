@@ -32,7 +32,7 @@ export default function Blocklist() {
   }
 
   return (
-    <Shell title="Blocklist" sub={`Scammer values confirmed fake by a bank. SATYA phones flag them instantly after their next sync, even with the app closed. ${s.orgName} adds from a case or here.`}>
+    <Shell kind="bank" title="Blocklist" sub={`Scammer values confirmed fake by a bank. SATYA phones flag them instantly after their next sync, even with the app closed. ${s.orgName} adds from a case or here.`}>
       <form className="card mb-5 flex flex-wrap items-end gap-3 p-5" onSubmit={add}>
         <div>
           <label htmlFor="kind" className="micro">Type</label>

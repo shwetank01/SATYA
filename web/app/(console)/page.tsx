@@ -1,10 +1,12 @@
 'use client';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { homeOf, useSession } from '@/lib/console/session';
 
-/** A fraud desk starts at its Report Inbox. */
+/** Each institution starts on its own home page. */
 export default function Home() {
   const router = useRouter();
-  useEffect(() => { router.replace('/inbox'); }, [router]);
+  const s = useSession();
+  useEffect(() => { router.replace(homeOf(s.kind)); }, [router, s.kind]);
   return null;
 }

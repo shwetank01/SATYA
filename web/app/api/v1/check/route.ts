@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { analyze } from '@/lib/ai/analyze';
 import { CHAT_MODEL, sarvamConfigured } from '@/lib/ai/sarvam';
 import { PROMISES, RULE_BOOK } from '@/lib/bundle';
-import { fail, isResponse, json, readJson, requireConsole } from '@/lib/gateway';
+import { fail, isResponse, json, readJson, requireBank } from '@/lib/gateway';
 import { evaluate } from '@/lib/satya/rules';
 
 const Body = z.object({
@@ -22,7 +22,7 @@ const RANK = { none: 0, medium: 1, high: 2, critical: 3 } as const;
  * reading of the message. Rules decide "Breaks promise"; the AI can only add "Looks like a scam".
  */
 export async function POST(req: Request) {
-  const u = requireConsole(req);
+  const u = requireBank(req);
   if (isResponse(u)) return u;
   const body = await readJson(req, 24_000);
   if (isResponse(body)) return body;

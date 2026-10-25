@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { SEAL } from './sealPaths';
 import { api } from '@/lib/console/client';
 import { useSession } from '@/lib/console/session';
+import type { OrgKind } from '@/lib/orgs';
 
 export function Seal({ size = 34 }: { size?: number }) {
   return (
@@ -19,35 +20,60 @@ export function Seal({ size = 34 }: { size?: number }) {
   );
 }
 
-/** The three things a bank's fraud desk does in NYAYA. */
-const NAV = [
-  ['/inbox', 'Report Inbox', 'Sealed reports from customers'],
-  ['/check', 'Scam Check', 'Rules + Sarvam AI on any message'],
-  ['/blocklist', 'Blocklist', 'Block a scammer for every phone'],
-] as const;
+type NavItem = [href: string, label: string, hint: string];
+interface NavGroup { group: string; items: NavItem[] }
 
-export function Shell({ title, sub, children, actions }: { title: string; sub?: string; children: React.ReactNode; actions?: React.ReactNode }) {
+/**
+ * What each kind of institution does in NYAYA, in the order a fraud desk works:
+ * detect a scam, respond to it, prevent the next one, and keep the record.
+ */
+const NAV: Record<OrgKind, NavGroup[]> = {
+  bank: [
+    { group: 'Detect', items: [['/inbox', 'Report Inbox', 'Sealed reports from customers']] },
+    { group: 'Respond', items: [['/blocklist', 'Blocklist', 'Block a scammer for every phone']] },
+    { group: 'Prevent', items: [['/check', 'Scam Check', 'Contact-centre copilot']] },
+    { group: 'Govern', items: [['/audit', 'Audit trail', 'Every action, who and when']] },
+  ],
+  company: [
+    { group: 'Govern', items: [['/audit', 'Audit trail', 'Every action, who and when']] },
+  ],
+};
+
+/** A page also counts as active for its detail routes (a case belongs to the inbox). */
+const ALSO: Record<string, string[]> = { '/inbox': ['/case'] };
+
+export function Shell({ title, sub, children, actions, kind }: { title: string; sub?: string; children: React.ReactNode; actions?: React.ReactNode; kind?: OrgKind }) {
   const s = useSession();
-  const path = usePathname();
+  const path = usePathname() ?? '';
   const router = useRouter();
-  const active = (href: string) => path === href || path?.startsWith(href + '/') || (href === '/inbox' && path?.startsWith('/case'));
+  const under = (href: string) => path === href || path.startsWith(href + '/');
+  const active = (href: string) => under(href) || (ALSO[href] ?? []).some(under);
+  const groups = NAV[s.kind];
   return (
     <div className="flex min-h-screen">
-      <aside className="grain lattice sticky top-0 hidden h-screen w-64 shrink-0 flex-col gap-6 bg-blue p-5 text-paper md:flex" style={{ backgroundBlendMode: 'soft-light' }}>
+      <aside className="grain lattice sticky top-0 hidden h-screen w-64 shrink-0 flex-col gap-5 bg-blue p-5 text-paper md:flex" style={{ backgroundBlendMode: 'soft-light' }}>
         <div className="flex items-center gap-2.5"><Seal size={36} /><span className="font-display text-lg font-semibold tracking-[.1em] text-yellow">NYAYA</span></div>
         <div className="rounded-2xl border border-white/30 bg-white/10 p-3">
-          <div className="micro !text-paper/80">Bank fraud desk</div>
+          <div className="micro !text-paper/80">{s.kind === 'bank' ? 'Bank fraud desk' : 'Company finance'}</div>
           <div className="mt-1 font-semibold">{s.orgName}</div>
+          <div className="mt-0.5 text-xs text-paper/75">Signed in as {s.user}</div>
         </div>
-        <nav className="flex flex-col gap-1" aria-label="Console">
-          {NAV.map(([href, label, hint]) => (
-            <Link key={href} href={href} aria-current={active(href) ? 'page' : undefined} className={`rounded-xl px-3 py-2.5 transition ${active(href) ? 'bg-yellow text-ink' : 'hover:bg-white/10'}`}>
-              <div className="text-[15px] font-semibold">{label}</div>
-              <div className={`text-xs ${active(href) ? 'text-ink/70' : 'text-paper/70'}`}>{hint}</div>
-            </Link>
+        <nav className="-mx-1 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1" aria-label="Console">
+          {groups.map((g) => (
+            <div key={g.group}>
+              <div className="micro mb-1 px-3 !text-paper/60">{g.group}</div>
+              <div className="flex flex-col gap-0.5">
+                {g.items.map(([href, label, hint]) => (
+                  <Link key={href} href={href} aria-current={active(href) ? 'page' : undefined} className={`rounded-xl px-3 py-2 transition ${active(href) ? 'bg-yellow text-ink' : 'hover:bg-white/10'}`}>
+                    <div className="text-[14.5px] font-semibold leading-tight">{label}</div>
+                    <div className={`text-[11.5px] leading-snug ${active(href) ? 'text-ink/70' : 'text-paper/70'}`}>{hint}</div>
+                  </Link>
+                ))}
+              </div>
+            </div>
           ))}
         </nav>
-        <div className="mt-auto space-y-2 text-xs text-paper/70">
+        <div className="space-y-2 text-xs text-paper/70">
           <div>AI by Sarvam (sarvam-105b, Saaras). Rules decide; AI explains.</div>
           <button className="rounded-xl px-3 py-2 text-left text-sm font-semibold text-paper hover:bg-white/10" onClick={async () => { await api('/console/logout', { method: 'POST' }).catch(() => {}); router.replace('/login'); }}>Sign out</button>
         </div>
@@ -61,9 +87,11 @@ export function Shell({ title, sub, children, actions }: { title: string; sub?: 
           {actions}
         </div>
         <nav className="mb-4 flex gap-2 overflow-x-auto md:hidden" aria-label="Console">
-          {NAV.map(([href, label]) => <Link key={href} href={href} className={`shrink-0 rounded-full border px-3 py-1.5 text-sm font-semibold ${active(href) ? 'border-blue bg-blue text-paper' : 'border-ink/15 bg-white'}`}>{label}</Link>)}
+          {groups.flatMap((g) => g.items).map(([href, label]) => <Link key={href} href={href} className={`shrink-0 rounded-full border px-3 py-1.5 text-sm font-semibold ${active(href) ? 'border-blue bg-blue text-paper' : 'border-ink/15 bg-white'}`}>{label}</Link>)}
         </nav>
-        {children}
+        {kind && kind !== s.kind
+          ? <div className="card p-8 text-[15px]">This page is for {kind === 'bank' ? 'bank fraud desks' : 'company finance teams'}; {s.orgName} is signed in as a {s.kind}.</div>
+          : children}
       </main>
     </div>
   );

@@ -45,7 +45,7 @@ export default function Check() {
   }
 
   return (
-    <Shell title="Scam Check" sub="Paste what a customer received, or upload their voice note. SATYA’s promise rules decide; Sarvam AI explains it in English and Hindi. Nothing is stored.">
+    <Shell kind="bank" title="Scam Check" sub="Paste what a customer received, or upload their voice note. SATYA’s promise rules decide; Sarvam AI explains it in English and Hindi. Nothing is stored.">
       <div className="grid gap-5 lg:grid-cols-[1fr_1fr]">
         <form className="card space-y-4 p-6" onSubmit={(e) => { e.preventDefault(); run(); }}>
           <div className="grid gap-3 sm:grid-cols-2">

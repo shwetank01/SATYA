@@ -2,8 +2,8 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 import { z } from 'zod';
-import { fail, isResponse, json, readJson, requireConsole } from '@/lib/gateway';
-import { addToBlocklist, getBlocklist, storeConfigured } from '@/lib/store';
+import { fail, isResponse, json, readJson, requireBank, requireConsole } from '@/lib/gateway';
+import { addToBlocklist, getBlocklist, logAction, storeConfigured } from '@/lib/store';
 
 const Body = z.object({
   indicators: z.array(z.object({
@@ -19,7 +19,7 @@ const Body = z.object({
  * sync; this bank's open reports that carry these values become "blocked".
  */
 export async function POST(req: Request) {
-  const u = requireConsole(req);
+  const u = requireBank(req);
   if (isResponse(u)) return u;
   if (!storeConfigured()) return fail(503, 'store_not_configured');
   const body = await readJson(req, 16_384);
@@ -27,7 +27,9 @@ export async function POST(req: Request) {
   const p = Body.safeParse(body);
   if (!p.success) return fail(400, 'invalid_body');
   try {
-    return json({ blocked_reports: await addToBlocklist(u.org, p.data.indicators) });
+    const closed = await addToBlocklist(u.org, p.data.indicators);
+    await logAction(u.org, u.user, 'blocked_for_everyone', p.data.indicators.map((i) => i.label).join(', '), `${closed} report(s) closed`);
+    return json({ blocked_reports: closed });
   } catch {
     return fail(500, 'kill_failed');
   }
