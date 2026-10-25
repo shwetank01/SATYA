@@ -31,6 +31,7 @@ const NAV: Record<OrgKind, NavGroup[]> = {
   bank: [
     { group: 'Detect', items: [
       ['/overview', 'Overview', 'Value delivered, 30 days'],
+      ['/radar', 'Radar', 'Live scam campaigns'],
       ['/inbox', 'Report Inbox', 'Sealed reports from customers'],
     ] },
     { group: 'Respond', items: [['/blocklist', 'Blocklist', 'Block a scammer for every phone']] },

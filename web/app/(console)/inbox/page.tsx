@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Empty, Shell, ago } from '@/components/ui';
 import { api, forgetKeys, getKeys, importKeys } from '@/lib/console/client';
 import { useSession } from '@/lib/console/session';
+import { askFirst, ruleName } from '@/lib/console/ruleNames';
 import { usePoll } from '@/lib/console/usePoll';
 
 interface Row { id: string; channel: string; rules: string[]; severity: string; received_at: string; status: string; indicator_count: number; demo?: boolean }
@@ -79,7 +80,7 @@ export default function Inbox() {
             <Link key={r.id} href={`/case/${r.id}`} className="flex flex-wrap items-center gap-4 px-5 py-4 transition hover:bg-paper">
               {r.status === 'delivered' ? <span className="live-dot" aria-label="new" /> : <span className="h-2 w-2" />}
               <div className="min-w-0 flex-1">
-                <div className="font-semibold">{r.rules.length ? r.rules.join(' · ') : 'No rule id (AI-flagged)'}</div>
+                <div className="font-semibold">{r.rules.length ? askFirst(r.rules).map(ruleName).join(' · ') : 'Flagged by SATYA AI (no promise rule)'}</div>
                 <div className="text-sm text-muted">{r.channel} · {r.indicator_count} scammer value{r.indicator_count === 1 ? '' : 's'} · report {r.id.slice(0, 8)}{r.demo ? ' · Demo' : ''}</div>
               </div>
               <span className="stamp">{r.severity}</span>
