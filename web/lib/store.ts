@@ -303,6 +303,43 @@ export async function updatePayCheck(org: string, id: string, fn: (r: PayCheckRe
   return out;
 }
 
+// ---------------------------------------------------------------- partner API keys and usage
+
+/** A key is shown once at creation; the gateway keeps only its SHA-256 and a short prefix to tell keys apart. */
+export interface ApiKeyRow { id: string; prefix: string; hash: string; created_at: string; created_by: string; revoked_at: string | null; revoked_by: string | null }
+
+const keysPath = (org: string) => `apikeys/${org}.json`;
+const usagePath = (org: string, month: string) => `usage/${org}/${month}.json`;
+
+export const listApiKeys = async (org: string) => (await readJson<ApiKeyRow[]>(keysPath(org))) ?? [];
+
+export async function addApiKey(org: string, row: ApiKeyRow) {
+  await update<ApiKeyRow[]>(keysPath(org), () => [], (rows) => [row, ...rows].slice(0, 50));
+}
+
+export async function revokeApiKey(org: string, id: string, user: string): Promise<ApiKeyRow | null> {
+  let hit: ApiKeyRow | null = null;
+  await update<ApiKeyRow[]>(keysPath(org), () => [], (rows) => rows.map((r) => {
+    if (r.id !== id || r.revoked_at) return r;
+    hit = { ...r, revoked_at: new Date().toISOString(), revoked_by: user };
+    return hit;
+  }));
+  return hit;
+}
+
+export interface UsageFile { days: Record<string, number> }
+
+export async function usageOf(org: string, months: string[]): Promise<Record<string, number>> {
+  const files = await Promise.all(months.map((m) => readJson<UsageFile>(usagePath(org, m)).catch(() => null)));
+  return Object.assign({}, ...files.map((f) => f?.days ?? {}));
+}
+
+/** Counts one partner call for today and returns today's total. */
+export async function countCall(org: string, day = dayOf()): Promise<number> {
+  const next = await update<UsageFile>(usagePath(org, day.slice(0, 7)), () => ({ days: {} }), (f) => ({ days: { ...f.days, [day]: (f.days[day] ?? 0) + 1 } }));
+  return next.days[day];
+}
+
 // ---------------------------------------------------------------- audit trail (who did what, when)
 
 export interface AuditEntry { at: string; user: string; action: string; target?: string; detail?: string }

@@ -13,6 +13,8 @@ const WORDS: Record<string, string> = {
   pay_rules_saved: 'Saved Pay Rules',
   pay_checked: 'Checked a payment request',
   pay_verified: 'Recorded a callback',
+  api_key_created: 'Created an API key',
+  api_key_revoked: 'Revoked an API key',
 };
 
 export const actionWord = (a: string) => WORDS[a] ?? a.replace(/_/g, ' ');

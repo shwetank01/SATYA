@@ -45,7 +45,7 @@ export default function Check() {
   }
 
   return (
-    <Shell kind="bank" title="Scam Check" sub="Paste what a customer received, or upload their voice note. SATYA’s promise rules decide; Sarvam AI explains it in English and Hindi. Nothing is stored.">
+    <Shell kind="bank" title="Scam Check" sub="For the contact centre: a customer calls asking “is this really you?”. Paste what they received or upload their voice note. SATYA’s promise rules decide, Sarvam AI explains, and you get the words to say back in English and Hindi. Nothing is stored.">
       <div className="grid gap-5 lg:grid-cols-[1fr_1fr]">
         <form className="card space-y-4 p-6" onSubmit={(e) => { e.preventDefault(); run(); }}>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -102,7 +102,17 @@ export default function Check() {
                   <p className="mt-2 text-[15px] leading-relaxed">{res.ai.summary}</p>
                   <p lang="hi" className="mt-1 text-[15px] leading-relaxed text-body2">{res.ai.summary_hi}</p>
                   {!!res.ai.reasons.length && <ul className="mt-3 list-disc space-y-1 pl-5 text-sm">{res.ai.reasons.map((r) => <li key={r}>{r}</li>)}</ul>}
-                  {res.ai.advice && <p className="mt-3 text-sm"><span className="micro">Tell the customer</span><br />{res.ai.advice}<br /><span lang="hi" className="text-body2">{res.ai.advice_hi}</span></p>}
+                  {res.ai.advice && (
+                    <div className="mt-4 rounded-2xl bg-paper p-3 text-sm">
+                      <div className="micro">Say this to the customer</div>
+                      <p className="mt-1 font-semibold">{res.ai.advice}</p>
+                      <p lang="hi" className="mt-1 text-body2">{res.ai.advice_hi}</p>
+                      <div className="mt-2 flex gap-3 text-xs font-semibold text-blue">
+                        <button className="underline" onClick={() => navigator.clipboard?.writeText(res.ai!.advice)}>Copy English</button>
+                        <button className="underline" onClick={() => navigator.clipboard?.writeText(res.ai!.advice_hi)}>Copy Hindi</button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               {res.ai && res.ai.source !== 'ai' && <div className="card p-6 text-sm">The AI is unavailable right now; the rules verdict above still stands.</div>}

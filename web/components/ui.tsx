@@ -41,6 +41,7 @@ const NAV: Record<OrgKind, NavGroup[]> = {
     { group: 'Prevent', items: [
       ['/card', 'Promise Card', 'Your signed official channels'],
       ['/check', 'Scam Check', 'Contact-centre copilot'],
+      ['/developers', 'API access', 'SATYA inside your own app'],
     ] },
     { group: 'Govern', items: [['/audit', 'Audit trail', 'Every action, who and when']] },
   ],
