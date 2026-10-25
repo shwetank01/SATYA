@@ -38,7 +38,7 @@ describe('partner API keys', () => {
     const { key, row } = newKey('HDFC', 'Asha Rao');
     await store.addApiKey('HDFC', row);
     expect(await orgOfKey(`Bearer ${key.replace('_hdfc_', '_sbi_')}`)).toBeNull();
-    expect(await orgOfKey(`Bearer ${key.slice(0, -1)}0`)).toBeNull();
+    expect(await orgOfKey(`Bearer ${key.slice(0, -1)}${key.endsWith('0') ? '1' : '0'}`)).toBeNull();
     expect(await orgOfKey('Basic abc')).toBeNull();
     expect(await orgOfKey(`Bearer nyaya_live_acme_${'0'.repeat(40)}`)).toBeNull(); // companies have no API keys
     await store.revokeApiKey('HDFC', row.id, 'Asha Rao');

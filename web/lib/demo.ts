@@ -3,7 +3,7 @@
 
 /** Scam receiving accounts the demo seeds as confirmed fake by another bank, keyed by home bank. */
 export const DEMO_MULES: Record<string, { upi?: string; acct?: [string, string]; by: string }[]> = {
-  SBI: [{ upi: 'rahul.kyc99@oksbi', by: 'HDFC' }, { upi: 'sbi.reward.desk@sbi', by: 'ICICI' }],
+  SBI: [{ upi: 'rahul.kyc99@oksbi', by: 'HDFC' }, { upi: 'icici.cashback22@oksbi', by: 'ICICI' }],
   HDFC: [{ upi: 'refund.desk@okhdfcbank', by: 'SBI' }, { acct: ['50100123456780', 'HDFC0001234'], by: 'AXIS' }],
   ICICI: [{ upi: 'yono.cashback@ibl', by: 'SBI' }],
   AXIS: [{ upi: 'kycupdate.pnb@okaxis', by: 'PNB' }],

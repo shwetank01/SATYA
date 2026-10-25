@@ -243,6 +243,22 @@ export async function addToBlocklist(bank: string, items: { t: BlockRow['t']; h:
   return closed;
 }
 
+/** Removes blocklist rows (demo-data and smoke-test cleanup only; a real block is never undone here). */
+export async function removeFromBlocklist(drop: (r: BlockRow) => boolean): Promise<BlockRow[]> {
+  let gone: BlockRow[] = [];
+  await update<BlockRow[]>('blocklist.json', () => [], (rows) => { gone = rows.filter(drop); return rows.filter((r) => !drop(r)); });
+  return gone;
+}
+
+/** Forgets herd entries for exact hashes (cleanup only). */
+export async function herdForget(hashes: string[]) {
+  const byPrefix = new Map<string, Set<string>>();
+  for (const h of hashes) byPrefix.set(h.slice(0, 5), (byPrefix.get(h.slice(0, 5)) ?? new Set()).add(h));
+  for (const [p, hs] of byPrefix) {
+    await update<HerdFile>(herdPath(p), () => ({}), (f) => Object.fromEntries(Object.entries(f).filter(([h]) => !hs.has(h))));
+  }
+}
+
 // ---------------------------------------------------------------- Mule Watch (what a bank did about its mules)
 
 export type MuleAction = 'frozen' | 'investigating' | 'not_ours';

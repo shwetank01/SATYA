@@ -12,7 +12,10 @@
     "test": "vitest run",
     "gen-keys": "tsx scripts/gen-keys.ts",
     "seed": "tsx scripts/seed.ts",
-    "doctor": "tsx scripts/doctor.ts"
+    "doctor": "tsx scripts/doctor.ts",
+    "smoke": "tsx --env-file=.env.local scripts/smoke.ts",
+    "demo:seed": "tsx --env-file=.env.local scripts/demo-data.ts seed",
+    "demo:clean": "tsx --env-file=.env.local scripts/demo-data.ts clean"
   },
   "dependencies": {
     "@noble/hashes": "^2.0.1",

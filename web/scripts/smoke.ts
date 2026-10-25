@@ -1,15 +1,20 @@
 // End-to-end smoke test of a deployed gateway + NYAYA console, the way a phone and a bank use it:
 // health -> registry -> AI analyze -> herd -> sealed report -> console login -> inbox -> open with
-// the bank's Box key -> brief -> kill -> phone sees "blocked" -> herd shows the confirmation.
-// Usage: npx tsx --env-file=.env.local scripts/smoke.ts [https://satya-gateway.vercel.app]
+// the bank's Box key -> brief -> kill -> phone sees "blocked" -> herd shows the confirmation, then
+// the institution features (Overview, Radar herd, Promise Card, Mule Watch, audit, export, the
+// partner API, and a company's Pay Check with Verify Before Release). Everything it wrote is
+// removed at the end unless --keep is given.
+// Usage: npx tsx --env-file=.env.local scripts/smoke.ts [https://satya-gateway.vercel.app] [--keep]
 import fs from 'node:fs';
 import path from 'node:path';
 import { boxKeyOf } from '../lib/bundle';
 import { openSealedB64Text, randomHex, receiptMessage, sealB64, verifyHex } from '../lib/satya/crypto';
 import { dayToken, fromHex, sha256Hex, ticketHash } from '../lib/satya/hash';
 import { maskedLabel, upi } from '../lib/satya/normalize';
+import { deleteReport, herdForget, removeFromBlocklist, update, type PayCheckRecord } from '../lib/store';
 
-const BASE = (process.argv[2] ?? 'https://satya-gateway.vercel.app').replace(/\/+$/, '');
+const KEEP = process.argv.includes('--keep');
+const BASE = (process.argv.slice(2).find((a) => !a.startsWith('--')) ?? 'https://satya-gateway.vercel.app').replace(/\/+$/, '');
 const APP = { 'x-satya-app': process.env.SATYA_APP_KEY ?? '', 'content-type': 'application/json' };
 const KEYS = JSON.parse(fs.readFileSync(path.resolve(import.meta.dirname, '..', '..', 'keys', 'demo_keys.json'), 'utf8'));
 let cookie = '';
@@ -62,7 +67,7 @@ await step('report sealed to SBI, receipt verifies', async () => {
 });
 await step('phone status = delivered', async () => { const r = await call('GET', `/api/v1/reports/${reportId}/status`, undefined, { ...APP, 'x-satya-ticket': ticket }); need(r.j?.status === 'delivered', JSON.stringify(r.j)); return r.j.status; });
 await step('console refuses without a session', async () => { const r = await call('GET', '/api/v1/reports', undefined, {}); need(r.status === 401, `HTTP ${r.status}`); return '401'; });
-await step('console login (SBI)', async () => { const r = await call('POST', '/api/v1/console/login', { bank: 'SBI', password: process.env.NYAYA_PASSWORD }, { 'content-type': 'application/json' }); need(r.status === 200 && cookie, `HTTP ${r.status}`); return r.j.orgName; });
+await step('console login (SBI)', async () => { const r = await call('POST', '/api/v1/console/login', { org: 'SBI', user: 'Smoke test', password: process.env.NYAYA_PASSWORD }, { 'content-type': 'application/json' }); need(r.status === 200 && cookie, `HTTP ${r.status}`); return r.j.orgName; });
 await step('inbox lists the report', async () => { const r = await call('GET', '/api/v1/reports', undefined, {}); need(r.j.items?.some((x: any) => x.id === reportId), 'not in inbox'); return `${r.j.items.length} report(s)`; });
 await step('bank opens the box in "browser"', async () => {
   const r = await call('GET', `/api/v1/reports/${reportId}/sealed`, undefined, {});
@@ -77,6 +82,52 @@ await step('kill -> blocked for everyone', async () => { const r = await call('P
 await step('phone status = blocked', async () => { const r = await call('GET', `/api/v1/reports/${reportId}/status`, undefined, { ...APP, 'x-satya-ticket': ticket }); need(r.j?.status === 'blocked', JSON.stringify(r.j)); return r.j.status; });
 await step('registry carries the block', async () => { const r = await call('GET', '/api/v1/registry'); need(r.j.blocklist.some((b: any) => b.h === ind.h), 'not in blocklist'); return `${r.j.blocklist.length} blocked`; });
 await step('herd shows confirmed_by SBI', async () => { const l = await call('GET', `/api/v1/herd/${ind.prefix}`); const m = l.j.matches.find((x: any) => x.h === ind.h); need(m?.confirmed_by === 'SBI', JSON.stringify(m)); return `reports ${m.reports}`; });
+
+const J = { 'content-type': 'application/json' };
+let apiKey = ''; let keyId = ''; let payId = '';
+await step('Overview metrics', async () => { const r = await call('GET', '/api/v1/console/metrics', undefined, {}); need(r.status === 200 && r.j.reports_30d >= 1, JSON.stringify(r.j)); return `${r.j.reports_30d} reports, ${r.j.blocked_by_you} blocked by SBI · ${r.ms} ms`; });
+await step('Radar herd by prefix only', async () => { const r = await call('POST', '/api/v1/console/herd', { prefixes: [ind.prefix] }, J); need(r.j.matches?.some((m: any) => m.h === ind.h), JSON.stringify(r.j)); return `${r.j.matches.length} under ${ind.prefix}`; });
+await step('Promise Card for SBI', async () => { const r = await call('GET', '/api/v1/cards', undefined, {}); need(r.status === 200 && r.j.cert?.sign_pk && r.j.bank_cards?.length === 5, `HTTP ${r.status}`); return `v${r.j.card.version}, signed by ${r.j.card.signed_by}`; });
+await step('Mule Watch', async () => { const r = await call('GET', '/api/v1/console/mules', undefined, {}); need(r.status === 200 && Array.isArray(r.j.items), `HTTP ${r.status}`); return `${r.j.items.length} alert(s)`; });
+await step('audit trail names the analyst', async () => { const r = await call('GET', '/api/v1/console/audit', undefined, {}); need(r.j.items?.some((e: any) => e.user === 'Smoke test' && e.action === 'blocked_for_everyone'), 'kill not in audit'); return `${r.j.items.length} entries`; });
+await step('case register CSV', async () => { const r = await call('GET', '/api/v1/console/export', undefined, {}); need(r.status === 200 && String(r.j).includes(reportId), `HTTP ${r.status}`); return `${String(r.j).trim().split('\n').length - 1} line(s)`; });
+await step('partner API: key, call, revoke', async () => {
+  const k = await call('POST', '/api/v1/console/apikeys', undefined, {});
+  need(k.status === 201, `create HTTP ${k.status}`);
+  apiKey = k.j.key; keyId = k.j.id;
+  const c = await call('POST', '/api/v1/partner/check', { text: 'Dear SBI customer pay Rs 10 KYC fee to sbi.kyc.help@ybl today', channel: 'sms', sender: '+91 70421 88310', ai: false }, { ...J, authorization: `Bearer ${apiKey}` });
+  need(c.status === 200 && c.j.verdict === 'breaks', JSON.stringify(c.j));
+  await call('DELETE', '/api/v1/console/apikeys', { id: keyId }, J);
+  const after = await call('POST', '/api/v1/partner/check', { text: 'x', ai: false }, { ...J, authorization: `Bearer ${apiKey}` });
+  need(after.status === 401, `revoked key HTTP ${after.status}`);
+  return `${c.j.verdict} (${c.j.broken_promises.length} promises) · ${c.ms} ms, revoked -> 401`;
+});
+await step('company login (Acme) is refused bank data', async () => {
+  const r = await call('POST', '/api/v1/console/login', { org: 'ACME', user: 'Smoke test', password: process.env.NYAYA_PASSWORD }, J);
+  need(r.status === 200 && r.j.kind === 'company', `HTTP ${r.status}`);
+  const b = await call('GET', '/api/v1/reports', undefined, {});
+  need(b.status === 403, `reports HTTP ${b.status}`);
+  return 'company, reports -> 403';
+});
+await step('Pay Check P01 -> hold -> callback denied -> blocked', async () => {
+  const c = await call('POST', '/api/v1/pay/checks', { requester: 'R. Mehta', channel: 'voice_note', amount_inr: 480000, request_hash: sha256Hex('smoke P01'), summary: 'smoke: Rs 4.8 lakh to a/c ••••6780', flags: ['NEW_ACCOUNT', 'OVER_LIMIT', 'URGENT_SECRET', 'WRONG_CHANNEL'], voice_score: null }, J);
+  need(c.status === 201 && c.j.decision === 'hold', JSON.stringify(c.j));
+  payId = c.j.id;
+  const v = await call('POST', `/api/v1/pay/checks/${payId}`, { result: 'denied' }, J);
+  need(v.j.decision === 'blocked', JSON.stringify(v.j));
+  need(await verifyHex(v.j.receipt.message, v.j.receipt.sig, process.env.SATYA_RECEIPT_PK!), 'pay receipt signature invalid');
+  return `blocked, receipt verifies · ${v.ms} ms`;
+});
+
+if (!KEEP) {
+  await step('clean up what this run wrote', async () => {
+    await deleteReport('SBI', reportId);
+    await removeFromBlocklist((b) => b.h === ind.h);
+    await herdForget([ind.h]);
+    if (payId) await update<PayCheckRecord[]>('pay/ACME/checks.json', () => [], (rows) => rows.filter((r) => r.id !== payId));
+    return 'report, block, herd entry and pay check removed';
+  });
+}
 
 console.log(failed ? `\n${failed} FAILED` : '\nALL PASS');
 process.exit(failed ? 1 : 0);

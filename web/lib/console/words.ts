@@ -15,6 +15,7 @@ const WORDS: Record<string, string> = {
   pay_verified: 'Recorded a callback',
   api_key_created: 'Created an API key',
   api_key_revoked: 'Revoked an API key',
+  demo_seeded: 'Loaded the demo data',
 };
 
 export const actionWord = (a: string) => WORDS[a] ?? a.replace(/_/g, ' ');
