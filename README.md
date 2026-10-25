@@ -208,7 +208,7 @@ sequenceDiagram
 
 ### Install the app
 
-Install `SATYA.apk` on an Android 11+ phone and follow the in-app Setup. The maintainers share signed APKs directly; they are not attached to [releases](https://github.com/workblue21/SATYA/releases), because each build carries the gateway's app key. You can also build your own (below).
+Install `SATYA.apk` on an Android 11+ phone and follow the in-app Setup. The maintainers share signed APKs directly; they are not attached to [releases](../../releases), because each build carries the gateway's app key. You can also build your own (below).
 
 Samsung notes:
 - Turn Auto Blocker off.

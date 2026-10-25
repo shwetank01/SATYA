@@ -79,6 +79,7 @@ NYAYA becomes a product institutions pay for: ten features for bank fraud desks 
 - First build: all phone protocols (DRISHTI, PRAHARI, KAVACH, VACHAN, SANGH, DOOT, SAKSHI), the design screens and overlays, and Doctor.
 - Gateway API, NYAYA console, Cloudflare workers, VIVEK service and Supabase schema.
 
-[0.3.0]: https://github.com/workblue21/SATYA/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/workblue21/SATYA/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/workblue21/SATYA/releases/tag/v0.1.0
+[0.4.0]: ../../compare/v0.3.0...v0.4.0
+[0.3.0]: ../../compare/v0.2.0...v0.3.0
+[0.2.0]: ../../compare/v0.1.0...v0.2.0
+[0.1.0]: ../../releases/tag/v0.1.0
